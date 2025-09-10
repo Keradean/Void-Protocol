@@ -28,18 +28,21 @@ public class InputManager : MonoBehaviour
     [SerializeField] private string jump = "Jump";
     [SerializeField] private string sprint = "Sprint";
     [SerializeField] private string interact = "Interact";
+    [SerializeField] private string shoot = "Attack";
 
     private InputAction movementAction;
     private InputAction rotationAction;
     private InputAction jumpAction;
     private InputAction sprintAction;
     private InputAction interactAction;
+    private InputAction shootAction;
 
     public Vector2 MovementInput { get; private set; }
     public Vector2 RotationInput { get; private set; }
     public bool JumpTriggered { get; internal set; }
     public bool SprintTriggered { get; private set; }
     public bool InteractTriggered { get; private set; }
+    public bool ShootTriggered { get; private set; }
 
     private void Awake()
     {
@@ -50,6 +53,7 @@ public class InputManager : MonoBehaviour
         jumpAction = mapReference.FindAction(jump);
         sprintAction = mapReference.FindAction(sprint);
         interactAction = mapReference.FindAction(interact);
+        shootAction = mapReference.FindAction(shoot);
 
         ActionValues();
     }
@@ -70,6 +74,9 @@ public class InputManager : MonoBehaviour
 
         interactAction.performed += ctx => InteractTriggered = true;
         interactAction.canceled += ctx => InteractTriggered = false;
+        
+        shootAction.performed += ctx => ShootTriggered = true;
+        shootAction.canceled += ctx => ShootTriggered = false;
     }
 
     private void OnEnable()
@@ -87,6 +94,11 @@ public class InputManager : MonoBehaviour
     public void ResetInteract()
     {
         InteractTriggered = false;
+    }
+    
+    public void ResetShoot()
+    {
+        ShootTriggered = false;
     }
 }
 
