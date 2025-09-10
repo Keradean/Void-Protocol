@@ -21,7 +21,6 @@ public class PlayerStats : ScriptableObject
     public float Oxy; // Player Oxygen
     public float MaxOxy; // Maximum player Oxygen
 
-
     [Header("EXP")]
     public float CurrentExp; // Current experience points
     public float NextLevelExp; // Experience points required for the next level

@@ -2,38 +2,28 @@ using UnityEngine;
 
 public class FirstPersonController : MonoBehaviour
 {
-    /// <summary>
-    /// Cheats 
-    /// </summary>
-    //[Header("")]
-    //[Tooltip("")]
-    //[SerializeField]
-
     [Header("Config Movement Parameters")]
-    [Tooltip("Configure your Movement & Sprint Speeds")]
+
     [SerializeField] private float moveSpeed;
-    [SerializeField] private float sprintSpeed;
+    [SerializeField] private float sprintSpeedMultiplier;
 
     [Header("Config Jump Parameters")]
-    [Tooltip("Configure your  Jump & Gravity Variables")]
     [SerializeField] private float jumpForce;
     [SerializeField] private float gravity;
 
     [Header("Config Look Parameters")]
-    [Tooltip("Configure your  Look Parameters Variables")]
     [SerializeField] private float mouseSensitivity;
     [SerializeField] private float upDownLookRange;
 
     [Header("Referenz")]
-    [Tooltip("")]
     [SerializeField] private CharacterController characterController;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private InputManager inputManager;
 
     [Header("Config Stamina Parameter")]
     [SerializeField] private PlayerStats stats;
-    [SerializeField] private float staminaDrainPerSecond;
-    [SerializeField] private float staminaRegenPerSecond;
+    [SerializeField] private float staminaDrain;
+    [SerializeField] private float staminaRegen;
 
     [Header("Config Sprint Parameter")]
     [SerializeField] private float sprintCooldown;
@@ -61,9 +51,7 @@ public class FirstPersonController : MonoBehaviour
         HandleMovement();
         HandleRotation();
         HandleStamina();
-
     }
-
     private Vector3 CalculateMove()
     {
         Vector3 inputDirection = new Vector3(inputManager.MovementInput.x, 0f, inputManager.MovementInput.y);
@@ -124,7 +112,7 @@ public class FirstPersonController : MonoBehaviour
 
         if (CanSprint)
         {
-            stats.Stamina -= staminaDrainPerSecond * Time.deltaTime;
+            stats.Stamina -= staminaDrain * Time.deltaTime;
             if (stats.Stamina <= 0f)
             {
                 stats.Stamina = 0f;
@@ -136,7 +124,7 @@ public class FirstPersonController : MonoBehaviour
         {
             if (stats.Stamina < stats.MaxStamina)
             {
-                stats.Stamina += staminaRegenPerSecond * Time.deltaTime;
+                stats.Stamina += staminaRegen * Time.deltaTime;
                 if (stats.Stamina > stats.MaxStamina) stats.Stamina = stats.MaxStamina;
             }
         }
