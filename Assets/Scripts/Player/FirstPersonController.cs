@@ -148,11 +148,11 @@ public class FirstPersonController : MonoBehaviour
             weaponsController.Shoot();
             currentShootCooldown = shootCooldown;
             
-         /*   if(!isAutomatic) // Einzelschuss
+            if(!isAutomatic) // Einzelschuss
             {
                 inputManager.ResetShoot();
             }
-         */
+         
         }
     }
 }

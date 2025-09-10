@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
   Level: 0
-  Health: 0
-  MaxHealth: 0
-  Stamina: 0
-  MaxStamina: 0
+  Health: 30
+  MaxHealth: 30
+  Stamina: 20
+  MaxStamina: 20
   Oxy: 0
   MaxOxy: 0
   CurrentExp: 0
-  NextLevelExp: 0
-  InitialNextLevelExp: 0
-  ExpMultiplier: 1
+  NextLevelExp: 100
+  InitialNextLevelExp: 100
+  ExpMultiplier: 50
