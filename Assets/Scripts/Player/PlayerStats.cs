@@ -17,6 +17,11 @@ public class PlayerStats : ScriptableObject
     public float Stamina; // Player Stamina
     public float MaxStamina; // Maximum player Stamina
 
+    [Header("Ammo")]
+    public int CurrentAmmo; // Player Ammo
+    public int RemainingAmmo; // Remaining Player Ammo
+    public int ClipSize; // Maximum Ammo (you might want to add this for reset)o
+
     [Header("Oxygen")]
     public float Oxy; // Player Oxygen
     public float MaxOxy; // Maximum player Oxygen
@@ -30,7 +35,9 @@ public class PlayerStats : ScriptableObject
     public void ResetStats()
     {
         Health = MaxHealth; // Reset health to maximum health
-        Stamina = MaxStamina; // Reset health to maximum health
+        Stamina = MaxStamina; // Reset stamina to maximum stamina
+        CurrentAmmo = ClipSize; // Reset current ammo to clip size
+        RemainingAmmo = ClipSize * 3; // Reset remaining ammo (3 full clips)
         Oxy = MaxOxy; // Reset Oxy to maximum Oxy
         CurrentExp = 0f; // Reset current experience points to zero
         NextLevelExp = InitialNextLevelExp; // Reset next level experience points to initial value

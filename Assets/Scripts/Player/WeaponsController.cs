@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WeaponsController : MonoBehaviour
 {
-    [Header("Confiq")]
+    [Header("Config")]
     [SerializeField] private float range; 
     [SerializeField] private Transform mainCam; 
     [SerializeField] private LayerMask validLayers;
@@ -14,6 +14,9 @@ public class WeaponsController : MonoBehaviour
     [SerializeField] private int clipSize;
     [SerializeField] private int remainingAmmo;
 
+    [Header("Stats Reference")]
+    [SerializeField] private PlayerStats playerStats; // Reference to PlayerStats
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,10 +26,10 @@ public class WeaponsController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-       if(flareCount > 0)
+        if (flareCount > 0)
         {
           flareCount -= Time.deltaTime;
-            if(flareCount <= 0)
+            if (flareCount <= 0)
             {
                 muzzelFlare.SetActive(false);
             }
@@ -35,14 +38,13 @@ public class WeaponsController : MonoBehaviour
 
     public void Shoot() 
     {
-        if (currentAmmo > 0)
+        if (playerStats.CurrentAmmo > 0)
         {
             RaycastHit hit;
             if (Physics.Raycast(mainCam.position, mainCam.forward, out hit, range, validLayers))
             {
                 Debug.Log(hit.transform.name);
-
-                if (hit.transform.tag == "Enemy")
+                if (hit.transform.CompareTag("Enemy"))
                 {
                     Instantiate(damageEffect, hit.point, Quaternion.identity);
                 }
@@ -55,25 +57,25 @@ public class WeaponsController : MonoBehaviour
             }
             muzzelFlare.SetActive(true);
             flareCount = flareTime;
-            currentAmmo--;
+            playerStats.CurrentAmmo--; // Use PlayerStats
         }
     }
 
     public void Reload()
     {
-        // Reload Logic 
-        remainingAmmo += currentAmmo;
+        // Reload Logic using PlayerStats
+        playerStats.RemainingAmmo += playerStats.CurrentAmmo;
 
-        if (remainingAmmo >= clipSize) 
+        if (playerStats.RemainingAmmo >= playerStats.ClipSize) 
         { 
         Debug.Log("I am Reloading my Weapon");
-        currentAmmo = clipSize;
-        remainingAmmo -= clipSize;
+        playerStats.CurrentAmmo = playerStats.ClipSize;
+        playerStats.RemainingAmmo -= playerStats.ClipSize;
         }
         else
         {
-            currentAmmo = remainingAmmo;
-            remainingAmmo = 0;
+            playerStats.CurrentAmmo = playerStats.RemainingAmmo;
+            playerStats.RemainingAmmo = 0;
         }
         //PlayreloadAnimation(); // if its a littel bit Time lef´t
     }
