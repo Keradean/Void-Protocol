@@ -15,6 +15,8 @@ public class WeaponsController : MonoBehaviour
     [Header("Stats Reference")]
     [SerializeField] private PlayerStats playerStats;
 
+    [SerializeField] private float damageValue;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -46,6 +48,8 @@ public class WeaponsController : MonoBehaviour
                 if (hit.transform.tag == "Enemy")
                 {
                     Instantiate(damageEffect, hit.point, Quaternion.identity);
+
+                    hit.transform.GetComponent<EnemyController>().TakeDamage(damageValue);
                 }
                 else
                 {

@@ -16,6 +16,12 @@ public class EnemyController : MonoBehaviour
     [SerializeField] private Transform[] patrolsPoints;
     [SerializeField] private Transform pointHolder;
     [HideInInspector] private int currentPatrolPoint;
+
+
+    [HideInInspector] private bool isDeath;
+
+
+    [SerializeField] private float currentHealth;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -29,7 +35,11 @@ public class EnemyController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        // Corpse is not following me, anymore.
+        if (isDeath == true)
+        {
+            return;
+        }
 
         // Enemy is Moving 
         float moveY = rB.linearVelocity.y;
@@ -70,5 +80,20 @@ public class EnemyController : MonoBehaviour
             }
         }
         rB.linearVelocity = new Vector3(rB.linearVelocity.x, moveY, rB.linearVelocity.z);
+    }
+
+    public void TakeDamage(float damageToTake)
+    {
+         
+        currentHealth -= damageToTake;
+
+        if (currentHealth <= 0)
+        {
+            isDeath = true;
+            Destroy(gameObject);
+            rB.linearVelocity = Vector3.zero;
+            GetComponent<Collider>().enabled = false; // if enemy is death, he isnt slide on the ground
+            Debug.Log("i Hit You");
+        } 
     }
 }
