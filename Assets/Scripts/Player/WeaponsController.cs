@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class WeaponsController : MonoBehaviour
 {
-    [Header("Config")]
+    [Header("Confiq")]
     [SerializeField] private float range; 
     [SerializeField] private Transform mainCam; 
     [SerializeField] private LayerMask validLayers;
@@ -10,12 +10,10 @@ public class WeaponsController : MonoBehaviour
     [SerializeField] private GameObject muzzelFlare;
     [SerializeField] private float flareTime;
     [SerializeField] private float flareCount;
-    [SerializeField] private int currentAmmo;
-    [SerializeField] private int clipSize;
-    [SerializeField] private int remainingAmmo;
+    [SerializeField] private int pickUpValue;
 
     [Header("Stats Reference")]
-    [SerializeField] private PlayerStats playerStats; // Reference to PlayerStats
+    [SerializeField] private PlayerStats playerStats;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -26,10 +24,10 @@ public class WeaponsController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (flareCount > 0)
+       if(flareCount > 0)
         {
           flareCount -= Time.deltaTime;
-            if (flareCount <= 0)
+            if(flareCount <= 0)
             {
                 muzzelFlare.SetActive(false);
             }
@@ -44,7 +42,8 @@ public class WeaponsController : MonoBehaviour
             if (Physics.Raycast(mainCam.position, mainCam.forward, out hit, range, validLayers))
             {
                 Debug.Log(hit.transform.name);
-                if (hit.transform.CompareTag("Enemy"))
+
+                if (hit.transform.tag == "Enemy")
                 {
                     Instantiate(damageEffect, hit.point, Quaternion.identity);
                 }
@@ -57,13 +56,13 @@ public class WeaponsController : MonoBehaviour
             }
             muzzelFlare.SetActive(true);
             flareCount = flareTime;
-            playerStats.CurrentAmmo--; // Use PlayerStats
+            playerStats.CurrentAmmo--;
         }
     }
 
     public void Reload()
     {
-        // Reload Logic using PlayerStats
+        // Reload Logic 
         playerStats.RemainingAmmo += playerStats.CurrentAmmo;
 
         if (playerStats.RemainingAmmo >= playerStats.ClipSize) 
@@ -78,5 +77,12 @@ public class WeaponsController : MonoBehaviour
             playerStats.RemainingAmmo = 0;
         }
         //PlayreloadAnimation(); // if its a littel bit Time lef´t
+    }
+
+    public void GetAmmo()
+    {
+        playerStats.RemainingAmmo += pickUpValue; 
+        Debug.Log("Nimm mich du Sau");
+        
     }
 }

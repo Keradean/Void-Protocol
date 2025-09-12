@@ -10,7 +10,6 @@ public class UIManager : MonoBehaviour
     [Header("Stats")]
     [SerializeField] private PlayerStats stats; // Reference to the PlayerStats scriptable object
 
-
     [Header("Bars")]
     [SerializeField] private Image healthBar;  // Reference to the health bar UI element
     [SerializeField] private Image staminaBar;  // Reference to the mana bar UI element 
@@ -38,11 +37,6 @@ public class UIManager : MonoBehaviour
         if (ammoBar != null && stats.ClipSize > 0)
         {
             ammoBar.fillAmount = (float)stats.CurrentAmmo / (float)stats.ClipSize;
-            Debug.Log($"Ammo Bar: {stats.CurrentAmmo}/{stats.ClipSize} = {ammoBar.fillAmount}"); // DEBUG
-        }
-        else
-        {
-            Debug.LogWarning("AmmoBar is null or ClipSize is 0!"); // DEBUG
         }
 
         /*// Update oxygen bar if you have one
@@ -57,6 +51,8 @@ public class UIManager : MonoBehaviour
         healthTMP.text = $"{Mathf.FloorToInt(stats.Health)}"; // Update the health text with the player's current health 
         ammoTMP.text = $"{stats.CurrentAmmo}"; // Update the ammo text with current ammo
         remainingAmmoTMP.text = $"{stats.RemainingAmmo}"; // Update the remaining ammo text
+        
+
     }
 
 }
