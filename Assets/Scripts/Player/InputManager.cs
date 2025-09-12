@@ -29,6 +29,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private string sprint = "Sprint";
     [SerializeField] private string interact = "Interact";
     [SerializeField] private string shoot = "Attack";
+    [SerializeField] private string reload = "Reloading";
 
     private InputAction movementAction;
     private InputAction rotationAction;
@@ -36,6 +37,7 @@ public class InputManager : MonoBehaviour
     private InputAction sprintAction;
     private InputAction interactAction;
     private InputAction shootAction;
+    private InputAction reloadAction;
 
     public Vector2 MovementInput { get; private set; }
     public Vector2 RotationInput { get; private set; }
@@ -43,6 +45,7 @@ public class InputManager : MonoBehaviour
     public bool SprintTriggered { get; private set; }
     public bool InteractTriggered { get; private set; }
     public bool ShootTriggered { get; private set; }
+    public bool ReloadTriggered { get; private set; }
 
     private void Awake()
     {
@@ -54,6 +57,7 @@ public class InputManager : MonoBehaviour
         sprintAction = mapReference.FindAction(sprint);
         interactAction = mapReference.FindAction(interact);
         shootAction = mapReference.FindAction(shoot);
+        reloadAction = mapReference.FindAction(reload);
 
         ActionValues();
     }
@@ -77,6 +81,9 @@ public class InputManager : MonoBehaviour
         
         shootAction.performed += ctx => ShootTriggered = true;
         shootAction.canceled += ctx => ShootTriggered = false;
+        
+        reloadAction.performed += ctx => ReloadTriggered = true;
+        reloadAction.canceled += ctx => ReloadTriggered = false;
     }
 
     private void OnEnable()
@@ -99,6 +106,11 @@ public class InputManager : MonoBehaviour
     public void ResetShoot()
     {
         ShootTriggered = false;
+    }
+    
+    public void ResetReload()
+    {
+        ReloadTriggered = false;
     }
 }
 

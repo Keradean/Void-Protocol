@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FirstPersonController : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
 
     [Header("Referenz")]
@@ -148,11 +148,17 @@ public class FirstPersonController : MonoBehaviour
             weaponsController.Shoot();
             currentShootCooldown = shootCooldown;
             
-            if(!isAutomatic) // Einzelschuss
+            if(!isAutomatic) // Einzelschuss oder Automatic einstellung 
             {
                 inputManager.ResetShoot();
             }
          
+        }
+
+        if(inputManager.ReloadTriggered)
+        {
+            weaponsController.Reload();
+            inputManager.ResetReload();
         }
     }
 }
