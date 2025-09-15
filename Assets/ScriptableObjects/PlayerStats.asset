@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
   Level: 0
-  Health: 76
+  Health: 80
   MaxHealth: 100
   Stamina: 100
   MaxStamina: 100
-  CurrentAmmo: 2
-  RemainingAmmo: 15
+  CurrentAmmo: 11
+  RemainingAmmo: 120
   ClipSize: 30
   Oxy: 0
   MaxOxy: 0
