@@ -47,9 +47,13 @@ public class WeaponsController : MonoBehaviour
 
                 if (hit.transform.tag == "Enemy")
                 {
-                    Instantiate(damageEffect, hit.point, Quaternion.identity);
+                    IDamageable enemy = hit.transform.GetComponent<IDamageable>();
+                    if (enemy != null)
+                    {
+                        enemy.TakeDamage(damageValue);
+                    }
 
-                    hit.transform.GetComponent<EnemyController>().TakeDamage(damageValue);
+                    Instantiate(damageEffect, hit.point, Quaternion.identity);
                 }
                 else
                 {

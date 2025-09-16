@@ -19,7 +19,15 @@ public class ActionPatrol : FSMAction
     }
     private void FollowPath()
     {
+        Vector3 direction = GetCurrentPosition() - transform.position;
+        if (direction.sqrMagnitude > 0.01f)  
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f); 
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, GetCurrentPosition(), speed * Time.deltaTime);
+
         if (Vector3.Distance(transform.position, GetCurrentPosition()) <= 0.1f)
         {
             UpdateNextPosition();

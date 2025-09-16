@@ -10,13 +10,33 @@ public class EnemyBrain : MonoBehaviour
 
     private void Start()
     {
-        ChangeState(initState); // Initialize the FSM by setting the current state to the initial state
+        if (Player == null)
+        {
+            Player = GameObject.FindWithTag("Player")?.transform; // Sucht den Player per Tag
+            if (Player == null)
+            {
+                Debug.LogError("Player nicht gefunden! Bitte den Player zuweisen.");
+                return;
+            }
+
+            ChangeState(initState); // Initialize the FSM by setting the current state to the initial state
+        }
     }
 
     private void Update()
     {
-        if (CurrentState == null) return; // Ensure the current state is valid before updating
-        CurrentState.UpdateState(this); // Update the current state of the enemy(this === enemyBrain)
+        if (CurrentState == null) return; 
+        CurrentState.UpdateState(this);
+
+        if (Player == null) return; 
+
+        Vector3 directionToPlayer = new Vector3(Player.transform.position.x, transform.position.y, Player.transform.position.z) - transform.position;
+
+        if (directionToPlayer.magnitude > 0.1f) 
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);  
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 5f); 
+        }
     }
 
     public void ChangeState(string newStateID)

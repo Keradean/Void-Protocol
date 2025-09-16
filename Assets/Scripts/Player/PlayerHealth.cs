@@ -48,6 +48,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private void PlayerDead()
     {
+
         // playerAnimations.SetDeadAnimation(); // Trigger the dead animation
         Debug.Log("I am Dead");
     }
