@@ -161,18 +161,4 @@ public class PlayerController : MonoBehaviour
             inputManager.ResetReload();
         }
     }
-    public void TakeDamage(float amount)
-    {
-        stats.Health -= amount;
-
-        if (stats.Health < 0)
-        {
-            stats.Health = 0;
-        }
-
-        if (stats.Health <= 0)
-        {
-            Debug.Log("Ich bin Tot!");
-        }
-    }
 }

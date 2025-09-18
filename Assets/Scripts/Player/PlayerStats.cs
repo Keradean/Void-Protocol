@@ -12,6 +12,7 @@ public class PlayerStats : ScriptableObject
     [Header("Health")]
     public float Health; // Player health
     public float MaxHealth; // Maximum player health
+    public float HealthValue; // PickUpValue MediPen
 
     [Header("Stamina")]
     public float Stamina; // Player Stamina
@@ -37,7 +38,7 @@ public class PlayerStats : ScriptableObject
         Health = MaxHealth; // Reset health to maximum health
         Stamina = MaxStamina; // Reset stamina to maximum stamina
         CurrentAmmo = ClipSize; // Reset current ammo to clip size
-        RemainingAmmo = ClipSize * 4; // Reset remaining ammo (*3 full clips)
+        RemainingAmmo = ClipSize * 4; // Reset remaining ammo (*4 full clips)
         Oxy = MaxOxy; // Reset Oxy to maximum Oxy
         CurrentExp = 0f; // Reset current experience points to zero
         NextLevelExp = InitialNextLevelExp; // Reset next level experience points to initial value

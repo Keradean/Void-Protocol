@@ -15,13 +15,19 @@ MonoBehaviour:
   Level: 0
   Health: 100
   MaxHealth: 100
-  Stamina: 100
+  HealthValue: 20
+  Stamina: 98.70137
   MaxStamina: 100
+<<<<<<< HEAD
   CurrentAmmo: 30
   RemainingAmmo: 120
+=======
+  CurrentAmmo: 0
+  RemainingAmmo: 131
+>>>>>>> origin/main
   ClipSize: 30
-  Oxy: 0
-  MaxOxy: 0
+  Oxy: 23.322664
+  MaxOxy: 100
   CurrentExp: 0
   NextLevelExp: 100
   InitialNextLevelExp: 100

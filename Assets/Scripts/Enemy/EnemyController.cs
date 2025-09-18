@@ -37,10 +37,7 @@ public class EnemyController : MonoBehaviour
     void Update()
     {
         // Corpse is not following me, anymore.
-        if (isDeath == true)
-        {
-            return;
-        }
+        if (isDeath == true) return;
 
         // Enemy is Moving  
         float moveY = rB.linearVelocity.y;
