@@ -12,8 +12,5 @@ public class PickUpAmmo : MonoBehaviour
 
             Debug.Log("Aufgesammelt");
         }
-
     }
-
-
 }

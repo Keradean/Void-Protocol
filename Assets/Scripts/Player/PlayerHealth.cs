@@ -24,9 +24,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (stats == null) return; 
 
-
-      
-
         stats.Health -= amount;
         if (stats.Health <= 0f)
         {
@@ -49,6 +46,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     public bool CanRestoreHealth()
     {
+
         if (stats == null) return false;
         return stats.Health > 0 && stats.Health < stats.MaxHealth;
     }
