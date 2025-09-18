@@ -28,7 +28,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        UpdatePlayerUI(); // Call the method to update the player UI elements
+        UpdatePlayerUI(); 
     }
 
     private void UpdatePlayerUI()
