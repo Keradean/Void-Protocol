@@ -1,56 +1,62 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class PlayerHealth : MonoBehaviour, IDamageable
-
-
 {
-    [Header("Config")] // Configuration settings for the PlayerHealth component
-    [SerializeField] private PlayerStats stats; // Reference to the PlayerStats scriptable object
+    [Header("Config")]
+    [SerializeField] private PlayerStats stats;
 
-    //private PlayerAnimations playerAnimations; // Reference to the PlayerAnimations script for handling animations
+    [Header("References")]
+    [SerializeField] private UIManager uiManager;
 
     private void Awake()
     {
-       // playerAnimations = GetComponent<PlayerAnimations>(); // Get the PlayerAnimations component attached to the player GameObject
-    }
-    /// <summary>
-    /// Test Area
-    /// </summary>
-    private void Update()
-    {
+        if (uiManager == null)
+        {
+            uiManager = GetComponent<UIManager>();
 
+        }
     }
+
     public void TakeDamage(float amount)
     {
-        stats.Health -= amount; // Reduce health by the damage amount
+        if (stats == null) return; 
+
+
+      
+
+        stats.Health -= amount;
         if (stats.Health <= 0f)
         {
             stats.Health = 0f;
-            PlayerDead(); // Call the method to handle player death
-
+   
+            PlayerDead();
         }
     }
 
     public void RestoreHealth(float amount)
     {
-        stats.Health += amount; // Increase health by the restoration amount
-        if (stats.Health > stats.MaxHealth) // Ensure health does not exceed maximum health
+        if (stats == null) return;
+
+        stats.Health += amount;
+        if (stats.Health > stats.MaxHealth)
         {
-            stats.Health = stats.MaxHealth; // Cap health at maximum value
+            stats.Health = stats.MaxHealth;
         }
     }
+
     public bool CanRestoreHealth()
     {
-        return stats.Health > 0 && stats.Health < stats.MaxHealth; // Check if the player can restore health
+        if (stats == null) return false;
+        return stats.Health > 0 && stats.Health < stats.MaxHealth;
     }
 
     private void PlayerDead()
     {
-
-        // playerAnimations.SetDeadAnimation(); // Trigger the dead animation
+        if (uiManager == null) return; 
+        uiManager.ShowDeathScreen();
         Debug.Log("I am Dead");
     }
-
 }

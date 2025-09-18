@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using TMPro;
-using UnityEngine.UI;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
@@ -21,6 +22,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI staminaTMP; // Reference to the level text UI element
     [SerializeField] private TextMeshProUGUI ammoTMP; // Reference to the ammo text UI element
     [SerializeField] private TextMeshProUGUI remainingAmmoTMP; // Reference to the ammo text UI element
+
+    [Header("DeathScreen")]
+    [SerializeField] private GameObject showDeathScreen;
 
     private void Update()
     {
@@ -51,8 +55,24 @@ public class UIManager : MonoBehaviour
         healthTMP.text = $"{Mathf.FloorToInt(stats.Health)}"; // Update the health text with the player's current health 
         ammoTMP.text = $"{stats.CurrentAmmo}"; // Update the ammo text with current ammo
         remainingAmmoTMP.text = $"{stats.RemainingAmmo}"; // Update the remaining ammo text
-        
-
     }
 
+    public void ShowDeathScreen()
+    {
+        showDeathScreen.SetActive(true);
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+    public void RestartGame()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        
+    }
+
+    public void BackToMainMenu()
+    {
+        //SceneManager.LoadScene("MainMenu");
+    }
 }

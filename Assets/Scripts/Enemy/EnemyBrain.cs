@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Pool; 
 
 public class EnemyBrain : MonoBehaviour
 {
@@ -13,11 +14,8 @@ public class EnemyBrain : MonoBehaviour
         if (Player == null)
         {
             Player = GameObject.FindWithTag("Player")?.transform; // Sucht den Player per Tag
-            if (Player == null)
-            {
-                Debug.LogError("Player nicht gefunden! Bitte den Player zuweisen.");
-                return;
-            }
+            if (Player == null) return;
+
 
             ChangeState(initState); // Initialize the FSM by setting the current state to the initial state
         }
