@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 6e4c91feed9b16a478a5c27b5d58deef
+guid: 60f29bc8134eef246a23a71576175585
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,18 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Ground_flat_01_LOD0
-    second: {fileID: 2100000, guid: c07f6d5269c611549b9c786e26817284, type: 2}
+      name: Ground_flat_02_LOD0
+    second: {fileID: 2100000, guid: 8dee375eba1d2044a9dc06933a54d96c, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Ground_flat_01_LOD1
-    second: {fileID: 2100000, guid: eec0fed2e49727f4d85fb0fb3cbae54d, type: 2}
+      name: Ground_flat_02_LOD1
+    second: {fileID: 2100000, guid: d526992f4c2997d499f042e078ce9410, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Ground_flat_01_LOD2
-    second: {fileID: 2100000, guid: 9e2de47b52f1b5946922a3bcc5318d8a, type: 2}
+      name: Ground_flat_02_LOD2
+    second: {fileID: 2100000, guid: 9c495907396c91443a05de419d409861, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

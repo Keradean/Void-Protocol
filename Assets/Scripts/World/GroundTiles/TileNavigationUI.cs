@@ -1,12 +1,12 @@
 /*
 ====================================================================
-* TileNavigationUI.cs - Phase 1 Compatibility Update
+* TileNavigationUI.cs - Clean Compilation Safe Version
 ====================================================================
 * Project: Space Colony Game
 * Course: PIP
 * Script-Developer: Julian
 * Date: 18.09.2025
-* Version: Phase 1 Compatible - Academic Attribution
+* Version: Clean - Academic Attribution
 *
 * WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
 * Diese detaillierte Authorship-Dokumentation ist für die
@@ -14,7 +14,7 @@
 *
 * AUTHORSHIP CLASSIFICATION:
 * [HUMAN-AUTHORED] - Navigation logic, UI direction calculation, distance display
-* [AI-ASSISTED] - TileManager integration, performance optimization, compatibility updates
+* [AI-ASSISTED] - TileManager integration, performance optimization, syntax correction
 ====================================================================
 */
 
@@ -30,9 +30,10 @@ public class TileNavigationUI : MonoBehaviour
     [SerializeField] private RectTransform directionArrow;
 
     [Header("Navigation Settings")]
-    [SerializeField] private float updateInterval = 0.1f;
+    [SerializeField] private float updateInterval = 0.2f;
     [SerializeField] private bool showDistance = true;
     [SerializeField] private bool showDirection = true;
+    [SerializeField] private bool enableDebugDisplay = false;
 
     [Header("TileManager Reference")]
     [SerializeField] private TileManager tileManager;
@@ -62,21 +63,31 @@ public class TileNavigationUI : MonoBehaviour
     {
         // Initialize UI elements if not assigned
         if (directionText == null)
-            directionText = transform.Find("DirectionText")?.GetComponent<TextMeshProUGUI>();
+        {
+            Transform foundText = transform.Find("DirectionText");
+            if (foundText != null)
+                directionText = foundText.GetComponent<TextMeshProUGUI>();
+        }
 
         if (distanceText == null)
-            distanceText = transform.Find("DistanceText")?.GetComponent<TextMeshProUGUI>();
+        {
+            Transform foundText = transform.Find("DistanceText");
+            if (foundText != null)
+                distanceText = foundText.GetComponent<TextMeshProUGUI>();
+        }
 
         if (keyTileCountText == null)
-            keyTileCountText = transform.Find("KeyTileCountText")?.GetComponent<TextMeshProUGUI>();
+        {
+            Transform foundText = transform.Find("KeyTileCountText");
+            if (foundText != null)
+                keyTileCountText = foundText.GetComponent<TextMeshProUGUI>();
+        }
 
         if (directionArrow == null)
-            directionArrow = transform.Find("DirectionArrow")?.GetComponent<RectTransform>();
-
-        // Subscribe to TileManager events
-        if (tileManager != null)
         {
-            tileManager.OnKeyTilesUpdated += UpdateKeyTileCount;
+            Transform foundArrow = transform.Find("DirectionArrow");
+            if (foundArrow != null)
+                directionArrow = foundArrow.GetComponent<RectTransform>();
         }
     }
 
@@ -85,14 +96,16 @@ public class TileNavigationUI : MonoBehaviour
         if (tileManager == null)
         {
             tileManager = FindFirstObjectByType<TileManager>();
-            if (tileManager != null)
+            if (tileManager == null)
             {
-                tileManager.OnKeyTilesUpdated += UpdateKeyTileCount;
+                Debug.LogWarning("TileManager not found. Assign manually in Inspector.");
             }
-            else
-            {
-                Debug.LogWarning("TileManager not found! Assign manually in Inspector.");
-            }
+        }
+
+        // Subscribe to events if TileManager found
+        if (tileManager != null && tileManager.OnKeyTilesUpdated != null)
+        {
+            tileManager.OnKeyTilesUpdated += UpdateKeyTileCount;
         }
     }
 
@@ -103,19 +116,26 @@ public class TileNavigationUI : MonoBehaviour
         Vector3 playerPosition = GetPlayerPosition();
         if (playerPosition == Vector3.zero) return;
 
-        // Get nearest key tile from TileManager
-        Vector3 nearestKeyTileWorldPos = tileManager.GetNearestKeyTileWorldPosition(playerPosition);
-        Vector2Int nearestKeyTileGrid = WorldToGridPosition(nearestKeyTileWorldPos);
-
-        // Only update if nearest tile changed
-        if (nearestKeyTileGrid != cachedNearestKeyTile)
+        try
         {
-            cachedNearestKeyTile = nearestKeyTileGrid;
-            UpdateDirectionDisplay(playerPosition, nearestKeyTileWorldPos);
-        }
+            // Get nearest key tile from TileManager
+            Vector3 nearestKeyTileWorldPos = tileManager.GetNearestKeyTileWorldPosition(playerPosition);
+            Vector2Int nearestKeyTileGrid = WorldToGridPosition(nearestKeyTileWorldPos);
 
-        // Update distance (always, as player moves)
-        UpdateDistanceDisplay(playerPosition, nearestKeyTileWorldPos);
+            // Only update direction if nearest tile changed
+            if (nearestKeyTileGrid != cachedNearestKeyTile)
+            {
+                cachedNearestKeyTile = nearestKeyTileGrid;
+                UpdateDirectionDisplay(playerPosition, nearestKeyTileWorldPos);
+            }
+
+            // Always update distance as player moves
+            UpdateDistanceDisplay(playerPosition, nearestKeyTileWorldPos);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogWarning($"Navigation UI update error: {e.Message}");
+        }
     }
 
     private void UpdateDirectionDisplay(Vector3 playerPos, Vector3 targetPos)
@@ -138,11 +158,11 @@ public class TileNavigationUI : MonoBehaviour
         // Update arrow rotation if present
         if (directionArrow != null)
         {
-            float targetRotation = -angle; // Negative for UI coordinate system
+            float targetRotation = -angle;
             directionArrow.rotation = Quaternion.Lerp(
                 directionArrow.rotation,
                 Quaternion.Euler(0, 0, targetRotation),
-                Time.deltaTime * 5f
+                Time.deltaTime * 3f
             );
         }
     }
@@ -154,21 +174,21 @@ public class TileNavigationUI : MonoBehaviour
         float distance = Vector3.Distance(playerPos, targetPos);
         cachedDistance = distance;
 
-        // Format distance display
-        if (distance < 10f)
+        // Format distance display with color coding
+        if (distance < 5f)
         {
             distanceText.text = $"{distance:F1}m";
-            distanceText.color = Color.green; // Close
+            distanceText.color = Color.green;
         }
-        else if (distance < 50f)
+        else if (distance < 15f)
         {
-            distanceText.text = $"{distance:F0}m";
-            distanceText.color = Color.yellow; // Medium
+            distanceText.text = $"{distance:F1}m";
+            distanceText.color = Color.yellow;
         }
         else
         {
             distanceText.text = $"{distance:F0}m";
-            distanceText.color = Color.red; // Far
+            distanceText.color = Color.red;
         }
     }
 
@@ -194,7 +214,7 @@ public class TileNavigationUI : MonoBehaviour
         );
     }
 
-    // Public interface for external access
+    // Public interface methods
     public float GetDistanceToNearestKeyTile()
     {
         return cachedDistance;
@@ -205,25 +225,25 @@ public class TileNavigationUI : MonoBehaviour
         return cachedNearestKeyTile;
     }
 
-    // Debug info
+    // Debug display
     private void OnGUI()
     {
-        if (!Application.isPlaying) return;
-        if (tileManager == null) return;
+        if (!enableDebugDisplay || !Application.isPlaying || tileManager == null) return;
 
-        // Debug information in top-right corner
-        GUILayout.BeginArea(new Rect(Screen.width - 200, 10, 180, 100));
-        GUILayout.Label($"Navigation Debug", GUI.skin.box);
+        // Debug information in screen corner
+        GUILayout.BeginArea(new Rect(Screen.width - 200, 10, 180, 120));
+        GUILayout.Box("Navigation Debug");
         GUILayout.Label($"Distance: {cachedDistance:F1}m");
         GUILayout.Label($"Grid Pos: {cachedNearestKeyTile}");
         GUILayout.Label($"Key Tiles: {tileManager.GetKeyTilePositions().Count}");
+        GUILayout.Label($"Update Rate: {1f / updateInterval:F1} Hz");
         GUILayout.EndArea();
     }
 
     private void OnDestroy()
     {
-        // Unsubscribe from events
-        if (tileManager != null)
+        // Clean up event subscriptions
+        if (tileManager != null && tileManager.OnKeyTilesUpdated != null)
         {
             tileManager.OnKeyTilesUpdated -= UpdateKeyTileCount;
         }

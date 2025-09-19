@@ -62,7 +62,7 @@ public struct TileConfiguration
 public class TileManager : MonoBehaviour
 {
     [Header("Grid Configuration")]
-    [SerializeField] private int gridSize = 20;
+    [SerializeField] private int gridSize = 5;
     [SerializeField] private float tileSize = 1f;
     [SerializeField] private Transform tilesContainer;
 
@@ -93,7 +93,8 @@ public class TileManager : MonoBehaviour
 
     void Update()
     {
-        CheckPlayerProximity();
+        // TEMPORÄR DEAKTIVIERT FÜR DEBUGGING
+        // CheckPlayerProximity();
     }
 
     // PHASE 1: LOD-optimized terrain generation
