@@ -3,8 +3,8 @@ using UnityEngine;
 public class WeaponsController : MonoBehaviour
 {
     [Header("Config")]
-    [SerializeField] private float range; 
-    [SerializeField] private Transform mainCam; 
+    [SerializeField] private float range;
+    [SerializeField] private Transform mainCam;
     [SerializeField] private LayerMask validLayers;
     [SerializeField] private GameObject impactEffect, damageEffect;
     [SerializeField] private GameObject muzzelFlare;
@@ -26,7 +26,7 @@ public class WeaponsController : MonoBehaviour
     {
         if (flareCount > 0)
         {
-          flareCount -= Time.deltaTime;
+            flareCount -= Time.deltaTime;
             if (flareCount <= 0)
             {
                 muzzelFlare.SetActive(false);
@@ -36,10 +36,10 @@ public class WeaponsController : MonoBehaviour
         if (shootCounter > 0)
         {
             shootCounter -= Time.deltaTime;
-    }
+        }
     }
 
-    public void Shoot() 
+    public void Shoot()
     {
         if (shootCounter > 0) return;
 
@@ -77,32 +77,25 @@ public class WeaponsController : MonoBehaviour
             else
             {
                 shootCounter = singleShotCooldown;
+            }
         }
-    }
     }
 
     public void Reload()
     {
         playerStats.RemainingAmmo += playerStats.CurrentAmmo;
 
-        if (playerStats.RemainingAmmo >= playerStats.ClipSize) 
-        { 
-        Debug.Log("I am Reloading my Weapon");
-        playerStats.CurrentAmmo = playerStats.ClipSize;
-        playerStats.RemainingAmmo -= playerStats.ClipSize;
+        if (playerStats.RemainingAmmo >= playerStats.ClipSize)
+        {
+            Debug.Log("I am Reloading my Weapon");
+            playerStats.CurrentAmmo = playerStats.ClipSize;
+            playerStats.RemainingAmmo -= playerStats.ClipSize;
         }
         else
         {
             playerStats.CurrentAmmo = playerStats.RemainingAmmo;
             playerStats.RemainingAmmo = 0;
         }
-        //PlayreloadAnimation(); // if its a littel bit Time lef´t
-    }
-
-    public void GetAmmo()
-    {
-        playerStats.RemainingAmmo += pickUpValue; 
-        Debug.Log("Nimm mich du Sau");
-        
+        //PlayreloadAnimation(); // if its a little bit Time left
     }
 }

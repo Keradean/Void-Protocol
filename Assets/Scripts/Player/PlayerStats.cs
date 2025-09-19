@@ -12,6 +12,7 @@ public class PlayerStats : ScriptableObject
     [Header("Health")]
     public float Health; // Player health
     public float MaxHealth; // Maximum player health
+    public float HealthValue; // PickUpValue MediPen
 
     [Header("Stamina")]
     public float Stamina; // Player Stamina
