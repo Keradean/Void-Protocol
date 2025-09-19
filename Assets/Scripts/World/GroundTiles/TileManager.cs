@@ -56,7 +56,7 @@ public struct TileConfiguration
 
     [Header("Enemy AI Integration")]
     public bool isWalkable;                // For enemy pathfinding
-    public bool blocksLineOfSight;         // For enemy detection
+    public bool blocksLineOfSight;         // For enemy detection   // Enemy AI Integration ist nicht nötig !!!!
 }
 
 public class TileManager : MonoBehaviour
@@ -83,11 +83,21 @@ public class TileManager : MonoBehaviour
     public System.Action OnKeyTilesUpdated;
     public System.Action<Vector2Int> OnKeyTileReached;
 
+    private int failSafeAmount = 1000;
+
     void Start()
     {
         if (generateOnStart)
         {
             StartCoroutine(GenerateTerrainCoroutine());
+        }
+        Debug.Log($"=== KEY TILE DEBUG ===");
+        Debug.Log($"Total Key Tiles Generated: {keyTilePositions.Count}");
+        for (int i = 0; i < keyTilePositions.Count; i++)
+        {
+            Vector2Int gridPos = keyTilePositions[i];
+            Vector3 worldPos = GridToWorldPosition(gridPos);
+            Debug.Log($"Key Tile {i}: Grid({gridPos.x},{gridPos.y}) World({worldPos.x},{worldPos.z})");
         }
     }
 
@@ -286,8 +296,11 @@ public class TileManager : MonoBehaviour
     // Ensure minimum key tile count
     private void EnsureKeyTileCount()
     {
+        var failSafeCounter = 0;
+
         while (keyTilePositions.Count < 3)
         {
+            failSafeCounter++;
             // Find random empty position for additional key tile
             Vector2Int randomPos = new Vector2Int(Random.Range(0, gridSize), Random.Range(0, gridSize));
             if (!occupiedPositions.Contains(randomPos))
@@ -299,6 +312,8 @@ public class TileManager : MonoBehaviour
                     PlaceTile(randomPos, keyTileConfig);
                 }
             }
+
+            if (failSafeCounter > failSafeAmount) { Debug.LogError("FailSafeTriggered!!!"); break; }// Prevent infinite loop
         }
     }
 

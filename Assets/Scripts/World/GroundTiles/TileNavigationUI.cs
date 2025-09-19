@@ -56,6 +56,10 @@ public class TileNavigationUI : MonoBehaviour
         {
             UpdateNavigationUI();
             lastUpdateTime = Time.time;
+            Vector3 playerPos = GetPlayerPosition();
+            Debug.Log($"Player Position: {playerPos}");
+            Vector3 targetPos = tileManager.GetNearestKeyTileWorldPosition(playerPos);
+            Debug.Log($"Target Position: {targetPos}");
         }
     }
 
