@@ -17,7 +17,7 @@ public class GameManager : Singleton<GameManager>
     /// </summary>
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Y))
+        if (Input.GetKeyDown(KeyCode.L))
         {
             player.ResetStats(); // Call the ResetStats method on the player instance
         }

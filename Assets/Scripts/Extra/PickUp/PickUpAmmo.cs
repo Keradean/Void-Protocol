@@ -2,15 +2,24 @@ using UnityEngine;
 
 public class PickUpAmmo : MonoBehaviour
 {
+    [Header("Config")]
+    [SerializeField] WeaponsManager WeaponsManager;
+
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "Player")
+        if (other.CompareTag("Player"))
         {
-            FindFirstObjectByType<WeaponsController>().GetAmmo();
+            if (WeaponsManager != null)
+            {
+                WeaponsManager.AddAmmo(WeaponsManager.pickUpValue);
+                Debug.Log("Ammo aufgesammelt!");
+            }
+            else
+            {
+                Debug.LogWarning("WeaponsController nicht zugewiesen!");
+            }
 
             Destroy(gameObject);
-
-            Debug.Log("Aufgesammelt");
         }
     }
 }

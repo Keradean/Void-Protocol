@@ -1,28 +1,13 @@
-using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.LowLevel;
 
 public class InputManager : MonoBehaviour
 {
-    /// <summary>
-    /// Cheats 
-    /// </summary>
-    //[Header("")]
-    //[Tooltip("")]
-    //[SerializeField]
-
-    /// <summary>
-    /// Reference to the Input Action Asset for player controls.
-    /// </summary>
     [Header("Input Actions")]
-    [Tooltip("Input Action Asset")]
     [SerializeField] private InputActionAsset playerControls;
-
-    [Tooltip("Action Map Name Reference")]
     [SerializeField] private string actionMapName = "Player";
 
-    [Header("Confiq")]
+    [Header("Config")]
     [SerializeField] private string movement = "Movement";
     [SerializeField] private string rotation = "Rotation";
     [SerializeField] private string jump = "Jump";
@@ -30,6 +15,8 @@ public class InputManager : MonoBehaviour
     [SerializeField] private string interact = "Interact";
     [SerializeField] private string shoot = "Attack";
     [SerializeField] private string reload = "Reloading";
+    [SerializeField] private string next = "Next";
+    [SerializeField] private string previous = "Previous";
 
     private InputAction movementAction;
     private InputAction rotationAction;
@@ -38,14 +25,21 @@ public class InputManager : MonoBehaviour
     private InputAction interactAction;
     private InputAction shootAction;
     private InputAction reloadAction;
+    private InputAction nextAction;
+    private InputAction previousAction;
+
+    public bool ShootWasPressedThisFrame => shootAction.WasPressedThisFrame();
+    public bool ShootIsPressed => shootAction.IsPressed();
 
     public Vector2 MovementInput { get; private set; }
     public Vector2 RotationInput { get; private set; }
-    public bool JumpTriggered { get; internal set; }
+    public bool JumpTriggered { get; private set; }
     public bool SprintTriggered { get; private set; }
-    public bool InteractTriggered { get; private set; }
-    public bool ShootTriggered { get; private set; }
+    public bool InteractTriggered { get; private set; }  
+    public bool ShootTriggered { get; private set; } 
     public bool ReloadTriggered { get; private set; }
+    public bool NextTriggered { get; private set; }
+    public bool PreviousTriggered { get; private set; }
 
     private void Awake()
     {
@@ -58,11 +52,13 @@ public class InputManager : MonoBehaviour
         interactAction = mapReference.FindAction(interact);
         shootAction = mapReference.FindAction(shoot);
         reloadAction = mapReference.FindAction(reload);
+        nextAction = mapReference.FindAction(next);
+        previousAction = mapReference.FindAction(previous);
 
-        ActionValues();
+        SetupCallbacks();
     }
 
-    private void ActionValues()
+    private void SetupCallbacks()
     {
         movementAction.performed += ctx => MovementInput = ctx.ReadValue<Vector2>();
         movementAction.canceled += ctx => MovementInput = Vector2.zero;
@@ -78,39 +74,28 @@ public class InputManager : MonoBehaviour
 
         interactAction.performed += ctx => InteractTriggered = true;
         interactAction.canceled += ctx => InteractTriggered = false;
-        
+
         shootAction.performed += ctx => ShootTriggered = true;
         shootAction.canceled += ctx => ShootTriggered = false;
-        
+
         reloadAction.performed += ctx => ReloadTriggered = true;
         reloadAction.canceled += ctx => ReloadTriggered = false;
+       
+        nextAction.performed += ctx => NextTriggered = true;
+        nextAction.canceled += ctx => NextTriggered = false;
+
+        previousAction.performed += ctx => PreviousTriggered = true;
+        previousAction.canceled += ctx => PreviousTriggered = false;
     }
 
     private void OnEnable()
     {
         playerControls.FindActionMap(actionMapName).Enable();
-
     }
 
     private void OnDisable()
     {
         playerControls.FindActionMap(actionMapName).Disable();
-
-    }
-
-    public void ResetInteract()
-    {
-        InteractTriggered = false;
-    }
-    
-    public void ResetShoot()
-    {
-        ShootTriggered = false;
-    }
-    
-    public void ResetReload()
-    {
-        ReloadTriggered = false;
     }
 }
 

@@ -74,7 +74,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: cac77e6370469da44ba94adebdef619b, type: 3}
       propertyPath: m_Name
-      value: gun
+      value: Assault Rifle
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
