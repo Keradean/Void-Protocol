@@ -16,12 +16,12 @@ MonoBehaviour:
   Health: 100
   MaxHealth: 100
   HealthValue: 20
-  Stamina: 98.70137
+  Stamina: 77.64775
   MaxStamina: 100
-  CurrentAmmo: 0
-  RemainingAmmo: 131
+  CurrentAmmo: 5
+  RemainingAmmo: 127
   ClipSize: 30
-  Oxy: 23.322664
+  Oxy: 86.19423
   MaxOxy: 100
   CurrentExp: 0
   NextLevelExp: 100
