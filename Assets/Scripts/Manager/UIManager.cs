@@ -28,7 +28,7 @@ public class UIManager : MonoBehaviour
 
     private void Update()
     {
-        UpdatePlayerUI(); 
+        UpdatePlayerUI(); // Call the method to update the player UI elements
     }
 
     private void UpdatePlayerUI()
@@ -66,11 +66,8 @@ public class UIManager : MonoBehaviour
     }
     public void RestartGame()
     {
-
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-        stats.ResetStats();
-
     }
 
     public void BackToMainMenu()

@@ -2,42 +2,47 @@ using UnityEngine;
 
 public class WeaponsController : MonoBehaviour
 {
-    [Header("Confiq")]
-    [SerializeField] private float range; 
-    [SerializeField] private Transform mainCam; 
+    [Header("Config")]
+    [SerializeField] private float range;
+    [SerializeField] private Transform mainCam;
     [SerializeField] private LayerMask validLayers;
     [SerializeField] private GameObject impactEffect, damageEffect;
     [SerializeField] private GameObject muzzelFlare;
     [SerializeField] private float flareTime;
     [SerializeField] private float flareCount;
-    [SerializeField] private int pickUpValue;
+
+
+    [Header("Fire Settings")]
+    [SerializeField] private bool canAutoFire;
+    [SerializeField] private float autoFireRate;
+    [SerializeField] private float singleShotCooldown;
+    private float shootCounter;
 
     [Header("Stats Reference")]
     [SerializeField] private PlayerStats playerStats;
-
     [SerializeField] private float damageValue;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
     void Update()
     {
-       if(flareCount > 0)
+        if (flareCount > 0)
         {
-          flareCount -= Time.deltaTime;
-            if(flareCount <= 0)
+            flareCount -= Time.deltaTime;
+            if (flareCount <= 0)
             {
                 muzzelFlare.SetActive(false);
             }
         }
+
+        if (shootCounter > 0)
+        {
+            shootCounter -= Time.deltaTime;
+        }
     }
 
-    public void Shoot() 
+    public void Shoot()
     {
+        if (shootCounter > 0) return;
+
         if (playerStats.CurrentAmmo > 0)
         {
             RaycastHit hit;
@@ -45,53 +50,52 @@ public class WeaponsController : MonoBehaviour
             {
                 Debug.Log(hit.transform.name);
 
-                if (hit.transform.tag == "Enemy")
+                if (hit.transform.CompareTag("Enemy"))
                 {
                     IDamageable enemy = hit.transform.GetComponent<IDamageable>();
                     if (enemy != null)
                     {
                         enemy.TakeDamage(damageValue);
                     }
-
                     Instantiate(damageEffect, hit.point, Quaternion.identity);
                 }
                 else
                 {
-
                     Instantiate(impactEffect, hit.point, Quaternion.identity);
-
                 }
             }
+
             muzzelFlare.SetActive(true);
             flareCount = flareTime;
             playerStats.CurrentAmmo--;
+
+
+            if (canAutoFire)
+            {
+                shootCounter = autoFireRate;
+            }
+            else
+            {
+                shootCounter = singleShotCooldown;
+            }
         }
     }
 
     public void Reload()
     {
-        // Reload Logic 
         playerStats.RemainingAmmo += playerStats.CurrentAmmo;
 
-        if (playerStats.RemainingAmmo >= playerStats.ClipSize) 
-        { 
-        Debug.Log("I am Reloading my Weapon");
-        playerStats.CurrentAmmo = playerStats.ClipSize;
-        playerStats.RemainingAmmo -= playerStats.ClipSize;
+        if (playerStats.RemainingAmmo >= playerStats.ClipSize)
+        {
+            Debug.Log("I am Reloading my Weapon");
+            playerStats.CurrentAmmo = playerStats.ClipSize;
+            playerStats.RemainingAmmo -= playerStats.ClipSize;
         }
         else
         {
             playerStats.CurrentAmmo = playerStats.RemainingAmmo;
             playerStats.RemainingAmmo = 0;
         }
-        //PlayreloadAnimation(); // if its a littel bit Time lef´t
-    }
-
-
-    public void GetAmmo()
-    {
-        playerStats.RemainingAmmo += pickUpValue; 
-        Debug.Log("Nimm mich du Sau");
-        
+        //PlayreloadAnimation(); // if its a little bit Time left
     }
 }
