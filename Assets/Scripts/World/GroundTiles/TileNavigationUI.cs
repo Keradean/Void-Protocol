@@ -27,7 +27,6 @@ public class TileNavigationUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI directionText;
     [SerializeField] private TextMeshProUGUI distanceText;
     [SerializeField] private TextMeshProUGUI keyTileCountText;
-    [SerializeField] private RectTransform directionArrow;
 
     [Header("Navigation Settings")]
     [SerializeField] private float updateInterval = 0.2f;
@@ -56,10 +55,6 @@ public class TileNavigationUI : MonoBehaviour
         {
             UpdateNavigationUI();
             lastUpdateTime = Time.time;
-            Vector3 playerPos = GetPlayerPosition();
-            Debug.Log($"Player Position: {playerPos}");
-            Vector3 targetPos = tileManager.GetNearestKeyTileWorldPosition(playerPos);
-            Debug.Log($"Target Position: {targetPos}");
         }
     }
 
@@ -85,13 +80,6 @@ public class TileNavigationUI : MonoBehaviour
             Transform foundText = transform.Find("KeyTileCountText");
             if (foundText != null)
                 keyTileCountText = foundText.GetComponent<TextMeshProUGUI>();
-        }
-
-        if (directionArrow == null)
-        {
-            Transform foundArrow = transform.Find("DirectionArrow");
-            if (foundArrow != null)
-                directionArrow = foundArrow.GetComponent<RectTransform>();
         }
     }
 
@@ -135,6 +123,9 @@ public class TileNavigationUI : MonoBehaviour
 
             // Always update distance as player moves
             UpdateDistanceDisplay(playerPosition, nearestKeyTileWorldPos);
+
+            // Continuous key tile count update
+            UpdateKeyTileCount();
         }
         catch (System.Exception e)
         {
@@ -158,24 +149,13 @@ public class TileNavigationUI : MonoBehaviour
         string directionName = directionNames[directionIndex];
 
         directionText.text = directionName;
-
-        // Update arrow rotation if present
-        if (directionArrow != null)
-        {
-            float targetRotation = -angle;
-            directionArrow.rotation = Quaternion.Lerp(
-                directionArrow.rotation,
-                Quaternion.Euler(0, 0, targetRotation),
-                Time.deltaTime * 3f
-            );
-        }
     }
 
     private void UpdateDistanceDisplay(Vector3 playerPos, Vector3 targetPos)
     {
         if (!showDistance || distanceText == null) return;
 
-        float distance = Vector3.Distance(playerPos, targetPos);
+        float distance = Vector3.Distance(playerPos, targetPos) / 20f;
         cachedDistance = distance;
 
         // Format distance display with color coding
@@ -201,7 +181,7 @@ public class TileNavigationUI : MonoBehaviour
         if (keyTileCountText == null || tileManager == null) return;
 
         var keyTilePositions = tileManager.GetKeyTilePositions();
-        keyTileCountText.text = $"Key Tiles: {keyTilePositions.Count}";
+        keyTileCountText.text = $"Unclaimed Zones: {keyTilePositions.Count}";
     }
 
     private Vector3 GetPlayerPosition()
@@ -239,7 +219,7 @@ public class TileNavigationUI : MonoBehaviour
         GUILayout.Box("Navigation Debug");
         GUILayout.Label($"Distance: {cachedDistance:F1}m");
         GUILayout.Label($"Grid Pos: {cachedNearestKeyTile}");
-        GUILayout.Label($"Key Tiles: {tileManager.GetKeyTilePositions().Count}");
+        GUILayout.Label($"Unclaimed Zones: {tileManager.GetKeyTilePositions().Count}");
         GUILayout.Label($"Update Rate: {1f / updateInterval:F1} Hz");
         GUILayout.EndArea();
     }
