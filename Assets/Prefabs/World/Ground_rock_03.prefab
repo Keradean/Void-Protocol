@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8420784059607931709
+--- !u!1 &5756407047120458651
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5455669204475985585}
+  - component: {fileID: 8588176621404004616}
   m_Layer: 0
   m_Name: PivotPoint
   m_TagString: Untagged
@@ -16,13 +16,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5455669204475985585
+--- !u!4 &8588176621404004616
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8420784059607931709}
+  m_GameObject: {fileID: 5756407047120458651}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -20, y: 0, z: 0}
@@ -79,20 +79,64 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4155782539512168430, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3667212536020817300, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
       propertyPath: m_Name
       value: Ground_rock_03
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    - target: {fileID: 4173702697512356292, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: -3667212536020817300, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
+    - {fileID: -5866176700028439508, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
       insertIndex: 0
-      addedObject: {fileID: 5455669204475985585}
-    m_AddedComponents: []
+      addedObject: {fileID: 8588176621404004616}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: -7636468777005925934, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5785836470582395395}
   m_SourcePrefab: {fileID: 100100000, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
 --- !u!4 &114108212724073587 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
   m_PrefabInstance: {fileID: 441315027427976088}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1160254931682318922 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: -7636468777005925934, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
+  m_PrefabInstance: {fileID: 441315027427976088}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &5785836470582395395
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1160254931682318922}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5635196272597272795, guid: 2fdfc32bb6d862e4f8b1e4a4c3a2e279, type: 3}
