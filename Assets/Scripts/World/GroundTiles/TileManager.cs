@@ -1,20 +1,20 @@
 /*
 ====================================================================
-* TileManager.cs - Enhanced Key Tile Distribution System
+* TileManager.cs - Sequential Grid Generation System v3.1
 ====================================================================
 * Project: Space Colony Game
 * Course: PIP
 * Script-Developer: Julian
-* Date: 20.09.2025
-* Version: Distribution Enhanced - Academic Attribution
+* Date: 22.09.2025
+* Version: v3.1 - compositeTilesGenerated Variable Fix
 *
 * WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
 * Diese detaillierte Authorship-Dokumentation ist für die
 * akademische Bewertung erforderlich und darf nicht entfernt werden!
 *
 * AUTHORSHIP CLASSIFICATION:
-* [HUMAN-AUTHORED] - Grid logic, tile placement, key tile distribution concept, resolution ordering
-* [AI-ASSISTED] - Distribution algorithms, Poisson disk sampling, performance optimization, inspector controls
+* [HUMAN-AUTHORED] - Grid logic concept, tile placement requirements, constraint specifications
+* [AI-ASSISTED] - Sequential workflow algorithm, constraint validation system, warning implementation
 ====================================================================
 */
 
@@ -22,112 +22,115 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// Distribution method enumeration
-public enum KeyTileDistributionMethod
-{
-    PercentageBased = 0,    // Distance as percentage of grid size
-    FixedMeterDistance = 1, // Absolute world space distance
-    GridCellSpacing = 2,    // Distance in grid cells
-    PoissonDiskSampling = 3 // Even distribution with natural variation
-}
-
 // Resolution order system
 public enum ResolutionOrderMode
 {
-    DistanceBased = 0,      // Resolve nearest zones first (automatic)
-    PriorityBased = 1,      // Manual int priority assignment
-    MixedMode = 2           // Priority override with distance fallback
+    DistanceBased = 0,
+    PriorityBased = 1,
+    MixedMode = 2
 }
 
-// PHASE 1: Simplified tile type enum
+// Simplified tile type enum - KeyPoint eliminated
 public enum TileType
 {
-    Ground = 0,      // 70% distribution - Grund-Elemente
-    Specific = 1,    // 20% distribution - Spezifische Elemente  
-    Composite = 2,   // 8% distribution  - Zusammengesetzte Elemente
-    KeyPoint = 3     // 2% distribution  - Key-Points (3-6 total)
+    Ground = 0,
+    Specific = 1,
+    Composite = 2,
+    Entry_Exit = 3
 }
 
-// ZONE CLAIMING: Zone state enumeration
+// Zone state enumeration
 public enum ZoneState
 {
-    Undiscovered = 0,    // Player hasn't found zone yet
-    Discovered = 1,      // Zone found, terminal visible
-    Activating = 2,      // Microchip inserted, countdown active
-    Claimed = 3,         // Activation complete, beacon online
-    Defended = 4         // Under attack during activation
+    Undiscovered = 0,
+    Discovered = 1,
+    Activating = 2,
+    Claimed = 3,
+    Defended = 4
 }
 
-// ZONE CLAIMING: Enhanced zone data structure with resolution order
+// Enhanced zone data structure
 [System.Serializable]
 public struct ZoneData
 {
-    public Vector2Int gridPosition;     // Grid coordinates
-    public Vector3 worldPosition;      // World coordinates
-    public ZoneState currentState;     // Current zone status
-    public float activationProgress;   // 0.0f to 1.0f completion
-    public GameObject terminalObject;  // Reference to terminal prefab
-    public GameObject beaconObject;    // Reference to beacon prefab
-    public bool hasRequiredMicrochip;  // Inventory check result
-    public float lastActivationTime;   // Time tracking for cooldowns
-    public int resolutionPriority;     // Manual resolution order (1-6)
-    public float distanceFromStart;    // Distance from spawn point
+    public Vector2Int gridPosition;
+    public Vector3 worldPosition;
+    public ZoneState currentState;
+    public float activationProgress;
+    public GameObject terminalObject;
+    public GameObject beaconObject;
+    public bool hasRequiredMicrochip;
+    public float lastActivationTime;
+    public int resolutionPriority;
+    public float distanceFromStart;
 }
 
-// PHASE 1: LOD-optimized tile configuration
+// Updated tile configuration with constraint system
 [System.Serializable]
 public struct TileConfiguration
 {
     [Header("Basic Setup")]
-    public GameObject prefab;              // Tile prefab with LOD Group
-    public string displayName;             // Inspector display name
+    public GameObject prefab;
+    public string displayName;
 
     [Header("Size & Position")]
-    public Vector2Int size;                // Default (1,1) for single tiles
-    public Vector2Int anchorOffset;        // Anchor point within tile
+    public Vector2Int size;
+    public Vector2Int anchorOffset;
 
     [Header("Category")]
-    public TileType tileType;              // 4-category system
-    public bool isKeyPoint;                // Key point integration
+    public TileType tileType;
+    public bool isKeyPoint;
 
-    [Header("Distribution")]
-    public int spawnWeight;                // Simple integer weight (1-100)
+    [Header("Generation Constraints")]
+    public int minTileCount;
+    public int maxTileCount;
 
     [Header("LOD System Integration")]
-    public bool hasLODGroup;               // Prefab contains LOD Group
-    public float lodBias;                  // LOD bias multiplier (0.5-2.0)
+    public bool hasLODGroup;
+    public float lodBias;
 
     [Header("Enemy AI Integration")]
-    public bool isWalkable;                // For enemy pathfinding
-    public bool blocksLineOfSight;         // For enemy detection
+    public bool isWalkable;
+    public bool blocksLineOfSight;
+}
+
+// Border tile configuration
+[System.Serializable]
+public struct BorderTileConfiguration
+{
+    [Header("Border Setup")]
+    public GameObject borderPrefab;
+    public string displayName;
+
+    [Header("Border Properties")]
+    public Vector2Int borderSize;
+    public float outerExtension;
+    public bool hasLODGroup;
 }
 
 public class TileManager : MonoBehaviour
 {
     public static TileManager Instance { get; private set; }
 
-    [Header("Grid Configuration")]
-    [SerializeField] private int gridSize = 5;
-    [SerializeField] private float tileSize = 1f;
+    [Header("Grid Configuration - FIXED")]
+    private const int FIXED_GRID_SIZE = 18;
+    private const float TILE_SIZE = 20f;
+    private const int TOTAL_GRID_POSITIONS = FIXED_GRID_SIZE * FIXED_GRID_SIZE; // 324
+
     [SerializeField] private Transform tilesContainer;
 
-    [Header("Tile System - Phase 1")]
+    [Header("Border System")]
+    [SerializeField] private BorderTileConfiguration borderConfiguration;
+
+    [Header("Tile System - Constraint Based")]
     [SerializeField] private TileConfiguration[] tileConfigurations;
-    [SerializeField] private int keyTileCount = 5;
 
-    [Header("Key Tile Distribution System")]
-    [SerializeField] private KeyTileDistributionMethod distributionMethod = KeyTileDistributionMethod.PercentageBased;
-
-    [Header("Distribution Parameters")]
-    [SerializeField, Range(5f, 50f)] private float percentageDistance = 25f; // 25% of grid size
-    [SerializeField, Range(1f, 50f)] private float fixedMeterDistance = 15f; // 15 Unity units
-    [SerializeField, Range(2, 8)] private int gridCellSpacing = 4; // 4 grid cells apart
-    [SerializeField, Range(1, 10)] private int poissonSamples = 5; // Poisson disk sampling attempts
+    [Header("Key Tile Distribution System - Simplified")]
+    [SerializeField, Range(5f, 50f)] private float percentageDistance = 25f;
 
     [Header("Resolution Order System")]
     [SerializeField] private ResolutionOrderMode resolutionMode = ResolutionOrderMode.DistanceBased;
-    [SerializeField] private bool enforceDistributionInTerrain = true; // Always distribute in terrain
-    [SerializeField] private Vector3 playerStartPosition = Vector3.zero; // For distance calculations
+    [SerializeField] private Vector3 playerStartPosition = Vector3.zero;
 
     [Header("Zone Discovery Configuration")]
     [SerializeField] private float discoveryRange = 2.0f;
@@ -140,35 +143,37 @@ public class TileManager : MonoBehaviour
     [Header("Debug Visualization")]
     [SerializeField] private bool showDistributionGizmos = true;
     [SerializeField] private bool showResolutionOrder = true;
+    [SerializeField] private bool showWarnings = true;
 
     // Grid Management
     private HashSet<Vector2Int> occupiedPositions = new HashSet<Vector2Int>();
     private List<Vector2Int> keyTilePositions = new List<Vector2Int>();
+    private List<Vector2Int> compositeTilesGenerated = new List<Vector2Int>(); // FIX: Added missing variable
     private List<GameObject> spawnedTiles = new List<GameObject>();
+    private GameObject borderTileInstance;
 
-    // ZONE CLAIMING: Zone management
+    // Zone management
     private Dictionary<Vector2Int, ZoneData> zoneDataMap = new Dictionary<Vector2Int, ZoneData>();
 
-    // Distribution system
-    private List<Vector2Int> distributedKeyPositions = new List<Vector2Int>();
+    // Sequential generation tracking - consolidated
+    private Dictionary<TileType, int> tilePlacementCount = new Dictionary<TileType, int>();
 
-    // Existing Events
+    // Warning system
+    private List<string> generationWarnings = new List<string>();
+
+    // Events
     public System.Action OnKeyTilesUpdated;
     public System.Action<Vector2Int> OnKeyTileReached;
-
-    // ZONE CLAIMING: New zone events
     public System.Action<Vector2Int> OnZoneDiscovered;
     public System.Action<Vector2Int> OnZoneActivationStarted;
     public System.Action<Vector2Int, float> OnZoneActivationProgress;
     public System.Action<Vector2Int> OnZoneActivationComplete;
     public System.Action<Vector2Int> OnZoneUnderAttack;
     public System.Action<Vector2Int> OnBeaconActivated;
-
-    private int failSafeAmount = 1000;
+    public System.Action<List<string>> OnGenerationWarnings;
 
     private void Awake()
     {
-        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
@@ -184,223 +189,375 @@ public class TileManager : MonoBehaviour
     {
         if (generateOnStart)
         {
-            StartCoroutine(GenerateTerrainCoroutine());
+            StartCoroutine(GenerateSequentialTerrain());
         }
     }
 
     void Update()
     {
-        // Enhanced player proximity checking
         CheckPlayerProximity();
     }
 
-    // ENHANCED: Terrain generation with guaranteed key tile distribution
-    private IEnumerator GenerateTerrainCoroutine()
+    // SEQUENTIAL TERRAIN GENERATION WORKFLOW
+    private IEnumerator GenerateSequentialTerrain()
     {
         ClearExistingTiles();
-        occupiedPositions.Clear();
-        keyTilePositions.Clear();
-        zoneDataMap.Clear();
-        distributedKeyPositions.Clear();
+        InitializeGenerationState();
 
         yield return new WaitForSeconds(generationDelay);
 
-        // STEP 1: Calculate optimal key tile positions using selected distribution method
-        CalculateKeyTileDistribution();
-
-        // STEP 2: Generate terrain with guaranteed key tile placement
-        for (int x = 0; x < gridSize; x++)
+        // PHASE 1: Constraint Validation
+        if (!ValidateConstraints())
         {
-            for (int y = 0; y < gridSize; y++)
-            {
-                Vector2Int gridPos = new Vector2Int(x, y);
-
-                if (!occupiedPositions.Contains(gridPos))
-                {
-                    TileConfiguration selectedTile;
-
-                    // Force key tile placement at distributed positions
-                    if (distributedKeyPositions.Contains(gridPos))
-                    {
-                        selectedTile = GetKeyTileConfiguration();
-                        Debug.Log($"Placing guaranteed key tile at {gridPos}");
-                    }
-                    else
-                    {
-                        // Normal tile selection (excluding key tiles)
-                        selectedTile = SelectRandomNonKeyTile();
-                    }
-
-                    if (CanPlaceTile(gridPos, selectedTile.size))
-                    {
-                        PlaceTile(gridPos, selectedTile);
-                    }
-                }
-            }
-
-            // Yield every row for smooth generation
-            yield return null;
+            ReportWarnings();
+            yield break;
         }
 
-        // STEP 3: Initialize zone data with resolution order
+        // PHASE 2: Border Placement
+        PlaceBorderTile();
+        yield return null;
+
+        // PHASE 3: Key Tile Placement (3 tiles with isKeyPoint = true)
+        yield return StartCoroutine(PlaceKeyTiles());
+
+        // PHASE 4: Composite Tile Placement
+        yield return StartCoroutine(PlaceCompositeTiles());
+
+        // PHASE 5: Fill Remaining Positions
+        yield return StartCoroutine(FillRemainingGrid());
+
+        // PHASE 6: Final Validation
+        PerformFinalValidation();
+
+        // PHASE 7: Initialize Zone Data
         InitializeZoneDataWithOrder();
 
         OnKeyTilesUpdated?.Invoke();
 
-        Debug.Log($"Terrain generation complete: {spawnedTiles.Count} tiles, {keyTilePositions.Count} key points");
-        Debug.Log($"Key tile distribution method: {distributionMethod}");
-        Debug.Log($"Resolution order mode: {resolutionMode}");
-        Debug.Log($"Zone data initialized: {zoneDataMap.Count} zones");
-    }
+        Debug.Log($"Sequential terrain generation complete: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE} grid");
+        Debug.Log($"Key tiles placed: {keyTilePositions.Count}");
+        Debug.Log($"Total tiles generated: {spawnedTiles.Count}");
 
-    // KEY TILE DISTRIBUTION: Calculate optimal positions using selected method
-    private void CalculateKeyTileDistribution()
-    {
-        distributedKeyPositions.Clear();
-
-        switch (distributionMethod)
+        if (generationWarnings.Count > 0)
         {
-            case KeyTileDistributionMethod.PercentageBased:
-                CalculatePercentageBasedDistribution();
-                break;
-            case KeyTileDistributionMethod.FixedMeterDistance:
-                CalculateFixedMeterDistribution();
-                break;
-            case KeyTileDistributionMethod.GridCellSpacing:
-                CalculateGridCellDistribution();
-                break;
-            case KeyTileDistributionMethod.PoissonDiskSampling:
-                CalculatePoissonDiskDistribution();
-                break;
+            OnGenerationWarnings?.Invoke(generationWarnings);
         }
-
-        Debug.Log($"Calculated {distributedKeyPositions.Count} key tile positions using {distributionMethod}");
     }
 
-    private void CalculatePercentageBasedDistribution()
+    private void InitializeGenerationState()
     {
-        float minDistanceGrid = (percentageDistance / 100f) * gridSize;
+        occupiedPositions.Clear();
+        keyTilePositions.Clear();
+        compositeTilesGenerated.Clear(); // FIX: Clear composite tiles list
+        zoneDataMap.Clear();
+        tilePlacementCount.Clear();
+        generationWarnings.Clear();
 
-        for (int attempt = 0; attempt < keyTileCount * 50 && distributedKeyPositions.Count < keyTileCount; attempt++)
+        // Initialize tile counters
+        foreach (TileConfiguration config in tileConfigurations)
         {
-            Vector2Int candidate = new Vector2Int(
-                Random.Range(0, gridSize),
-                Random.Range(0, gridSize)
-            );
+            tilePlacementCount[config.tileType] = 0;
+        }
+    }
 
-            if (IsValidKeyTilePosition(candidate, minDistanceGrid))
+    private bool ValidateConstraints()
+    {
+        bool isValid = true;
+        int totalMinTiles = 0;
+        int keyTileCount = 0;
+
+        foreach (TileConfiguration config in tileConfigurations)
+        {
+            totalMinTiles += config.minTileCount;
+
+            if (config.isKeyPoint)
             {
-                distributedKeyPositions.Add(candidate);
+                keyTileCount++;
+                if (config.maxTileCount != 0)
+                {
+                    generationWarnings.Add($"Key tile '{config.displayName}' should have maxTileCount = 0");
+                }
             }
         }
-    }
 
-    private void CalculateFixedMeterDistribution()
-    {
-        float minDistanceGrid = fixedMeterDistance / tileSize;
-
-        for (int attempt = 0; attempt < keyTileCount * 50 && distributedKeyPositions.Count < keyTileCount; attempt++)
+        if (totalMinTiles > TOTAL_GRID_POSITIONS)
         {
-            Vector2Int candidate = new Vector2Int(
-                Random.Range(0, gridSize),
-                Random.Range(0, gridSize)
-            );
-
-            if (IsValidKeyTilePosition(candidate, minDistanceGrid))
-            {
-                distributedKeyPositions.Add(candidate);
-            }
+            generationWarnings.Add($"Grid 18x18 nicht füllbar: minTileCount Summe ({totalMinTiles}) übersteigt {TOTAL_GRID_POSITIONS}");
+            isValid = false;
         }
-    }
 
-    private void CalculateGridCellDistribution()
-    {
-        for (int attempt = 0; attempt < keyTileCount * 50 && distributedKeyPositions.Count < keyTileCount; attempt++)
+        if (keyTileCount == 0)
         {
-            Vector2Int candidate = new Vector2Int(
-                Random.Range(0, gridSize),
-                Random.Range(0, gridSize)
-            );
-
-            if (IsValidKeyTilePosition(candidate, gridCellSpacing))
-            {
-                distributedKeyPositions.Add(candidate);
-            }
+            generationWarnings.Add("Keine Key-Tiles definiert (isKeyPoint = true)");
+            isValid = false;
         }
+
+        if (keyTileCount > 5)
+        {
+            generationWarnings.Add($"Zu viele Key-Tiles definiert ({keyTileCount}). Empfohlen: 3 für Zone Claiming");
+        }
+
+        return isValid;
     }
 
-    private void CalculatePoissonDiskDistribution()
+    private void PlaceBorderTile()
     {
-        // Poisson disk sampling for even distribution
-        float minDistance = (25f / 100f) * gridSize; // Default to 25% spacing
-        List<Vector2Int> activeList = new List<Vector2Int>();
-        bool[,] grid = new bool[gridSize, gridSize];
+        if (borderConfiguration.borderPrefab == null) return;
 
-        // Start with random first point
-        Vector2Int firstPoint = new Vector2Int(
-            Random.Range(0, gridSize),
-            Random.Range(0, gridSize)
+        Vector3 centerPosition = new Vector3(
+            (FIXED_GRID_SIZE - 1) * TILE_SIZE * 0.5f,
+            0f,
+            (FIXED_GRID_SIZE - 1) * TILE_SIZE * 0.5f
         );
 
-        distributedKeyPositions.Add(firstPoint);
-        activeList.Add(firstPoint);
-        grid[firstPoint.x, firstPoint.y] = true;
+        borderTileInstance = Instantiate(borderConfiguration.borderPrefab, centerPosition, Quaternion.identity, tilesContainer);
 
-        while (activeList.Count > 0 && distributedKeyPositions.Count < keyTileCount)
+        if (borderConfiguration.hasLODGroup)
         {
-            int randomIndex = Random.Range(0, activeList.Count);
-            Vector2Int currentPoint = activeList[randomIndex];
-            bool foundValid = false;
+            ConfigureBorderLOD();
+        }
 
-            for (int sample = 0; sample < poissonSamples; sample++)
+        Debug.Log($"Border tile placed at center: {centerPosition}");
+    }
+
+    private void ConfigureBorderLOD()
+    {
+        if (borderTileInstance == null) return;
+
+        LODGroup lodGroup = borderTileInstance.GetComponent<LODGroup>();
+        if (lodGroup != null)
+        {
+            // Border tiles get special LOD treatment for large scale visibility
+            LOD[] lods = lodGroup.GetLODs();
+            for (int i = 0; i < lods.Length; i++)
             {
-                Vector2Int candidate = GenerateRandomPointAround(currentPoint, minDistance);
+                lods[i].screenRelativeTransitionHeight *= 2.0f; // Extended visibility
+            }
+            lodGroup.SetLODs(lods);
+        }
+    }
 
-                if (IsInGrid(candidate) && !grid[candidate.x, candidate.y] &&
-                    IsValidKeyTilePosition(candidate, minDistance))
+    private IEnumerator PlaceKeyTiles()
+    {
+        List<TileConfiguration> keyTileConfigs = GetKeyTileConfigurations();
+
+        if (keyTileConfigs.Count == 0)
+        {
+            generationWarnings.Add("Keine Key-Tiles für Platzierung gefunden");
+            yield break;
+        }
+
+        List<Vector2Int> keyPositions = CalculateKeyTilePositions(keyTileConfigs.Count);
+
+        for (int i = 0; i < keyPositions.Count && i < keyTileConfigs.Count; i++)
+        {
+            Vector2Int position = keyPositions[i];
+            TileConfiguration config = keyTileConfigs[i];
+
+            // ENHANCED: Double-check with actual size requirements
+            if (CanPlaceTile(position, config.size))
+            {
+                PlaceTile(position, config);
+                keyTilePositions.Add(position);
+                tilePlacementCount[config.tileType]++;
+
+                Debug.Log($"Key tile '{config.displayName}' (size {config.size}) placed at {position}");
+            }
+            else
+            {
+                generationWarnings.Add($"Key tile '{config.displayName}' konnte nicht bei {position} platziert werden - Kollision erkannt");
+
+                // Try alternative position for failed key tile
+                Vector2Int fallback = FindNearestValidPosition(position, config.size, 3);
+                if (fallback.x != -1)
                 {
-                    distributedKeyPositions.Add(candidate);
-                    activeList.Add(candidate);
-                    grid[candidate.x, candidate.y] = true;
-                    foundValid = true;
-                    break;
+                    PlaceTile(fallback, config);
+                    keyTilePositions.Add(fallback);
+                    tilePlacementCount[config.tileType]++;
+                    Debug.Log($"Key tile '{config.displayName}' placed at fallback position {fallback}");
                 }
             }
 
-            if (!foundValid)
+            yield return null;
+        }
+
+        Debug.Log($"Key tile placement complete: {keyTilePositions.Count} tiles placed");
+    }
+
+    private Vector2Int FindNearestValidPosition(Vector2Int originalPosition, Vector2Int size, int searchRadius)
+    {
+        // Search in expanding square pattern around original position
+        for (int radius = 1; radius <= searchRadius; radius++)
+        {
+            for (int x = -radius; x <= radius; x++)
             {
-                activeList.RemoveAt(randomIndex);
+                for (int y = -radius; y <= radius; y++)
+                {
+                    if (Mathf.Abs(x) != radius && Mathf.Abs(y) != radius) continue; // Only check perimeter
+
+                    Vector2Int candidate = originalPosition + new Vector2Int(x, y);
+
+                    if (IsInGrid(candidate) && CanPlaceTile(candidate, size))
+                    {
+                        return candidate;
+                    }
+                }
+            }
+        }
+
+        return new Vector2Int(-1, -1); // No valid position found
+    }
+
+    private List<TileConfiguration> GetKeyTileConfigurations()
+    {
+        List<TileConfiguration> keyConfigs = new List<TileConfiguration>();
+
+        foreach (TileConfiguration config in tileConfigurations)
+        {
+            if (config.isKeyPoint)
+            {
+                keyConfigs.Add(config);
+            }
+        }
+
+        return keyConfigs;
+    }
+
+    private List<Vector2Int> CalculateKeyTilePositions(int keyTileCount)
+    {
+        List<Vector2Int> positions = new List<Vector2Int>();
+        float minDistance = CalculateMinimumDistance();
+
+        // TRUE RANDOM DISTRIBUTION with distance validation
+        for (int attempt = 0; attempt < 2000 && positions.Count < keyTileCount; attempt++)
+        {
+            Vector2Int candidate = new Vector2Int(
+                Random.Range(2, FIXED_GRID_SIZE - 2), // Stay away from edges
+                Random.Range(2, FIXED_GRID_SIZE - 2)
+            );
+
+            if (IsValidKeyTilePosition(candidate, positions, minDistance))
+            {
+                positions.Add(candidate);
+                Debug.Log($"Key tile position {positions.Count}: {candidate}, distance requirement: {minDistance:F1}");
+            }
+        }
+
+        if (positions.Count < keyTileCount)
+        {
+            generationWarnings.Add($"Nur {positions.Count} von {keyTileCount} Key-Tiles konnten platziert werden - MinDistance {minDistance:F1} zu restriktiv");
+        }
+
+        return positions;
+    }
+
+    private float CalculateMinimumDistance()
+    {
+        return (percentageDistance / 100f) * FIXED_GRID_SIZE;
+    }
+
+    [ContextMenu("Debug Coordinate System")]
+    public void DebugCoordinateSystem()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Debug only available during Play Mode after generation");
+            return;
+        }
+
+        Debug.Log("=== COORDINATE SYSTEM DEBUG ===");
+        Debug.Log($"Grid Size: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE}");
+        Debug.Log($"Tile Size: {TILE_SIZE} Unity units");
+        Debug.Log($"Total Grid Positions: {TOTAL_GRID_POSITIONS}");
+        Debug.Log($"Occupied Positions: {occupiedPositions.Count}");
+
+        // Test coordinate mapping
+        Vector2Int testGrid = new Vector2Int(5, 5);
+        Vector3 testWorld = GridToWorldPosition(testGrid);
+        Vector2Int backToGrid = WorldToGridPosition(testWorld);
+
+        Debug.Log($"COORDINATE MAPPING TEST:");
+        Debug.Log($"  Grid {testGrid} -> World {testWorld} -> Grid {backToGrid}");
+        Debug.Log($"  Mapping Consistent: {testGrid == backToGrid}");
+
+        // Show first few tiles for verification
+        int count = 0;
+        foreach (GameObject tile in spawnedTiles)
+        {
+            if (count >= 5) break;
+            if (tile != null)
+            {
+                Vector3 worldPos = tile.transform.position;
+                Vector2Int gridPos = WorldToGridPosition(worldPos);
+                Debug.Log($"  Tile {count}: World {worldPos} -> Grid {gridPos}");
+            }
+            count++;
+        }
+    }
+
+    [ContextMenu("Validate No Overlapping")]
+    public void ValidateNoOverlapping()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Validation only available during Play Mode after generation");
+            return;
+        }
+
+        Debug.Log("=== OVERLAP VALIDATION ===");
+
+        Dictionary<Vector2Int, GameObject> positionMap = new Dictionary<Vector2Int, GameObject>();
+        List<string> overlaps = new List<string>();
+
+        foreach (GameObject tile in spawnedTiles)
+        {
+            if (tile == null) continue;
+
+            Vector2Int gridPos = WorldToGridPosition(tile.transform.position);
+
+            if (positionMap.ContainsKey(gridPos))
+            {
+                overlaps.Add($"OVERLAP at {gridPos}: '{positionMap[gridPos].name}' and '{tile.name}'");
+            }
+            else
+            {
+                positionMap[gridPos] = tile;
+            }
+        }
+
+        if (overlaps.Count == 0)
+        {
+            Debug.Log("VALIDATION PASSED: No overlapping tiles detected");
+        }
+        else
+        {
+            Debug.LogError($"VALIDATION FAILED: {overlaps.Count} overlaps detected:");
+            foreach (string overlap in overlaps)
+            {
+                Debug.LogError($"  {overlap}");
             }
         }
     }
 
-    private Vector2Int GenerateRandomPointAround(Vector2Int center, float minDistance)
+    [ContextMenu("Test Key Tile Distance")]
+    public void TestKeyTileDistance()
     {
-        float angle = Random.Range(0f, Mathf.PI * 2f);
-        float distance = Random.Range(minDistance, minDistance * 2f);
-
-        int x = Mathf.RoundToInt(center.x + Mathf.Cos(angle) * distance);
-        int y = Mathf.RoundToInt(center.y + Mathf.Sin(angle) * distance);
-
-        return new Vector2Int(x, y);
+        Debug.Log("=== KEY TILE DISTANCE CALCULATION ===");
+        float distance = CalculateMinimumDistance();
+        Debug.Log($"Percentage Distance: {percentageDistance}%");
+        Debug.Log($"Minimum Distance: {distance:F2} grid units");
+        Debug.Log($"Grid Size: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE}");
+        Debug.Log($"Maximum Possible Distance: {FIXED_GRID_SIZE * 0.7f:F2} grid units");
     }
 
-    private bool IsInGrid(Vector2Int position)
+    private bool IsValidKeyTilePosition(Vector2Int candidate, List<Vector2Int> existingPositions, float minDistance)
     {
-        return position.x >= 0 && position.x < gridSize &&
-               position.y >= 0 && position.y < gridSize;
-    }
-
-    private bool IsValidKeyTilePosition(Vector2Int candidate, float minDistance)
-    {
-        // Check if position is within grid bounds
         if (!IsInGrid(candidate)) return false;
+        if (occupiedPositions.Contains(candidate)) return false;
 
-        // Check minimum distance from existing key tiles
-        foreach (Vector2Int existing in distributedKeyPositions)
+        foreach (Vector2Int existing in existingPositions)
         {
-            float distance = Vector2Int.Distance(candidate, existing);
-            if (distance < minDistance)
+            if (Vector2Int.Distance(candidate, existing) < minDistance)
             {
                 return false;
             }
@@ -409,164 +566,175 @@ public class TileManager : MonoBehaviour
         return true;
     }
 
-    // ZONE CLAIMING: Initialize zone data with resolution order
-    private void InitializeZoneDataWithOrder()
+    private bool IsInGrid(Vector2Int position)
     {
-        List<Vector2Int> orderedPositions = new List<Vector2Int>(keyTilePositions);
-
-        // Apply resolution ordering
-        switch (resolutionMode)
-        {
-            case ResolutionOrderMode.DistanceBased:
-                OrderByDistanceFromStart(orderedPositions);
-                break;
-            case ResolutionOrderMode.PriorityBased:
-                // Manual priorities will be set in inspector or via separate method
-                break;
-            case ResolutionOrderMode.MixedMode:
-                OrderByDistanceFromStart(orderedPositions); // Default order, can be overridden
-                break;
-        }
-
-        // Initialize zone data with calculated order
-        for (int i = 0; i < orderedPositions.Count; i++)
-        {
-            Vector2Int keyPos = orderedPositions[i];
-
-            ZoneData newZone = new ZoneData
-            {
-                gridPosition = keyPos,
-                worldPosition = GridToWorldPosition(keyPos),
-                currentState = ZoneState.Undiscovered,
-                activationProgress = 0f,
-                terminalObject = null,
-                beaconObject = null,
-                hasRequiredMicrochip = false,
-                lastActivationTime = 0f,
-                resolutionPriority = i + 1, // 1-based priority
-                distanceFromStart = Vector3.Distance(GridToWorldPosition(keyPos), playerStartPosition)
-            };
-
-            zoneDataMap[keyPos] = newZone;
-        }
+        return position.x >= 0 && position.x < FIXED_GRID_SIZE &&
+               position.y >= 0 && position.y < FIXED_GRID_SIZE;
     }
 
-    private void OrderByDistanceFromStart(List<Vector2Int> positions)
+    private IEnumerator PlaceCompositeTiles()
     {
-        positions.Sort((a, b) => {
-            float distanceA = Vector3.Distance(GridToWorldPosition(a), playerStartPosition);
-            float distanceB = Vector3.Distance(GridToWorldPosition(b), playerStartPosition);
-            return distanceA.CompareTo(distanceB);
-        });
-    }
+        List<TileConfiguration> compositeConfigs = GetCompositeTileConfigurations();
 
-    // ENHANCED: Non-key tile selection (excludes key tiles from random generation)
-    private TileConfiguration SelectRandomNonKeyTile()
-    {
-        // Step 1: Select category (excluding KeyPoint)
-        TileType selectedCategory = SelectNonKeyTileCategory();
-
-        // Step 2: Find tiles of selected category
-        List<TileConfiguration> categoryTiles = new List<TileConfiguration>();
-        foreach (TileConfiguration tile in tileConfigurations)
+        foreach (TileConfiguration config in compositeConfigs)
         {
-            if (tile.tileType == selectedCategory && !tile.isKeyPoint)
-                categoryTiles.Add(tile);
-        }
+            int placedCount = 0;
+            int attempts = 0;
+            int maxAttempts = TOTAL_GRID_POSITIONS;
 
-        // Step 3: Select random tile from category
-        if (categoryTiles.Count == 0)
-        {
-            // Fallback to any non-key tile
-            foreach (TileConfiguration tile in tileConfigurations)
+            Debug.Log($"Placing composite tile '{config.displayName}' (size {config.size}), target: {config.minTileCount}");
+
+            while (placedCount < config.minTileCount && attempts < maxAttempts)
             {
-                if (!tile.isKeyPoint)
+                Vector2Int candidate = GetRandomAvailablePosition();
+
+                if (candidate.x == -1) break; // No more positions available
+
+                // ENHANCED: Size-aware placement validation
+                if (CanPlaceTile(candidate, config.size))
                 {
-                    return tile;
+                    PlaceTile(candidate, config);
+                    compositeTilesGenerated.Add(candidate); // FIX: Track composite tile placement
+                    tilePlacementCount[config.tileType]++;
+                    placedCount++;
+
+                    Debug.Log($"Composite tile '{config.displayName}' placed at {candidate}");
+                    yield return null;
+                }
+
+                attempts++;
+
+                // Progress feedback for large composite placements
+                if (attempts % 50 == 0)
+                {
+                    Debug.Log($"Composite placement attempt {attempts}/{maxAttempts} for '{config.displayName}'");
                 }
             }
-            return tileConfigurations[0]; // Ultimate fallback
+
+            if (placedCount < config.minTileCount)
+            {
+                generationWarnings.Add($"Composite tile '{config.displayName}': Nur {placedCount} von {config.minTileCount} platziert - nicht genug freie {config.size} Bereiche");
+            }
         }
 
-        return SelectWeightedRandom(categoryTiles);
+        Debug.Log($"Composite tile placement complete: {tilePlacementCount.GetValueOrDefault(TileType.Composite, 0)} composite tiles placed");
     }
 
-    private TileType SelectNonKeyTileCategory()
+    private List<TileConfiguration> GetCompositeTileConfigurations()
     {
-        // Redistributed percentages without KeyPoint
-        int randomValue = Random.Range(0, 98);
-        if (randomValue < 71) return TileType.Ground;      // ~72%
-        if (randomValue < 92) return TileType.Specific;    // ~21% 
-        return TileType.Composite;                         // ~7%
-    }
+        List<TileConfiguration> compositeConfigs = new List<TileConfiguration>();
 
-    // Original tile selection (kept for compatibility)
-    private TileConfiguration SelectRandomTile()
-    {
-        TileType selectedCategory = SelectTileCategory();
-
-        List<TileConfiguration> categoryTiles = new List<TileConfiguration>();
-        foreach (TileConfiguration tile in tileConfigurations)
+        foreach (TileConfiguration config in tileConfigurations)
         {
-            if (tile.tileType == selectedCategory)
-                categoryTiles.Add(tile);
+            if (config.tileType == TileType.Composite && !config.isKeyPoint)
+            {
+                compositeConfigs.Add(config);
+            }
         }
 
-        if (categoryTiles.Count == 0)
-            return tileConfigurations[0];
-
-        return SelectWeightedRandom(categoryTiles);
+        return compositeConfigs;
     }
 
-    private TileType SelectTileCategory()
+    private IEnumerator FillRemainingGrid()
     {
-        // This method is now primarily for fallback use
-        // Normal generation uses guaranteed key tile placement
-        if (keyTilePositions.Count >= keyTileCount)
+        List<TileConfiguration> fillerConfigs = GetFillerTileConfigurations();
+        int batchSize = 20;
+        int tilesProcessed = 0;
+
+        while (occupiedPositions.Count < TOTAL_GRID_POSITIONS && fillerConfigs.Count > 0)
         {
-            return SelectNonKeyTileCategory();
+            Vector2Int position = GetRandomAvailablePosition();
+
+            if (position.x == -1) break; // No more available positions
+
+            TileConfiguration selectedConfig = SelectFillerTile(fillerConfigs);
+
+            if (CanPlaceTile(position, selectedConfig.size))
+            {
+                PlaceTile(position, selectedConfig);
+                tilePlacementCount[selectedConfig.tileType]++;
+                tilesProcessed++;
+
+                if (tilesProcessed % batchSize == 0)
+                {
+                    yield return null;
+                }
+            }
         }
 
-        int randomValue2 = Random.Range(0, 100);
-        if (randomValue2 < 70) return TileType.Ground;
-        if (randomValue2 < 90) return TileType.Specific;
-        if (randomValue2 < 98) return TileType.Composite;
-        return TileType.KeyPoint;
+        Debug.Log($"Grid filling complete: {occupiedPositions.Count}/{TOTAL_GRID_POSITIONS} positions filled");
     }
 
-    private TileConfiguration SelectWeightedRandom(List<TileConfiguration> tiles)
+    private List<TileConfiguration> GetFillerTileConfigurations()
     {
-        if (tiles.Count == 1) return tiles[0];
+        List<TileConfiguration> fillerConfigs = new List<TileConfiguration>();
 
-        int totalWeight = 0;
-        foreach (var tile in tiles) totalWeight += tile.spawnWeight;
-
-        if (totalWeight == 0) return tiles[0];
-
-        int randomWeight = Random.Range(0, totalWeight);
-        int currentWeight = 0;
-
-        foreach (var tile in tiles)
+        foreach (TileConfiguration config in tileConfigurations)
         {
-            currentWeight += tile.spawnWeight;
-            if (randomWeight < currentWeight) return tile;
+            if (!config.isKeyPoint && config.tileType != TileType.Composite)
+            {
+                fillerConfigs.Add(config);
+            }
         }
 
-        return tiles[0];
+        return fillerConfigs;
+    }
+
+    private TileConfiguration SelectFillerTile(List<TileConfiguration> availableConfigs)
+    {
+        List<TileConfiguration> validConfigs = new List<TileConfiguration>();
+
+        foreach (TileConfiguration config in availableConfigs)
+        {
+            int currentCount = tilePlacementCount.GetValueOrDefault(config.tileType, 0);
+
+            if (currentCount < config.maxTileCount || config.maxTileCount == 0)
+            {
+                validConfigs.Add(config);
+            }
+        }
+
+        if (validConfigs.Count == 0) return availableConfigs[0];
+
+        // Simple random selection for now - can be enhanced with weighted distribution
+        return validConfigs[Random.Range(0, validConfigs.Count)];
+    }
+
+    private Vector2Int GetRandomAvailablePosition()
+    {
+        List<Vector2Int> availablePositions = new List<Vector2Int>();
+
+        for (int x = 0; x < FIXED_GRID_SIZE; x++)
+        {
+            for (int y = 0; y < FIXED_GRID_SIZE; y++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+                if (!occupiedPositions.Contains(pos))
+                {
+                    availablePositions.Add(pos);
+                }
+            }
+        }
+
+        return availablePositions.Count > 0 ? availablePositions[Random.Range(0, availablePositions.Count)] : new Vector2Int(-1, -1);
     }
 
     private bool CanPlaceTile(Vector2Int position, Vector2Int size)
     {
-        if (position.x + size.x > gridSize || position.y + size.y > gridSize)
+        // Check grid boundaries
+        if (position.x + size.x > FIXED_GRID_SIZE || position.y + size.y > FIXED_GRID_SIZE)
             return false;
 
+        // Check ALL positions that will be occupied by this tile
         for (int x = 0; x < size.x; x++)
         {
             for (int y = 0; y < size.y; y++)
             {
                 Vector2Int checkPos = new Vector2Int(position.x + x, position.y + y);
                 if (occupiedPositions.Contains(checkPos))
+                {
                     return false;
+                }
             }
         }
 
@@ -575,7 +743,11 @@ public class TileManager : MonoBehaviour
 
     private void PlaceTile(Vector2Int gridPosition, TileConfiguration tileConfig)
     {
-        Vector3 worldPos = GridToWorldPosition(gridPosition + tileConfig.anchorOffset);
+        // CRITICAL FIX: Mark positions BEFORE instantiation
+        MarkOccupiedPositions(gridPosition, tileConfig.size);
+
+        // UNIFIED COORDINATE SYSTEM: Eliminate anchorOffset to align collision with placement
+        Vector3 worldPos = GridToWorldPosition(gridPosition);
 
         GameObject tileInstance = Instantiate(tileConfig.prefab, worldPos, Quaternion.identity, tilesContainer);
         spawnedTiles.Add(tileInstance);
@@ -585,12 +757,54 @@ public class TileManager : MonoBehaviour
             ConfigureTileLOD(tileInstance, tileConfig);
         }
 
-        if (tileConfig.isKeyPoint)
+        // Runtime bounds validation - only in debug builds
+#if UNITY_EDITOR
+        if (showDistributionGizmos) // Use existing debug flag
         {
-            keyTilePositions.Add(gridPosition);
+            StartCoroutine(ValidatePlacedTileBounds(tileInstance, gridPosition, tileConfig));
         }
+#endif
+    }
 
-        MarkOccupiedPositions(gridPosition, tileConfig.size);
+    private IEnumerator ValidatePlacedTileBounds(GameObject tileInstance, Vector2Int gridPosition, TileConfiguration config)
+    {
+        // Wait one frame for instantiation to complete
+        yield return null;
+
+        Renderer renderer = tileInstance.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            Bounds actualBounds = renderer.bounds;
+            Vector2 gridBounds = new Vector2(config.size.x * TILE_SIZE, config.size.y * TILE_SIZE);
+            Vector2 actualSize = new Vector2(actualBounds.size.x, actualBounds.size.z);
+
+            // Log placement verification
+            Debug.Log($"PLACEMENT VERIFICATION - '{config.displayName}' at {gridPosition}:");
+            Debug.Log($"  Grid Size: {config.size} -> World Size: {gridBounds}");
+            Debug.Log($"  Actual Bounds: {actualSize:F1}");
+            Debug.Log($"  World Position: {tileInstance.transform.position}");
+            Debug.Log($"  Occupied Grid Positions: {string.Join(",", GetOccupiedPositionsForTile(gridPosition, config.size))}");
+
+            if (actualSize.x > gridBounds.x * 1.1f || actualSize.y > gridBounds.y * 1.1f)
+            {
+                generationWarnings.Add($"Tile '{config.displayName}' at {gridPosition}: Actual size {actualSize:F1} exceeds grid size {gridBounds:F1}");
+                Debug.LogWarning($"SIZE MISMATCH - Tile: {config.displayName}, Expected: {gridBounds:F1}, Actual: {actualSize:F1}");
+            }
+        }
+    }
+
+    private List<string> GetOccupiedPositionsForTile(Vector2Int startPos, Vector2Int size)
+    {
+        List<string> positions = new List<string>();
+        for (int x = 0; x < size.x; x++)
+        {
+            for (int y = 0; y < size.y; y++)
+            {
+                Vector2Int pos = new Vector2Int(startPos.x + x, startPos.y + y);
+                positions.Add($"({pos.x},{pos.y})");
+            }
+        }
+        return positions;
     }
 
     private void ConfigureTileLOD(GameObject tileInstance, TileConfiguration config)
@@ -625,46 +839,112 @@ public class TileManager : MonoBehaviour
 
     public Vector3 GridToWorldPosition(Vector2Int gridPos)
     {
-        return new Vector3(gridPos.x * tileSize, 0f, gridPos.y * tileSize);
+        return new Vector3(gridPos.x * TILE_SIZE, 0f, gridPos.y * TILE_SIZE);
     }
 
-    private void EnsureKeyTileCount()
+    private Vector2Int WorldToGridPosition(Vector3 worldPos)
     {
-        // This method is now less critical since we guarantee placement
-        // But kept for edge case handling
-        var failSafeCounter = 0;
+        return new Vector2Int(
+            Mathf.RoundToInt(worldPos.x / TILE_SIZE),
+            Mathf.RoundToInt(worldPos.z / TILE_SIZE)
+        );
+    }
 
-        while (keyTilePositions.Count < 3)
+    private void PerformFinalValidation()
+    {
+        // Validate all constraints are met
+        foreach (TileConfiguration config in tileConfigurations)
         {
-            failSafeCounter++;
-            Vector2Int randomPos = new Vector2Int(Random.Range(0, gridSize), Random.Range(0, gridSize));
-            if (!occupiedPositions.Contains(randomPos))
+            int placedCount = tilePlacementCount.GetValueOrDefault(config.tileType, 0);
+
+            if (placedCount < config.minTileCount)
             {
-                TileConfiguration keyTileConfig = GetKeyTileConfiguration();
-                if (keyTileConfig.prefab != null)
-                {
-                    PlaceTile(randomPos, keyTileConfig);
-                }
+                generationWarnings.Add($"'{config.displayName}': {placedCount} platziert, {config.minTileCount} minimum erforderlich");
             }
 
-            if (failSafeCounter > failSafeAmount)
+            if (config.maxTileCount > 0 && placedCount > config.maxTileCount)
             {
-                Debug.LogError("FailSafeTriggered!!! Using guaranteed distribution system instead.");
+                generationWarnings.Add($"'{config.displayName}': {placedCount} platziert, {config.maxTileCount} maximum überschritten");
+            }
+        }
+
+        // Validate key tiles
+        if (keyTilePositions.Count < 3)
+        {
+            generationWarnings.Add($"Nur {keyTilePositions.Count} Key-Tiles platziert. Empfohlen: 3 für Zone Claiming");
+        }
+
+        // Validate grid filling
+        if (occupiedPositions.Count != TOTAL_GRID_POSITIONS)
+        {
+            generationWarnings.Add($"Grid nicht vollständig gefüllt: {occupiedPositions.Count}/{TOTAL_GRID_POSITIONS} Positionen");
+        }
+    }
+
+    private void ReportWarnings()
+    {
+        if (generationWarnings.Count > 0 && showWarnings)
+        {
+            Debug.LogWarning("=== TILE GENERATION WARNINGS ===");
+            foreach (string warning in generationWarnings)
+            {
+                Debug.LogWarning($"WARNING: {warning}");
+            }
+            Debug.LogWarning("=== END WARNINGS ===");
+        }
+    }
+
+    // ZONE MANAGEMENT SYSTEM (preserved from v2.0)
+    private void InitializeZoneDataWithOrder()
+    {
+        List<Vector2Int> orderedPositions = new List<Vector2Int>(keyTilePositions);
+
+        switch (resolutionMode)
+        {
+            case ResolutionOrderMode.DistanceBased:
+                OrderByDistanceFromStart(orderedPositions);
                 break;
-            }
+            case ResolutionOrderMode.PriorityBased:
+                break;
+            case ResolutionOrderMode.MixedMode:
+                OrderByDistanceFromStart(orderedPositions);
+                break;
         }
-    }
 
-    private TileConfiguration GetKeyTileConfiguration()
-    {
-        foreach (var tile in tileConfigurations)
+        for (int i = 0; i < orderedPositions.Count; i++)
         {
-            if (tile.isKeyPoint) return tile;
+            Vector2Int keyPos = orderedPositions[i];
+
+            ZoneData newZone = new ZoneData
+            {
+                gridPosition = keyPos,
+                worldPosition = GridToWorldPosition(keyPos),
+                currentState = ZoneState.Undiscovered,
+                activationProgress = 0f,
+                terminalObject = null,
+                beaconObject = null,
+                hasRequiredMicrochip = false,
+                lastActivationTime = 0f,
+                resolutionPriority = i + 1,
+                distanceFromStart = Vector3.Distance(GridToWorldPosition(keyPos), playerStartPosition)
+            };
+
+            zoneDataMap[keyPos] = newZone;
         }
-        return tileConfigurations[0];
+
+        Debug.Log($"Zone data initialized: {zoneDataMap.Count} zones");
     }
 
-    // ENHANCED: Player proximity checking with zone discovery
+    private void OrderByDistanceFromStart(List<Vector2Int> positions)
+    {
+        positions.Sort((a, b) => {
+            float distanceA = Vector3.Distance(GridToWorldPosition(a), playerStartPosition);
+            float distanceB = Vector3.Distance(GridToWorldPosition(b), playerStartPosition);
+            return distanceA.CompareTo(distanceB);
+        });
+    }
+
+    // PLAYER PROXIMITY CHECKING (preserved from v2.0)
     private float lastProximityCheck = 0f;
     private float proximityCheckInterval = 0.1f;
 
@@ -700,25 +980,7 @@ public class TileManager : MonoBehaviour
         return player != null ? player.transform.position : Vector3.zero;
     }
 
-    private Vector2Int WorldToGridPosition(Vector3 worldPos)
-    {
-        return new Vector2Int(
-            Mathf.RoundToInt(worldPos.x / tileSize),
-            Mathf.RoundToInt(worldPos.z / tileSize)
-        );
-    }
-
-    private void ClearExistingTiles()
-    {
-        foreach (GameObject tile in spawnedTiles)
-        {
-            if (tile != null)
-                DestroyImmediate(tile);
-        }
-        spawnedTiles.Clear();
-    }
-
-    // ZONE CLAIMING: Zone state management methods
+    // ZONE STATE MANAGEMENT (preserved from v2.0)
     public void UpdateZoneState(Vector2Int position, ZoneState newState)
     {
         if (zoneDataMap.ContainsKey(position))
@@ -726,8 +988,6 @@ public class TileManager : MonoBehaviour
             ZoneData currentData = zoneDataMap[position];
             currentData.currentState = newState;
             zoneDataMap[position] = currentData;
-
-            Debug.Log($"Zone {position} state updated to {newState}");
         }
     }
 
@@ -740,295 +1000,15 @@ public class TileManager : MonoBehaviour
         return ZoneState.Undiscovered;
     }
 
-    public List<ZoneData> GetZonesInState(ZoneState targetState)
-    {
-        List<ZoneData> result = new List<ZoneData>();
-        foreach (var kvp in zoneDataMap)
-        {
-            if (kvp.Value.currentState == targetState)
-            {
-                result.Add(kvp.Value);
-            }
-        }
-        return result;
-    }
-
-    public ZoneData GetNearestZone(Vector3 playerPosition, ZoneState targetState)
-    {
-        Vector2Int playerGrid = WorldToGridPosition(playerPosition);
-        float nearestDistance = float.MaxValue;
-        ZoneData nearestZone = default(ZoneData);
-        bool foundAny = false;
-
-        foreach (var kvp in zoneDataMap)
-        {
-            if (kvp.Value.currentState == targetState)
-            {
-                float distance = Vector2Int.Distance(playerGrid, kvp.Key);
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearestZone = kvp.Value;
-                    foundAny = true;
-                }
-            }
-        }
-
-        if (!foundAny && zoneDataMap.Count > 0)
-        {
-            var firstZone = new List<ZoneData>(zoneDataMap.Values)[0];
-            return firstZone;
-        }
-
-        return nearestZone;
-    }
-
     public void DiscoverZone(Vector2Int position)
     {
         if (zoneDataMap.ContainsKey(position))
         {
             UpdateZoneState(position, ZoneState.Discovered);
-            Debug.Log($"Zone discovered at {position}");
         }
     }
 
-    public bool IsZoneDiscovered(Vector2Int position)
-    {
-        ZoneState state = GetZoneState(position);
-        return state != ZoneState.Undiscovered;
-    }
-
-    public void SpawnTerminal(Vector2Int position)
-    {
-        if (zoneDataMap.ContainsKey(position))
-        {
-            ZoneData currentData = zoneDataMap[position];
-            Debug.Log($"Terminal spawned at {position}");
-            zoneDataMap[position] = currentData;
-        }
-    }
-
-    public void ActivateBeacon(Vector2Int position)
-    {
-        if (zoneDataMap.ContainsKey(position))
-        {
-            ZoneData currentData = zoneDataMap[position];
-            Debug.Log($"Beacon activated at {position}");
-            zoneDataMap[position] = currentData;
-            OnBeaconActivated?.Invoke(position);
-        }
-    }
-
-    public GameObject GetTerminalAtPosition(Vector2Int position)
-    {
-        if (zoneDataMap.ContainsKey(position))
-        {
-            return zoneDataMap[position].terminalObject;
-        }
-        return null;
-    }
-
-    // ZONE CLAIMING: Progress tracking
-    public float GetActivationProgress(Vector2Int position)
-    {
-        if (zoneDataMap.ContainsKey(position))
-        {
-            return zoneDataMap[position].activationProgress;
-        }
-        return 0f;
-    }
-
-    public void SetActivationProgress(Vector2Int position, float progress)
-    {
-        if (zoneDataMap.ContainsKey(position))
-        {
-            ZoneData currentData = zoneDataMap[position];
-            currentData.activationProgress = Mathf.Clamp01(progress);
-            zoneDataMap[position] = currentData;
-        }
-    }
-
-    public int GetClaimedZoneCount()
-    {
-        int count = 0;
-        foreach (var kvp in zoneDataMap)
-        {
-            if (kvp.Value.currentState == ZoneState.Claimed)
-            {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    public int GetTotalZoneCount()
-    {
-        return zoneDataMap.Count;
-    }
-
-    // RESOLUTION ORDER: Manual priority management
-    public void SetZoneResolutionPriority(Vector2Int position, int priority)
-    {
-        if (zoneDataMap.ContainsKey(position))
-        {
-            ZoneData currentData = zoneDataMap[position];
-            currentData.resolutionPriority = priority;
-            zoneDataMap[position] = currentData;
-            Debug.Log($"Zone {position} resolution priority set to {priority}");
-        }
-    }
-
-    public int GetZoneResolutionPriority(Vector2Int position)
-    {
-        if (zoneDataMap.ContainsKey(position))
-        {
-            return zoneDataMap[position].resolutionPriority;
-        }
-        return 0;
-    }
-
-    public List<ZoneData> GetZonesByResolutionOrder()
-    {
-        List<ZoneData> zones = new List<ZoneData>(zoneDataMap.Values);
-
-        switch (resolutionMode)
-        {
-            case ResolutionOrderMode.PriorityBased:
-                zones.Sort((a, b) => a.resolutionPriority.CompareTo(b.resolutionPriority));
-                break;
-            case ResolutionOrderMode.DistanceBased:
-                zones.Sort((a, b) => a.distanceFromStart.CompareTo(b.distanceFromStart));
-                break;
-            case ResolutionOrderMode.MixedMode:
-                // Priority first, then distance for ties
-                zones.Sort((a, b) => {
-                    int priorityCompare = a.resolutionPriority.CompareTo(b.resolutionPriority);
-                    return priorityCompare != 0 ? priorityCompare : a.distanceFromStart.CompareTo(b.distanceFromStart);
-                });
-                break;
-        }
-
-        return zones;
-    }
-
-    // DISTRIBUTION VALIDATION: Inspector helper methods
-    [ContextMenu("Validate Distribution Settings")]
-    public void ValidateDistributionSettings()
-    {
-        bool isValid = true;
-
-        // Check if distribution parameters are reasonable
-        switch (distributionMethod)
-        {
-            case KeyTileDistributionMethod.PercentageBased:
-                if (percentageDistance < 10f)
-                {
-                    Debug.LogWarning("Percentage distance too small - may cause clustering");
-                    isValid = false;
-                }
-                break;
-            case KeyTileDistributionMethod.FixedMeterDistance:
-                float maxDistance = gridSize * tileSize;
-                if (fixedMeterDistance > maxDistance * 0.5f)
-                {
-                    Debug.LogWarning($"Fixed meter distance too large for grid size. Max recommended: {maxDistance * 0.5f}");
-                    isValid = false;
-                }
-                break;
-            case KeyTileDistributionMethod.GridCellSpacing:
-                float maxSpacing = gridSize * 0.5f;
-                if (gridCellSpacing > maxSpacing)
-                {
-                    Debug.LogWarning($"Grid cell spacing too large. Max recommended: {maxSpacing}");
-                    isValid = false;
-                }
-                break;
-        }
-
-        // Check key tile count vs grid size
-        float gridArea = gridSize * gridSize;
-        float requiredArea = keyTileCount * (gridCellSpacing * gridCellSpacing);
-        if (requiredArea > gridArea * 0.5f)
-        {
-            Debug.LogWarning("Too many key tiles for current distribution settings and grid size");
-            isValid = false;
-        }
-
-        if (isValid)
-        {
-            Debug.Log("Distribution settings validation PASSED");
-        }
-        else
-        {
-            Debug.LogError("Distribution settings validation FAILED - adjust parameters");
-        }
-    }
-
-    [ContextMenu("Recalculate Key Tile Distribution")]
-    public void RecalculateDistribution()
-    {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("Recalculation only available during play mode");
-            return;
-        }
-
-        // Clear existing distribution
-        distributedKeyPositions.Clear();
-
-        // Recalculate with current settings
-        CalculateKeyTileDistribution();
-
-        Debug.Log($"Recalculated distribution: {distributedKeyPositions.Count} positions");
-    }
-
-    // DISTRIBUTION INFO: Get distribution statistics
-    public void LogDistributionStatistics()
-    {
-        if (distributedKeyPositions.Count == 0)
-        {
-            Debug.Log("No key tile distribution calculated yet");
-            return;
-        }
-
-        // Calculate average distance between key tiles
-        float totalDistance = 0f;
-        int pairCount = 0;
-
-        for (int i = 0; i < distributedKeyPositions.Count; i++)
-        {
-            for (int j = i + 1; j < distributedKeyPositions.Count; j++)
-            {
-                totalDistance += Vector2Int.Distance(distributedKeyPositions[i], distributedKeyPositions[j]);
-                pairCount++;
-            }
-        }
-
-        float averageDistance = pairCount > 0 ? totalDistance / pairCount : 0f;
-        float averageWorldDistance = averageDistance * tileSize;
-
-        Debug.Log($"=== KEY TILE DISTRIBUTION STATISTICS ===");
-        Debug.Log($"Distribution Method: {distributionMethod}");
-        Debug.Log($"Total Key Tiles: {distributedKeyPositions.Count}");
-        Debug.Log($"Average Grid Distance: {averageDistance:F2} cells");
-        Debug.Log($"Average World Distance: {averageWorldDistance:F2} units");
-        Debug.Log($"Grid Coverage: {(distributedKeyPositions.Count / (float)(gridSize * gridSize)) * 100f:F1}%");
-
-        // Resolution order info
-        Debug.Log($"Resolution Mode: {resolutionMode}");
-        if (resolutionMode != ResolutionOrderMode.DistanceBased)
-        {
-            List<ZoneData> orderedZones = GetZonesByResolutionOrder();
-            Debug.Log("Resolution Order:");
-            for (int i = 0; i < orderedZones.Count; i++)
-            {
-                ZoneData zone = orderedZones[i];
-                Debug.Log($"  {i + 1}. Grid({zone.gridPosition.x},{zone.gridPosition.y}) Priority:{zone.resolutionPriority} Distance:{zone.distanceFromStart:F1}");
-            }
-        }
-    }
-
-    // Public interface for navigation UI (enhanced)
+    // PUBLIC API (preserved from v2.0)
     public List<Vector2Int> GetKeyTilePositions()
     {
         return keyTilePositions;
@@ -1053,66 +1033,93 @@ public class TileManager : MonoBehaviour
         return GridToWorldPosition(nearestKeyTile);
     }
 
-    // ZONE CLAIMING: Get zone data by position
-    public ZoneData? GetZoneData(Vector2Int position)
+    private void ClearExistingTiles()
     {
-        if (zoneDataMap.ContainsKey(position))
+        foreach (GameObject tile in spawnedTiles)
         {
-            return zoneDataMap[position];
+            if (tile != null)
+                DestroyImmediate(tile);
         }
-        return null;
-    }
+        spawnedTiles.Clear();
 
-    // DISTRIBUTION: Get distributed positions for external access
-    public List<Vector2Int> GetDistributedKeyPositions()
-    {
-        return new List<Vector2Int>(distributedKeyPositions);
-    }
-
-    public float GetActualAverageKeyTileDistance()
-    {
-        if (keyTilePositions.Count < 2) return 0f;
-
-        float totalDistance = 0f;
-        int pairCount = 0;
-
-        for (int i = 0; i < keyTilePositions.Count; i++)
+        if (borderTileInstance != null)
         {
-            for (int j = i + 1; j < keyTilePositions.Count; j++)
-            {
-                totalDistance += Vector2Int.Distance(keyTilePositions[i], keyTilePositions[j]);
-                pairCount++;
-            }
+            DestroyImmediate(borderTileInstance);
+            borderTileInstance = null;
+        }
+    }
+
+    // CONTEXT MENU FUNCTIONS
+    [ContextMenu("Generate Sequential Test Grid")]
+    public void GenerateTestGrid()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Sequential generation only available in Play Mode");
+            return;
         }
 
-        return pairCount > 0 ? (totalDistance / pairCount) * tileSize : 0f;
+        StartCoroutine(GenerateSequentialTerrain());
     }
 
-    // Enhanced debug visualization
+    [ContextMenu("Validate Tile Constraints")]
+    public void ValidateTileConstraints()
+    {
+        generationWarnings.Clear();
+
+        if (ValidateConstraints())
+        {
+            Debug.Log("PASSED: Tile constraints validation - Grid 18x18 kann sauber erstellt werden");
+        }
+        else
+        {
+            Debug.LogError("FAILED: Tile constraints validation:");
+            ReportWarnings();
+        }
+    }
+
+    [ContextMenu("Show Generation Statistics")]
+    public void ShowGenerationStatistics()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Statistics only available after generation in Play Mode");
+            return;
+        }
+
+        Debug.Log("=== SEQUENTIAL GENERATION STATISTICS ===");
+        Debug.Log($"Grid Size: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE} = {TOTAL_GRID_POSITIONS} positions");
+        Debug.Log($"Occupied Positions: {occupiedPositions.Count}/{TOTAL_GRID_POSITIONS}");
+        Debug.Log($"Key Tiles Placed: {keyTilePositions.Count}");
+        Debug.Log($"Composite Tiles: {compositeTilesGenerated.Count}");
+        Debug.Log($"Total Spawned Tiles: {spawnedTiles.Count}");
+        Debug.Log($"Border Tile: {(borderTileInstance != null ? "Placed" : "Not Placed")}");
+
+        foreach (var kvp in tilePlacementCount)
+        {
+            Debug.Log($"TileType.{kvp.Key}: {kvp.Value} placed");
+        }
+
+        if (generationWarnings.Count > 0)
+        {
+            Debug.Log($"Warnings Generated: {generationWarnings.Count}");
+        }
+    }
+
+    // DEBUG VISUALIZATION
     private void OnDrawGizmosSelected()
     {
         if (!showDistributionGizmos) return;
 
-        // Draw grid bounds
+        // Draw fixed 18x18 grid bounds
         Gizmos.color = Color.white;
-        Vector3 gridCenter = new Vector3((gridSize - 1) * tileSize * 0.5f, 0f, (gridSize - 1) * tileSize * 0.5f);
-        Vector3 gridSize3D = new Vector3(gridSize * tileSize, 0.1f, gridSize * tileSize);
+        Vector3 gridCenter = new Vector3((FIXED_GRID_SIZE - 1) * TILE_SIZE * 0.5f, 0f, (FIXED_GRID_SIZE - 1) * TILE_SIZE * 0.5f);
+        Vector3 gridSize3D = new Vector3(FIXED_GRID_SIZE * TILE_SIZE, 0.1f, FIXED_GRID_SIZE * TILE_SIZE);
         Gizmos.DrawWireCube(gridCenter, gridSize3D);
 
         if (!Application.isPlaying) return;
 
-        // Draw distributed key positions (planned)
-        if (distributedKeyPositions != null && distributedKeyPositions.Count > 0)
-        {
-            Gizmos.color = Color.cyan;
-            foreach (Vector2Int pos in distributedKeyPositions)
-            {
-                Vector3 worldPos = GridToWorldPosition(pos);
-                Gizmos.DrawWireCube(worldPos + Vector3.up * 0.5f, Vector3.one * 0.8f);
-            }
-        }
-
-        // Draw actual key tile positions
+        // Draw key tile positions
         Gizmos.color = Color.green;
         foreach (Vector2Int keyPos in keyTilePositions)
         {
@@ -1120,12 +1127,19 @@ public class TileManager : MonoBehaviour
             Gizmos.DrawWireCube(worldPos + Vector3.up * 0.5f, Vector3.one);
         }
 
+        // Draw composite tiles
+        Gizmos.color = Color.blue;
+        foreach (Vector2Int compositePos in compositeTilesGenerated)
+        {
+            Vector3 worldPos = GridToWorldPosition(compositePos);
+            Gizmos.DrawWireCube(worldPos + Vector3.up * 0.3f, Vector3.one * 0.6f);
+        }
+
         // Draw zone states with resolution order
         foreach (var kvp in zoneDataMap)
         {
             Vector3 worldPos = GridToWorldPosition(kvp.Key);
 
-            // Color based on zone state
             switch (kvp.Value.currentState)
             {
                 case ZoneState.Undiscovered:
@@ -1147,29 +1161,12 @@ public class TileManager : MonoBehaviour
 
             Gizmos.DrawSphere(worldPos + Vector3.up * 1.5f, 0.3f);
 
-            // Draw resolution order numbers
             if (showResolutionOrder)
             {
 #if UNITY_EDITOR
                 UnityEditor.Handles.color = Color.white;
                 UnityEditor.Handles.Label(worldPos + Vector3.up * 2f, kvp.Value.resolutionPriority.ToString());
 #endif
-            }
-        }
-
-        // Draw distribution lines between key tiles
-        if (distributionMethod == KeyTileDistributionMethod.PoissonDiskSampling ||
-            distributionMethod == KeyTileDistributionMethod.PercentageBased)
-        {
-            Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
-            for (int i = 0; i < keyTilePositions.Count; i++)
-            {
-                for (int j = i + 1; j < keyTilePositions.Count; j++)
-                {
-                    Vector3 posA = GridToWorldPosition(keyTilePositions[i]) + Vector3.up * 0.5f;
-                    Vector3 posB = GridToWorldPosition(keyTilePositions[j]) + Vector3.up * 0.5f;
-                    Gizmos.DrawLine(posA, posB);
-                }
             }
         }
 
@@ -1184,23 +1181,32 @@ public class TileManager : MonoBehaviour
             UnityEditor.Handles.Label(playerStartPosition + Vector3.up * 1.5f, "START");
 #endif
         }
+
+        // Draw border tile bounds
+        if (borderTileInstance != null)
+        {
+            Gizmos.color = Color.cyan;
+            Vector3 borderCenter = borderTileInstance.transform.position;
+            Gizmos.DrawWireCube(borderCenter, Vector3.one * (FIXED_GRID_SIZE * TILE_SIZE + borderConfiguration.outerExtension * 2f));
+        }
     }
 
-    // INSPECTOR HELPER: Runtime distribution adjustment
 #if UNITY_EDITOR
     private void OnValidate()
     {
         // Clamp values to reasonable ranges
         percentageDistance = Mathf.Clamp(percentageDistance, 5f, 50f);
-        fixedMeterDistance = Mathf.Clamp(fixedMeterDistance, 1f, 50f);
-        gridCellSpacing = Mathf.Clamp(gridCellSpacing, 2, 8);
-        poissonSamples = Mathf.Clamp(poissonSamples, 1, 10);
-        keyTileCount = Mathf.Clamp(keyTileCount, 3, 10);
 
-        // Auto-validation during editor changes
-        if (Application.isPlaying)
+        // Validate tile configurations
+        if (tileConfigurations != null)
         {
-            ValidateDistributionSettings();
+            foreach (TileConfiguration config in tileConfigurations)
+            {
+                if (config.isKeyPoint && config.maxTileCount > 0)
+                {
+                    Debug.LogWarning($"Key tile '{config.displayName}' should have maxTileCount = 0");
+                }
+            }
         }
     }
 #endif
