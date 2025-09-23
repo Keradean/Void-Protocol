@@ -22,4 +22,10 @@ public class PickUpAmmo : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+    public void GetAmmo()
+    {
+        playerStats.RemainingAmmo += pickUpValue;
+        Debug.Log("Nimm mich du Sau");
+    }
 }
