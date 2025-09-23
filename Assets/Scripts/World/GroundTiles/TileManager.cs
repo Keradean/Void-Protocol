@@ -1,20 +1,20 @@
 /*
 ====================================================================
-* TileManager.cs - Sequential Grid Generation System v3.1
+* TileManager.cs - Sequential Grid Generation System v3.2
 ====================================================================
 * Project: Space Colony Game
 * Course: PIP
 * Script-Developer: Julian
-* Date: 22.09.2025
-* Version: v3.1 - compositeTilesGenerated Variable Fix
+* Date: 23.09.2025
+* Version: v3.2 - PivotPoint System Integration Complete
 *
 * WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
 * Diese detaillierte Authorship-Dokumentation ist für die
 * akademische Bewertung erforderlich und darf nicht entfernt werden!
 *
 * AUTHORSHIP CLASSIFICATION:
-* [HUMAN-AUTHORED] - Grid logic concept, tile placement requirements, constraint specifications
-* [AI-ASSISTED] - Sequential workflow algorithm, constraint validation system, warning implementation
+* [HUMAN-AUTHORED] - Grid logic concept, tile placement requirements, PivotPoint integration concept
+* [AI-ASSISTED] - Sequential workflow algorithm, PivotPoint positioning system, constraint validation
 ====================================================================
 */
 
@@ -30,7 +30,7 @@ public enum ResolutionOrderMode
     MixedMode = 2
 }
 
-// Simplified tile type enum - KeyPoint eliminated
+// Simplified tile type enum
 public enum TileType
 {
     Ground = 0,
@@ -148,14 +148,14 @@ public class TileManager : MonoBehaviour
     // Grid Management
     private HashSet<Vector2Int> occupiedPositions = new HashSet<Vector2Int>();
     private List<Vector2Int> keyTilePositions = new List<Vector2Int>();
-    private List<Vector2Int> compositeTilesGenerated = new List<Vector2Int>(); // FIX: Added missing variable
+    private List<Vector2Int> compositeTilesGenerated = new List<Vector2Int>();
     private List<GameObject> spawnedTiles = new List<GameObject>();
     private GameObject borderTileInstance;
 
     // Zone management
     private Dictionary<Vector2Int, ZoneData> zoneDataMap = new Dictionary<Vector2Int, ZoneData>();
 
-    // Sequential generation tracking - consolidated
+    // Sequential generation tracking
     private Dictionary<TileType, int> tilePlacementCount = new Dictionary<TileType, int>();
 
     // Warning system
@@ -217,7 +217,7 @@ public class TileManager : MonoBehaviour
         PlaceBorderTile();
         yield return null;
 
-        // PHASE 3: Key Tile Placement (3 tiles with isKeyPoint = true)
+        // PHASE 3: Key Tile Placement
         yield return StartCoroutine(PlaceKeyTiles());
 
         // PHASE 4: Composite Tile Placement
@@ -248,7 +248,7 @@ public class TileManager : MonoBehaviour
     {
         occupiedPositions.Clear();
         keyTilePositions.Clear();
-        compositeTilesGenerated.Clear(); // FIX: Clear composite tiles list
+        compositeTilesGenerated.Clear();
         zoneDataMap.Clear();
         tilePlacementCount.Clear();
         generationWarnings.Clear();
@@ -354,7 +354,6 @@ public class TileManager : MonoBehaviour
             Vector2Int position = keyPositions[i];
             TileConfiguration config = keyTileConfigs[i];
 
-            // ENHANCED: Double-check with actual size requirements
             if (CanPlaceTile(position, config.size))
             {
                 PlaceTile(position, config);
@@ -367,7 +366,6 @@ public class TileManager : MonoBehaviour
             {
                 generationWarnings.Add($"Key tile '{config.displayName}' konnte nicht bei {position} platziert werden - Kollision erkannt");
 
-                // Try alternative position for failed key tile
                 Vector2Int fallback = FindNearestValidPosition(position, config.size, 3);
                 if (fallback.x != -1)
                 {
@@ -386,14 +384,13 @@ public class TileManager : MonoBehaviour
 
     private Vector2Int FindNearestValidPosition(Vector2Int originalPosition, Vector2Int size, int searchRadius)
     {
-        // Search in expanding square pattern around original position
         for (int radius = 1; radius <= searchRadius; radius++)
         {
             for (int x = -radius; x <= radius; x++)
             {
                 for (int y = -radius; y <= radius; y++)
                 {
-                    if (Mathf.Abs(x) != radius && Mathf.Abs(y) != radius) continue; // Only check perimeter
+                    if (Mathf.Abs(x) != radius && Mathf.Abs(y) != radius) continue;
 
                     Vector2Int candidate = originalPosition + new Vector2Int(x, y);
 
@@ -405,7 +402,7 @@ public class TileManager : MonoBehaviour
             }
         }
 
-        return new Vector2Int(-1, -1); // No valid position found
+        return new Vector2Int(-1, -1);
     }
 
     private List<TileConfiguration> GetKeyTileConfigurations()
@@ -428,11 +425,10 @@ public class TileManager : MonoBehaviour
         List<Vector2Int> positions = new List<Vector2Int>();
         float minDistance = CalculateMinimumDistance();
 
-        // TRUE RANDOM DISTRIBUTION with distance validation
         for (int attempt = 0; attempt < 2000 && positions.Count < keyTileCount; attempt++)
         {
             Vector2Int candidate = new Vector2Int(
-                Random.Range(2, FIXED_GRID_SIZE - 2), // Stay away from edges
+                Random.Range(2, FIXED_GRID_SIZE - 2),
                 Random.Range(2, FIXED_GRID_SIZE - 2)
             );
 
@@ -454,100 +450,6 @@ public class TileManager : MonoBehaviour
     private float CalculateMinimumDistance()
     {
         return (percentageDistance / 100f) * FIXED_GRID_SIZE;
-    }
-
-    [ContextMenu("Debug Coordinate System")]
-    public void DebugCoordinateSystem()
-    {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("Debug only available during Play Mode after generation");
-            return;
-        }
-
-        Debug.Log("=== COORDINATE SYSTEM DEBUG ===");
-        Debug.Log($"Grid Size: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE}");
-        Debug.Log($"Tile Size: {TILE_SIZE} Unity units");
-        Debug.Log($"Total Grid Positions: {TOTAL_GRID_POSITIONS}");
-        Debug.Log($"Occupied Positions: {occupiedPositions.Count}");
-
-        // Test coordinate mapping
-        Vector2Int testGrid = new Vector2Int(5, 5);
-        Vector3 testWorld = GridToWorldPosition(testGrid);
-        Vector2Int backToGrid = WorldToGridPosition(testWorld);
-
-        Debug.Log($"COORDINATE MAPPING TEST:");
-        Debug.Log($"  Grid {testGrid} -> World {testWorld} -> Grid {backToGrid}");
-        Debug.Log($"  Mapping Consistent: {testGrid == backToGrid}");
-
-        // Show first few tiles for verification
-        int count = 0;
-        foreach (GameObject tile in spawnedTiles)
-        {
-            if (count >= 5) break;
-            if (tile != null)
-            {
-                Vector3 worldPos = tile.transform.position;
-                Vector2Int gridPos = WorldToGridPosition(worldPos);
-                Debug.Log($"  Tile {count}: World {worldPos} -> Grid {gridPos}");
-            }
-            count++;
-        }
-    }
-
-    [ContextMenu("Validate No Overlapping")]
-    public void ValidateNoOverlapping()
-    {
-        if (!Application.isPlaying)
-        {
-            Debug.LogWarning("Validation only available during Play Mode after generation");
-            return;
-        }
-
-        Debug.Log("=== OVERLAP VALIDATION ===");
-
-        Dictionary<Vector2Int, GameObject> positionMap = new Dictionary<Vector2Int, GameObject>();
-        List<string> overlaps = new List<string>();
-
-        foreach (GameObject tile in spawnedTiles)
-        {
-            if (tile == null) continue;
-
-            Vector2Int gridPos = WorldToGridPosition(tile.transform.position);
-
-            if (positionMap.ContainsKey(gridPos))
-            {
-                overlaps.Add($"OVERLAP at {gridPos}: '{positionMap[gridPos].name}' and '{tile.name}'");
-            }
-            else
-            {
-                positionMap[gridPos] = tile;
-            }
-        }
-
-        if (overlaps.Count == 0)
-        {
-            Debug.Log("VALIDATION PASSED: No overlapping tiles detected");
-        }
-        else
-        {
-            Debug.LogError($"VALIDATION FAILED: {overlaps.Count} overlaps detected:");
-            foreach (string overlap in overlaps)
-            {
-                Debug.LogError($"  {overlap}");
-            }
-        }
-    }
-
-    [ContextMenu("Test Key Tile Distance")]
-    public void TestKeyTileDistance()
-    {
-        Debug.Log("=== KEY TILE DISTANCE CALCULATION ===");
-        float distance = CalculateMinimumDistance();
-        Debug.Log($"Percentage Distance: {percentageDistance}%");
-        Debug.Log($"Minimum Distance: {distance:F2} grid units");
-        Debug.Log($"Grid Size: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE}");
-        Debug.Log($"Maximum Possible Distance: {FIXED_GRID_SIZE * 0.7f:F2} grid units");
     }
 
     private bool IsValidKeyTilePosition(Vector2Int candidate, List<Vector2Int> existingPositions, float minDistance)
@@ -588,13 +490,12 @@ public class TileManager : MonoBehaviour
             {
                 Vector2Int candidate = GetRandomAvailablePosition();
 
-                if (candidate.x == -1) break; // No more positions available
+                if (candidate.x == -1) break;
 
-                // ENHANCED: Size-aware placement validation
                 if (CanPlaceTile(candidate, config.size))
                 {
                     PlaceTile(candidate, config);
-                    compositeTilesGenerated.Add(candidate); // FIX: Track composite tile placement
+                    compositeTilesGenerated.Add(candidate);
                     tilePlacementCount[config.tileType]++;
                     placedCount++;
 
@@ -604,7 +505,6 @@ public class TileManager : MonoBehaviour
 
                 attempts++;
 
-                // Progress feedback for large composite placements
                 if (attempts % 50 == 0)
                 {
                     Debug.Log($"Composite placement attempt {attempts}/{maxAttempts} for '{config.displayName}'");
@@ -645,7 +545,7 @@ public class TileManager : MonoBehaviour
         {
             Vector2Int position = GetRandomAvailablePosition();
 
-            if (position.x == -1) break; // No more available positions
+            if (position.x == -1) break;
 
             TileConfiguration selectedConfig = SelectFillerTile(fillerConfigs);
 
@@ -696,7 +596,6 @@ public class TileManager : MonoBehaviour
 
         if (validConfigs.Count == 0) return availableConfigs[0];
 
-        // Simple random selection for now - can be enhanced with weighted distribution
         return validConfigs[Random.Range(0, validConfigs.Count)];
     }
 
@@ -721,11 +620,9 @@ public class TileManager : MonoBehaviour
 
     private bool CanPlaceTile(Vector2Int position, Vector2Int size)
     {
-        // Check grid boundaries
         if (position.x + size.x > FIXED_GRID_SIZE || position.y + size.y > FIXED_GRID_SIZE)
             return false;
 
-        // Check ALL positions that will be occupied by this tile
         for (int x = 0; x < size.x; x++)
         {
             for (int y = 0; y < size.y; y++)
@@ -743,13 +640,29 @@ public class TileManager : MonoBehaviour
 
     private void PlaceTile(Vector2Int gridPosition, TileConfiguration tileConfig)
     {
-        // CRITICAL FIX: Mark positions BEFORE instantiation
+        // CRITICAL: Mark positions BEFORE instantiation
         MarkOccupiedPositions(gridPosition, tileConfig.size);
 
-        // UNIFIED COORDINATE SYSTEM: Eliminate anchorOffset to align collision with placement
+        // PIVOTPOINT-AWARE COORDINATE SYSTEM
         Vector3 worldPos = GridToWorldPosition(gridPosition);
 
         GameObject tileInstance = Instantiate(tileConfig.prefab, worldPos, Quaternion.identity, tilesContainer);
+
+        // PIVOTPOINT INTEGRATION: Check for PivotPoint GameObject and adjust position
+        Transform pivotPoint = tileInstance.transform.Find("PivotPoint");
+        if (pivotPoint != null)
+        {
+            // Calculate offset from PivotPoint to desired grid position
+            Vector3 pivotOffset = pivotPoint.position - tileInstance.transform.position;
+            Vector3 correctedPosition = worldPos - pivotOffset;
+
+            // Apply corrected position to align PivotPoint with grid position
+            tileInstance.transform.position = correctedPosition;
+
+            Debug.Log($"PivotPoint tile '{tileConfig.displayName}' positioned with offset: {pivotOffset}");
+        }
+        // Fallback: Use Transform.position for tiles without PivotPoint (existing behavior)
+
         spawnedTiles.Add(tileInstance);
 
         if (tileConfig.hasLODGroup)
@@ -759,7 +672,7 @@ public class TileManager : MonoBehaviour
 
         // Runtime bounds validation - only in debug builds
 #if UNITY_EDITOR
-        if (showDistributionGizmos) // Use existing debug flag
+        if (showDistributionGizmos)
         {
             StartCoroutine(ValidatePlacedTileBounds(tileInstance, gridPosition, tileConfig));
         }
@@ -768,7 +681,6 @@ public class TileManager : MonoBehaviour
 
     private IEnumerator ValidatePlacedTileBounds(GameObject tileInstance, Vector2Int gridPosition, TileConfiguration config)
     {
-        // Wait one frame for instantiation to complete
         yield return null;
 
         Renderer renderer = tileInstance.GetComponent<Renderer>();
@@ -778,12 +690,10 @@ public class TileManager : MonoBehaviour
             Vector2 gridBounds = new Vector2(config.size.x * TILE_SIZE, config.size.y * TILE_SIZE);
             Vector2 actualSize = new Vector2(actualBounds.size.x, actualBounds.size.z);
 
-            // Log placement verification
             Debug.Log($"PLACEMENT VERIFICATION - '{config.displayName}' at {gridPosition}:");
             Debug.Log($"  Grid Size: {config.size} -> World Size: {gridBounds}");
             Debug.Log($"  Actual Bounds: {actualSize:F1}");
             Debug.Log($"  World Position: {tileInstance.transform.position}");
-            Debug.Log($"  Occupied Grid Positions: {string.Join(",", GetOccupiedPositionsForTile(gridPosition, config.size))}");
 
             if (actualSize.x > gridBounds.x * 1.1f || actualSize.y > gridBounds.y * 1.1f)
             {
@@ -791,20 +701,6 @@ public class TileManager : MonoBehaviour
                 Debug.LogWarning($"SIZE MISMATCH - Tile: {config.displayName}, Expected: {gridBounds:F1}, Actual: {actualSize:F1}");
             }
         }
-    }
-
-    private List<string> GetOccupiedPositionsForTile(Vector2Int startPos, Vector2Int size)
-    {
-        List<string> positions = new List<string>();
-        for (int x = 0; x < size.x; x++)
-        {
-            for (int y = 0; y < size.y; y++)
-            {
-                Vector2Int pos = new Vector2Int(startPos.x + x, startPos.y + y);
-                positions.Add($"({pos.x},{pos.y})");
-            }
-        }
-        return positions;
     }
 
     private void ConfigureTileLOD(GameObject tileInstance, TileConfiguration config)
@@ -852,7 +748,6 @@ public class TileManager : MonoBehaviour
 
     private void PerformFinalValidation()
     {
-        // Validate all constraints are met
         foreach (TileConfiguration config in tileConfigurations)
         {
             int placedCount = tilePlacementCount.GetValueOrDefault(config.tileType, 0);
@@ -868,13 +763,11 @@ public class TileManager : MonoBehaviour
             }
         }
 
-        // Validate key tiles
         if (keyTilePositions.Count < 3)
         {
             generationWarnings.Add($"Nur {keyTilePositions.Count} Key-Tiles platziert. Empfohlen: 3 für Zone Claiming");
         }
 
-        // Validate grid filling
         if (occupiedPositions.Count != TOTAL_GRID_POSITIONS)
         {
             generationWarnings.Add($"Grid nicht vollständig gefüllt: {occupiedPositions.Count}/{TOTAL_GRID_POSITIONS} Positionen");
@@ -894,7 +787,7 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    // ZONE MANAGEMENT SYSTEM (preserved from v2.0)
+    // ZONE MANAGEMENT SYSTEM
     private void InitializeZoneDataWithOrder()
     {
         List<Vector2Int> orderedPositions = new List<Vector2Int>(keyTilePositions);
@@ -944,7 +837,7 @@ public class TileManager : MonoBehaviour
         });
     }
 
-    // PLAYER PROXIMITY CHECKING (preserved from v2.0)
+    // PLAYER PROXIMITY CHECKING
     private float lastProximityCheck = 0f;
     private float proximityCheckInterval = 0.1f;
 
@@ -980,7 +873,7 @@ public class TileManager : MonoBehaviour
         return player != null ? player.transform.position : Vector3.zero;
     }
 
-    // ZONE STATE MANAGEMENT (preserved from v2.0)
+    // ZONE STATE MANAGEMENT
     public void UpdateZoneState(Vector2Int position, ZoneState newState)
     {
         if (zoneDataMap.ContainsKey(position))
@@ -1008,7 +901,7 @@ public class TileManager : MonoBehaviour
         }
     }
 
-    // PUBLIC API (preserved from v2.0)
+    // PUBLIC API
     public List<Vector2Int> GetKeyTilePositions()
     {
         return keyTilePositions;
@@ -1104,6 +997,98 @@ public class TileManager : MonoBehaviour
         {
             Debug.Log($"Warnings Generated: {generationWarnings.Count}");
         }
+    }
+
+    [ContextMenu("Debug Coordinate System")]
+    public void DebugCoordinateSystem()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Debug only available during Play Mode after generation");
+            return;
+        }
+
+        Debug.Log("=== COORDINATE SYSTEM DEBUG ===");
+        Debug.Log($"Grid Size: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE}");
+        Debug.Log($"Tile Size: {TILE_SIZE} Unity units");
+        Debug.Log($"Total Grid Positions: {TOTAL_GRID_POSITIONS}");
+        Debug.Log($"Occupied Positions: {occupiedPositions.Count}");
+
+        Vector2Int testGrid = new Vector2Int(5, 5);
+        Vector3 testWorld = GridToWorldPosition(testGrid);
+        Vector2Int backToGrid = WorldToGridPosition(testWorld);
+
+        Debug.Log($"COORDINATE MAPPING TEST:");
+        Debug.Log($"  Grid {testGrid} -> World {testWorld} -> Grid {backToGrid}");
+        Debug.Log($"  Mapping Consistent: {testGrid == backToGrid}");
+
+        int count = 0;
+        foreach (GameObject tile in spawnedTiles)
+        {
+            if (count >= 5) break;
+            if (tile != null)
+            {
+                Vector3 worldPos = tile.transform.position;
+                Vector2Int gridPos = WorldToGridPosition(worldPos);
+                Debug.Log($"  Tile {count}: World {worldPos} -> Grid {gridPos}");
+            }
+            count++;
+        }
+    }
+
+    [ContextMenu("Validate No Overlapping")]
+    public void ValidateNoOverlapping()
+    {
+        if (!Application.isPlaying)
+        {
+            Debug.LogWarning("Validation only available during Play Mode after generation");
+            return;
+        }
+
+        Debug.Log("=== OVERLAP VALIDATION ===");
+
+        Dictionary<Vector2Int, GameObject> positionMap = new Dictionary<Vector2Int, GameObject>();
+        List<string> overlaps = new List<string>();
+
+        foreach (GameObject tile in spawnedTiles)
+        {
+            if (tile == null) continue;
+
+            Vector2Int gridPos = WorldToGridPosition(tile.transform.position);
+
+            if (positionMap.ContainsKey(gridPos))
+            {
+                overlaps.Add($"OVERLAP at {gridPos}: '{positionMap[gridPos].name}' and '{tile.name}'");
+            }
+            else
+            {
+                positionMap[gridPos] = tile;
+            }
+        }
+
+        if (overlaps.Count == 0)
+        {
+            Debug.Log("VALIDATION PASSED: No overlapping tiles detected");
+        }
+        else
+        {
+            Debug.LogError($"VALIDATION FAILED: {overlaps.Count} overlaps detected:");
+            foreach (string overlap in overlaps)
+            {
+                Debug.LogError($"  {overlap}");
+            }
+        }
+    }
+
+    [ContextMenu("Test Key Tile Distance")]
+    public void TestKeyTileDistance()
+    {
+        Debug.Log("=== KEY TILE DISTANCE CALCULATION ===");
+        float distance = CalculateMinimumDistance();
+        Debug.Log($"Percentage Distance: {percentageDistance}%");
+        Debug.Log($"Minimum Distance: {distance:F2} grid units");
+        Debug.Log($"Grid Size: {FIXED_GRID_SIZE}x{FIXED_GRID_SIZE}");
+        Debug.Log($"Maximum Possible Distance: {FIXED_GRID_SIZE * 0.7f:F2} grid units");
     }
 
     // DEBUG VISUALIZATION
