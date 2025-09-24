@@ -17,6 +17,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private string reload = "Reloading";
     [SerializeField] private string next = "Next";
     [SerializeField] private string previous = "Previous";
+    [SerializeField] private string paused = "Paused";
 
     private InputAction movementAction;
     private InputAction rotationAction;

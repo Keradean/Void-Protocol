@@ -25,7 +25,7 @@ public class WeaponsManager : MonoBehaviour
 
     public UIManager UIManager;
 
-    private int CurrentWeapon; // PreviousWeapon; 
+    private int CurrentWeapon, previouWeapons; 
 
 
 
@@ -130,11 +130,13 @@ public class WeaponsManager : MonoBehaviour
         Debug.Log($"Munition aufgefüllt! + {pickUpValue}.Gesamt: {RemainingAmmo}");
     }
 
-    // Methode zum Waffenwechsel
     public void SetWeapon(int weaponToSet)
     {
-        Weapons[CurrentWeapon].CurrentAmmo = CurrentAmmo;
-        Weapons[CurrentWeapon].RemainingAmmo = RemainingAmmo;
+        if (previouWeapons != CurrentWeapon) 
+        { 
+        Weapons[previouWeapons].CurrentAmmo = CurrentAmmo;
+        Weapons[previouWeapons].RemainingAmmo = RemainingAmmo;
+        }
 
 
 
@@ -157,6 +159,8 @@ public class WeaponsManager : MonoBehaviour
         Weapons[weaponToSet].gameObject.SetActive(true);
 
         UpdateAmmoUI();
+
+        previouWeapons = CurrentWeapon;
     }
 
     public void UpdateAmmoUI()

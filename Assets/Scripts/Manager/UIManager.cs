@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
 
     [Header("DeathScreen")]
     [SerializeField] private GameObject showDeathScreen;
+   
+    [Header("PausedScreen")]
+    [SerializeField] private GameObject showPausedScreen;
 
 
     private void Update()
@@ -70,15 +73,33 @@ public class UIManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
+    public void ShowPausedScreen()
+    {
+        showPausedScreen.SetActive(true);
+        Time.timeScale = 0;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
     public void RestartGame()
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         stats.ResetStats();
     }
+    public void ExitGame()
+    {
+        Debug.Log("Tüdülüü, ihr blöden...!");
+        Application.Quit();
+    }
 
     public void BackToMainMenu()
     {
-        //SceneManager.LoadScene("MainMenu");
+        Debug.Log("ET nach Hause telefonieren..");
+        //SceneManager.LoadScene(MainMenu);
+    }
+    public void PausedUnpaused()
+    {
+        Debug.Log("It’s not a game. It’s a game!");
+        //SceneManager.LoadScene(MainMenu);
     }
 }
