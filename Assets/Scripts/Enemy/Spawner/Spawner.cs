@@ -22,6 +22,7 @@ public class Spawner : MonoBehaviour
 
     private void OnGet(EnemyHealth enemyHealth)
     {
+        enemyHealth.OnSpawn();
         enemyHealth.gameObject.SetActive(true);
         Transform randomSpawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
         enemyHealth.transform.position = randomSpawnPoint.position;
