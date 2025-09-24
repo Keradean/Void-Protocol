@@ -12,6 +12,10 @@ public class PickUpAmmo : MonoBehaviour
             if (WeaponsManager != null)
             {
                 WeaponsManager.AddAmmo(WeaponsManager.pickUpValue);
+
+                // AUDIO INTEGRATION - Added by Julian with AI-Support
+                SoundManager.Instance?.PlayPickupAmmo(transform.position);
+
                 Debug.Log("Ammo aufgesammelt!");
             }
             else

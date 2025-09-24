@@ -178,6 +178,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 1226659830466121422, guid: 10d95d21f4f0a594b807b7e2fbfd34cb, type: 3}
+--- !u!1 &16512163 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9142441920079452033, guid: 6a8a5258615efb44e9d614c92d7c3406, type: 3}
+  m_PrefabInstance: {fileID: 1196237632}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &16512164 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8479058535048121659, guid: 6a8a5258615efb44e9d614c92d7c3406, type: 3}
@@ -1412,7 +1417,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &225369357
 Transform:
   m_ObjectHideFlags: 0
@@ -1431,11 +1436,11 @@ Transform:
   - {fileID: 797728026}
   - {fileID: 2106955032}
   - {fileID: 16512164}
-  - {fileID: 1821190152}
   - {fileID: 377331666}
   - {fileID: 2031319427}
   - {fileID: 651276864}
   - {fileID: 385977096}
+  - {fileID: 1821190152}
   - {fileID: 453297011}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2918,6 +2923,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33507df66763cd7488e4eca58be46b8d, type: 3}
+--- !u!1 &377331665 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7016122004639144245, guid: 0dea1b6e13889d741b66df72f83cb6cb, type: 3}
+  m_PrefabInstance: {fileID: 153231825}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &377331666 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7644180211371672463, guid: 0dea1b6e13889d741b66df72f83cb6cb, type: 3}
@@ -2950,6 +2960,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 7829897305483744564, guid: 10d95d21f4f0a594b807b7e2fbfd34cb, type: 3}
+--- !u!1 &385977095 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7758948135854730784, guid: fc2a7d9b9a6472c47ba9a91d17327e93, type: 3}
+  m_PrefabInstance: {fileID: 2025074111}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &385977096 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6982411844836963482, guid: fc2a7d9b9a6472c47ba9a91d17327e93, type: 3}
@@ -3240,6 +3255,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -4355278824087911111, guid: eae1f1c28a373e84c94d635db199df43, type: 3}
+--- !u!1 &448114475 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7530206563392186596, guid: 798dc487c21346e41b78ae4f8b4bb868, type: 3}
+  m_PrefabInstance: {fileID: 1937005886}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &448114476 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7190975738118287966, guid: 798dc487c21346e41b78ae4f8b4bb868, type: 3}
@@ -3271,6 +3291,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.014305832, y: 0.022339892, z: 0.068088025}
   m_Center: {x: 0, y: -0.0000000037252903, z: 0}
+--- !u!1 &453297010 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6494396151976791126, guid: 2f5300f6a04a72744825ac44f38cea87, type: 3}
+  m_PrefabInstance: {fileID: 718687333}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &453297011 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5866899799995700972, guid: 2f5300f6a04a72744825ac44f38cea87, type: 3}
@@ -4186,6 +4211,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.036560778, y: 0.042153396, z: 0.273214}
   m_Center: {x: 0.000000011892184, y: -0.0006596454, z: 0.07480268}
+--- !u!1 &651276863 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 783261830011150025, guid: ef0a17ed4d7a9c24fb6725330fab9a13, type: 3}
+  m_PrefabInstance: {fileID: 1042032015}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &651276864 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 114108212724073587, guid: ef0a17ed4d7a9c24fb6725330fab9a13, type: 3}
@@ -4751,7 +4781,7 @@ MonoBehaviour:
     outerExtension: 0
     hasLODGroup: 1
   tileConfigurations:
-  - prefab: {fileID: 7530206563392186596, guid: 798dc487c21346e41b78ae4f8b4bb868, type: 3}
+  - prefab: {fileID: 448114475}
     displayName: Basic1
     size: {x: 1, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4763,7 +4793,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 0
-  - prefab: {fileID: 7137936148566876719, guid: 8ee7193a3053e1a4da43006c7b8996f0, type: 3}
+  - prefab: {fileID: 843889575}
     displayName: Basic2
     size: {x: 1, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4775,7 +4805,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 0
-  - prefab: {fileID: 4711468163955063316, guid: 33507df66763cd7488e4eca58be46b8d, type: 3}
+  - prefab: {fileID: 797728025}
     displayName: Basic3
     size: {x: 1, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4787,7 +4817,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 0
-  - prefab: {fileID: 4460470066053045189, guid: 383d6fab572cccf4391cdf036286f8fb, type: 3}
+  - prefab: {fileID: 2106955031}
     displayName: Decline
     size: {x: 1, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4799,7 +4829,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 1
-  - prefab: {fileID: 9142441920079452033, guid: 6a8a5258615efb44e9d614c92d7c3406, type: 3}
+  - prefab: {fileID: 16512163}
     displayName: Skeleton
     size: {x: 1, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4811,7 +4841,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 0
-  - prefab: {fileID: 7016122004639144245, guid: 0dea1b6e13889d741b66df72f83cb6cb, type: 3}
+  - prefab: {fileID: 377331665}
     displayName: Rock1
     size: {x: 1, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4823,7 +4853,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 1
-  - prefab: {fileID: 620190947645749501, guid: 7d5bc92088315cd4fb584e1019558863, type: 3}
+  - prefab: {fileID: 2031319426}
     displayName: Rock2
     size: {x: 1, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4835,7 +4865,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 1
-  - prefab: {fileID: 783261830011150025, guid: ef0a17ed4d7a9c24fb6725330fab9a13, type: 3}
+  - prefab: {fileID: 651276863}
     displayName: Rock3
     size: {x: 3, y: 1}
     anchorOffset: {x: 0, y: 0}
@@ -4847,7 +4877,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 1
-  - prefab: {fileID: 7758948135854730784, guid: fc2a7d9b9a6472c47ba9a91d17327e93, type: 3}
+  - prefab: {fileID: 385977095}
     displayName: Hill
     size: {x: 3, y: 3}
     anchorOffset: {x: 0, y: 0}
@@ -4859,7 +4889,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 0
-  - prefab: {fileID: 1050097503560763666, guid: 1ad4bf1a384b9ec4bb3c39e0e1a4b2d4, type: 3}
+  - prefab: {fileID: 1821190151}
     displayName: Ravine
     size: {x: 1, y: 5}
     anchorOffset: {x: 0, y: 0}
@@ -4871,7 +4901,7 @@ MonoBehaviour:
     lodBias: 1
     isWalkable: 1
     blocksLineOfSight: 1
-  - prefab: {fileID: 6494396151976791126, guid: 2f5300f6a04a72744825ac44f38cea87, type: 3}
+  - prefab: {fileID: 453297010}
     displayName: Skycraper
     size: {x: 3, y: 3}
     anchorOffset: {x: 0, y: 0}
@@ -5515,6 +5545,11 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.036560774, y: 0.047824714, z: 0.273214}
   m_Center: {x: 0.000000058703808, y: 0.0021760054, z: 0.07480268}
+--- !u!1 &797728025 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4711468163955063316, guid: 33507df66763cd7488e4eca58be46b8d, type: 3}
+  m_PrefabInstance: {fileID: 373440562}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &797728026 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5343995919814238382, guid: 33507df66763cd7488e4eca58be46b8d, type: 3}
@@ -5792,6 +5827,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &843889575 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7137936148566876719, guid: 8ee7193a3053e1a4da43006c7b8996f0, type: 3}
+  m_PrefabInstance: {fileID: 242665346}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &843889576 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7513371658695997589, guid: 8ee7193a3053e1a4da43006c7b8996f0, type: 3}
@@ -9858,6 +9898,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 690f49fe72cd50246b86bda6e85d5905, type: 3}
   m_PrefabInstance: {fileID: 1650672896}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1821190151 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1050097503560763666, guid: 1ad4bf1a384b9ec4bb3c39e0e1a4b2d4, type: 3}
+  m_PrefabInstance: {fileID: 668685462}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1821190152 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 421476553523975080, guid: 1ad4bf1a384b9ec4bb3c39e0e1a4b2d4, type: 3}
@@ -10913,6 +10958,11 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 643344969}
   m_SourcePrefab: {fileID: 100100000, guid: fc2a7d9b9a6472c47ba9a91d17327e93, type: 3}
+--- !u!1 &2031319426 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 620190947645749501, guid: 7d5bc92088315cd4fb584e1019558863, type: 3}
+  m_PrefabInstance: {fileID: 286253809}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2031319427 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 274874389867405895, guid: 7d5bc92088315cd4fb584e1019558863, type: 3}
@@ -11036,6 +11086,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -1574398660232301814, guid: e1d6248e4a2a6d2459c4f34dfb9bfd6f, type: 3}
+--- !u!1 &2106955031 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4460470066053045189, guid: 383d6fab572cccf4391cdf036286f8fb, type: 3}
+  m_PrefabInstance: {fileID: 720658234}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2106955032 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3939828651774345599, guid: 383d6fab572cccf4391cdf036286f8fb, type: 3}

@@ -1,12 +1,12 @@
 /*
 ====================================================================
-* SoundManager.cs - Complete Audio System
+* SoundManager.cs - Complete Audio System Enhanced
 ====================================================================
 * Project: Space Colony Game
 * Course: PIP
 * Script-Developer: Julian
 * Date: 23.09.2025
-* Version: v1.2 - Fixed Script Structure
+* Version: v1.3 - Enhanced Audio Control with Manual Timing
 *
 * WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
 * Diese detaillierte Authorship-Dokumentation ist für die
@@ -14,7 +14,7 @@
 *
 * AUTHORSHIP CLASSIFICATION:
 * [HUMAN-AUTHORED] - Audio requirements, game integration concept
-* [AI-ASSISTED] - Event system implementation, performance optimization
+* [AI-ASSISTED] - Enhanced audio control system, responsive playback
 ====================================================================
 */
 
@@ -31,6 +31,27 @@ public struct AudioClipData
     [Range(0.5f, 2f)] public float pitch;
     public bool is3D;
     public bool loop;
+
+    [Header("Manual Audio Control - Added by Julian with AI-Support")]
+    [SerializeField] private float startTime;
+    [SerializeField] private float endTime;
+    [Range(0f, 1f)] public float fadeInDuration;
+    [Range(0f, 1f)] public float fadeOutDuration;
+
+    // Properties for manual audio timing control
+    public float StartTime
+    {
+        get => startTime;
+        set => startTime = Mathf.Clamp(value, 0f, clip != null ? clip.length : 0f);
+    }
+
+    public float EndTime
+    {
+        get => endTime <= 0f ? (clip != null ? clip.length : 0f) : endTime;
+        set => endTime = Mathf.Clamp(value, 0f, clip != null ? clip.length : 0f);
+    }
+
+    public float ClipDuration => EndTime - StartTime;
 }
 
 [CreateAssetMenu(fileName = "SoundConfiguration", menuName = "Space Colony/Sound Configuration")]
@@ -102,6 +123,10 @@ public class SoundManager : MonoBehaviour
     [Header("Performance")]
     [SerializeField] private int maxConcurrentSounds = 16;
     [SerializeField] private bool enableObjectPooling = true;
+
+    [Header("Enhanced Audio Control - Added by Julian with AI-Support")]
+    [SerializeField] private AudioSource continuousFootstepSource; // Dedicated source for continuous sounds
+    private bool isFootstepPlaying = false;
 
     // Object Pooling
     private Queue<AudioSource> audioSourcePool = new Queue<AudioSource>();
@@ -181,6 +206,14 @@ public class SoundManager : MonoBehaviour
             ambientSource.loop = true;
             ambientSource.volume = 0.4f;
         }
+
+        if (continuousFootstepSource == null)
+        {
+            continuousFootstepSource = gameObject.AddComponent<AudioSource>();
+            continuousFootstepSource.loop = true;
+            continuousFootstepSource.volume = 0.6f;
+            continuousFootstepSource.spatialBlend = 1f; // 3D audio for footsteps
+        }
     }
 
     private void InitializeAudioPool()
@@ -211,22 +244,53 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // MOVEMENT AUDIO
-    public void PlayFootstep(bool isRunning, Vector3 position)
+    public void StartFootsteps(bool isRunning, Vector3 position)
     {
         if (!isInitialized || soundConfig == null) return;
-        if (Time.time - lastFootstepTime < footstepInterval) return;
 
         AudioClipData[] footstepSounds = isRunning ? soundConfig.runSounds : soundConfig.walkSounds;
 
-        if (footstepSounds != null && footstepSounds.Length > 0)
-        {
-            AudioClipData randomFootstep = footstepSounds[Random.Range(0, footstepSounds.Length)];
-            PlaySound3D(randomFootstep, position);
+        if (footstepSounds == null || footstepSounds.Length == 0) return;
 
-            lastFootstepTime = Time.time;
-            footstepInterval = isRunning ? 0.3f : 0.5f;
+        if (!isFootstepPlaying || (isRunning != (continuousFootstepSource.pitch > 1.2f)))
+        {
+            AudioClipData footstepData = footstepSounds[Random.Range(0, footstepSounds.Length)];
+
+            if (footstepData.clip != null)
+            {
+                continuousFootstepSource.transform.position = position;
+                continuousFootstepSource.clip = footstepData.clip;
+                continuousFootstepSource.volume = footstepData.volume;
+                continuousFootstepSource.pitch = isRunning ? 1.5f : 1.0f; // Faster pitch for running
+                continuousFootstepSource.time = footstepData.StartTime;
+
+                if (!isFootstepPlaying)
+                {
+                    continuousFootstepSource.Play();
+                    isFootstepPlaying = true;
+                }
+            }
         }
+        else
+        {
+            // Update position while moving
+            continuousFootstepSource.transform.position = position;
+        }
+    }
+
+    public void StopFootsteps()
+    {
+        if (isFootstepPlaying && continuousFootstepSource != null)
+        {
+            continuousFootstepSource.Stop();
+            isFootstepPlaying = false;
+        }
+    }
+
+    // LEGACY FOOTSTEP METHOD - kept for compatibility
+    public void PlayFootstep(bool isRunning, Vector3 position)
+    {
+        StartFootsteps(isRunning, position);
     }
 
     public void PlayJump(Vector3 position)
@@ -451,7 +515,7 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // CORE PLAYBACK METHODS
+    // CORE PLAYBACK METHODS with Enhanced Audio Contro
     private void PlayMusic(AudioClipData audioData, AudioSource source = null)
     {
         if (audioData.clip == null) return;
@@ -463,7 +527,14 @@ public class SoundManager : MonoBehaviour
         source.volume = audioData.volume;
         source.pitch = audioData.pitch;
         source.loop = audioData.loop;
+        source.time = audioData.StartTime; // Use custom start time
         source.Play();
+
+        // Handle custom end time
+        if (audioData.EndTime < audioData.clip.length)
+        {
+            StartCoroutine(StopAudioAtTime(source, audioData.ClipDuration));
+        }
     }
 
     private void PlaySFX(AudioClipData audioData)
@@ -471,7 +542,28 @@ public class SoundManager : MonoBehaviour
         if (audioData.clip == null || sfxSource == null) return;
 
         sfxSource.pitch = audioData.pitch;
-        sfxSource.PlayOneShot(audioData.clip, audioData.volume);
+
+        // Handle custom timing for SFX
+        if (audioData.StartTime > 0f || audioData.EndTime < audioData.clip.length)
+        {
+            StartCoroutine(PlaySFXWithCustomTiming(audioData));
+        }
+        else
+        {
+            sfxSource.PlayOneShot(audioData.clip, audioData.volume);
+        }
+    }
+
+    private IEnumerator PlaySFXWithCustomTiming(AudioClipData audioData)
+    {
+        sfxSource.clip = audioData.clip;
+        sfxSource.volume = audioData.volume;
+        sfxSource.time = audioData.StartTime;
+        sfxSource.Play();
+
+        yield return new WaitForSeconds(audioData.ClipDuration);
+
+        sfxSource.Stop();
     }
 
     private void PlayVoice(AudioClipData audioData)
@@ -481,7 +573,14 @@ public class SoundManager : MonoBehaviour
         voiceSource.clip = audioData.clip;
         voiceSource.volume = audioData.volume;
         voiceSource.pitch = audioData.pitch;
+        voiceSource.time = audioData.StartTime; // Use custom start time
         voiceSource.Play();
+
+        // Handle custom end time
+        if (audioData.EndTime < audioData.clip.length)
+        {
+            StartCoroutine(StopAudioAtTime(voiceSource, audioData.ClipDuration));
+        }
     }
 
     private void PlaySound3D(AudioClipData audioData, Vector3 position)
@@ -497,12 +596,23 @@ public class SoundManager : MonoBehaviour
         source.pitch = audioData.pitch;
         source.loop = audioData.loop;
         source.spatialBlend = audioData.is3D ? 1f : 0f;
+        source.time = audioData.StartTime; // Use custom start time
 
         source.Play();
 
         if (!audioData.loop)
         {
-            StartCoroutine(ReturnToPool(source, audioData.clip.length));
+            float playDuration = audioData.ClipDuration;
+            StartCoroutine(ReturnToPool(source, playDuration));
+        }
+    }
+
+    private IEnumerator StopAudioAtTime(AudioSource source, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        if (source != null && source.isPlaying)
+        {
+            source.Stop();
         }
     }
 
@@ -585,10 +695,16 @@ public class SoundManager : MonoBehaviour
         if (!Application.isPlaying || !IsSystemReady()) return;
 
         Vector3 testPos = transform.position;
-        PlayFootstep(false, testPos);
+        StartFootsteps(false, testPos);
         PlayJump(testPos);
         PlayPickupAmmo(testPos);
         PlayMissionStart();
+    }
+
+    [ContextMenu("Stop All Continuous Sounds")]
+    private void StopAllContinuousSounds()
+    {
+        StopFootsteps();
     }
 
     [ContextMenu("Validate Sound Configuration")]

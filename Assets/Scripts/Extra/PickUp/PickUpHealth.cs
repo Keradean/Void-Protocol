@@ -4,7 +4,7 @@ public class PickUpHealth : MonoBehaviour
 {
     [Header("Config")]
     [SerializeField] private PlayerHealth playerHealth;
-    [SerializeField]public float HealthValue; // PickUpValue MediPen
+    [SerializeField] public float HealthValue; // PickUpValue MediPen
 
 
     private void OnTriggerEnter(Collider other)
@@ -17,6 +17,10 @@ public class PickUpHealth : MonoBehaviour
             {
                 PlayerStats stats = other.GetComponent<Player>().Stats;
                 playerHealth.RestoreHealth(HealthValue);
+
+                // AUDIO INTEGRATION - Added by Julian with AI-Support
+                // Using pickup ammo sound as placeholder for health pickup
+                SoundManager.Instance?.PlayPickupAmmo(transform.position);
 
                 Destroy(gameObject);
             }
