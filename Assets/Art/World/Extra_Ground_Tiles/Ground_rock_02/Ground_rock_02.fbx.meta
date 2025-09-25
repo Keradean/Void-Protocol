@@ -3,37 +3,7 @@ guid: ba881214f62ea3f4ba7af65a55c88138
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_02_LOD0
-    second: {fileID: 2100000, guid: ee338e4802c97904dac24d73c3b5369e, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_02_LOD1
-    second: {fileID: 2100000, guid: 619bf820e881426478848681d04048c9, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_02_LOD2
-    second: {fileID: 2100000, guid: 9cc557ebb279d464988f1e1816a24e17, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_02_LOD0
-    second: {fileID: 2100000, guid: 39655020dca323247a96faa4ceef0824, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_02_LOD1
-    second: {fileID: 2100000, guid: b00b435dc2ca21d44ab6335b4be53e78, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_02_LOD2
-    second: {fileID: 2100000, guid: 289adb77c893a5f4cb4663e2a6468c05, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -1,26 +1,8 @@
-/*
-====================================================================
-* SoundManager.cs - Complete Audio System Enhanced
-====================================================================
-* Project: Space Colony Game
-* Course: PIP
-* Script-Developer: Julian
-* Date: 23.09.2025
-* Version: v1.3 - Enhanced Audio Control with Manual Timing
-*
-* WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
-* Diese detaillierte Authorship-Dokumentation ist für die
-* akademische Bewertung erforderlich und darf nicht entfernt werden!
-*
-* AUTHORSHIP CLASSIFICATION:
-* [HUMAN-AUTHORED] - Audio requirements, game integration concept
-* [AI-ASSISTED] - Enhanced audio control system, responsive playback
-====================================================================
-*/
-
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+// Optional: enable if you want to migrate old fields walkSound1/runSound1 automatically
+// using UnityEngine.Serialization;
 
 [System.Serializable]
 public struct AudioClipData
@@ -32,13 +14,12 @@ public struct AudioClipData
     public bool is3D;
     public bool loop;
 
-    [Header("Manual Audio Control - Added by Julian with AI-Support")]
+    [Header("Timeline Control - Managed by Custom Editor")]
     [SerializeField] private float startTime;
     [SerializeField] private float endTime;
     [Range(0f, 1f)] public float fadeInDuration;
     [Range(0f, 1f)] public float fadeOutDuration;
 
-    // Properties for manual audio timing control
     public float StartTime
     {
         get => startTime;
@@ -54,67 +35,47 @@ public struct AudioClipData
     public float ClipDuration => EndTime - StartTime;
 }
 
-[CreateAssetMenu(fileName = "SoundConfiguration", menuName = "Space Colony/Sound Configuration")]
-public class SoundConfiguration : ScriptableObject
-{
-    [Header("Movement Audio")]
-    public AudioClipData[] walkSounds;
-    public AudioClipData[] runSounds;
-    public AudioClipData jumpSound;
-    public AudioClipData landingSound;
-
-    [Header("Interaction Audio")]
-    public AudioClipData pickupAmmo;
-    public AudioClipData pickupOxygen;
-    public AudioClipData chipPlacement;
-    public AudioClipData zoneComplete;
-
-    [Header("Countdown System")]
-    public AudioClipData countdownTick;
-    public AudioClipData countdownMusic;
-    public AudioClipData countdownFinal;
-
-    [Header("Combat Audio")]
-    public AudioClipData[] weapon1Sounds;
-    public AudioClipData[] weapon2Sounds;
-    public AudioClipData[] impactSounds;
-    public AudioClipData weaponReload;
-    public AudioClipData weaponEmpty;
-
-    [Header("Mission Audio")]
-    public AudioClipData hoverSound;
-    public AudioClipData landingSequence;
-    public AudioClipData extractionMusic;
-
-    [Header("Dialogue Audio")]
-    public AudioClipData missionStart;
-    public AudioClipData missionConfirm;
-    public AudioClipData zoneUpdate;
-    public AudioClipData extractionCall;
-
-    [Header("Music")]
-    public AudioClipData gameStartMusic;
-    public AudioClipData creditsMusic;
-    public AudioClipData ambientMusic;
-
-    public bool ValidateConfiguration()
-    {
-        return jumpSound.clip != null && pickupAmmo.clip != null && gameStartMusic.clip != null;
-    }
-}
-
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance { get; private set; }
-
-    [Header("Configuration")]
-    [SerializeField] private SoundConfiguration soundConfig;
 
     [Header("Audio Sources")]
     [SerializeField] private AudioSource musicSource;
     [SerializeField] private AudioSource sfxSource;
     [SerializeField] private AudioSource voiceSource;
     [SerializeField] private AudioSource ambientSource;
+    [SerializeField] private AudioSource continuousFootstepSource;
+
+    [Header("Movement Audio - Single Walk/Run")]
+    // [FormerlySerializedAs("walkSound1")]
+    [SerializeField] private AudioClipData walkSound;
+    // [FormerlySerializedAs("runSound1")]
+    [SerializeField] private AudioClipData runSound;
+    [SerializeField] private AudioClipData jumpSound;
+    [SerializeField] private AudioClipData landingSound;
+
+    [Header("Interaction Audio")]
+    [SerializeField] private AudioClipData pickupAmmo;
+    [SerializeField] private AudioClipData pickupOxygen;
+    [SerializeField] private AudioClipData chipPlacement;
+    [SerializeField] private AudioClipData zoneComplete;
+
+    [Header("Combat Audio")]
+    [SerializeField] private AudioClipData[] weapon1Sounds;
+    [SerializeField] private AudioClipData[] weapon2Sounds;
+    [SerializeField] private AudioClipData[] impactSounds;
+    [SerializeField] private AudioClipData weaponReload;
+    [SerializeField] private AudioClipData weaponEmpty;
+
+    [Header("Music & Ambience")]
+    [SerializeField] private AudioClipData gameStartMusic;
+    [SerializeField] private AudioClipData ambientMusic;
+    [SerializeField] private AudioClipData creditsMusic;
+
+    [Header("Countdown System")]
+    [SerializeField] private AudioClipData countdownTick;
+    [SerializeField] private AudioClipData countdownMusic;
+    [SerializeField] private AudioClipData countdownFinal;
 
     [Header("3D Audio Settings")]
     [SerializeField] private float maxDistance = 50f;
@@ -124,19 +85,11 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private int maxConcurrentSounds = 16;
     [SerializeField] private bool enableObjectPooling = true;
 
-    [Header("Enhanced Audio Control - Added by Julian with AI-Support")]
-    [SerializeField] private AudioSource continuousFootstepSource; // Dedicated source for continuous sounds
-    private bool isFootstepPlaying = false;
-
-    // Object Pooling
     private Queue<AudioSource> audioSourcePool = new Queue<AudioSource>();
     private List<AudioSource> activeAudioSources = new List<AudioSource>();
-
-    // System State
     private Coroutine countdownCoroutine;
     private bool isCountdownActive = false;
-    private float lastFootstepTime;
-    private float footstepInterval = 0.5f;
+    private bool isFootstepPlaying = false;
     private bool isInitialized = false;
 
     private void Awake()
@@ -152,16 +105,11 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    void Start()
+    private void Start()
     {
         InitializeAudioSources();
         InitializeAudioPool();
         StartCoroutine(DelayedInitialization());
-    }
-
-    void Update()
-    {
-        // Performance monitoring if needed
     }
 
     private IEnumerator DelayedInitialization()
@@ -171,7 +119,7 @@ public class SoundManager : MonoBehaviour
         SubscribeToEvents();
         isInitialized = true;
 
-        if (soundConfig != null && soundConfig.ambientMusic.clip != null)
+        if (ambientMusic.clip != null)
         {
             PlayAmbientMusic();
         }
@@ -179,41 +127,31 @@ public class SoundManager : MonoBehaviour
 
     private void InitializeAudioSources()
     {
-        if (musicSource == null)
+        musicSource = CreateAudioSource("MusicSource", 0.7f, true);
+        sfxSource = CreateAudioSource("SFXSource", 0.8f, false);
+        voiceSource = CreateAudioSource("VoiceSource", 0.9f, false);
+        ambientSource = CreateAudioSource("AmbientSource", 0.4f, true);
+        continuousFootstepSource = CreateAudioSource("FootstepSource", 0.6f, true, true);
+    }
+
+    private AudioSource CreateAudioSource(string name, float volume, bool loop, bool is3D = false)
+    {
+        GameObject sourceObj = new GameObject(name);
+        sourceObj.transform.SetParent(transform);
+
+        AudioSource source = sourceObj.AddComponent<AudioSource>();
+        source.volume = volume;
+        source.loop = loop;
+        source.playOnAwake = false;
+        source.spatialBlend = is3D ? 1f : 0f;
+
+        if (is3D)
         {
-            musicSource = gameObject.AddComponent<AudioSource>();
-            musicSource.loop = true;
-            musicSource.volume = 0.7f;
+            source.rolloffMode = rolloffMode;
+            source.maxDistance = maxDistance;
         }
 
-        if (sfxSource == null)
-        {
-            sfxSource = gameObject.AddComponent<AudioSource>();
-            sfxSource.loop = false;
-            sfxSource.volume = 0.8f;
-        }
-
-        if (voiceSource == null)
-        {
-            voiceSource = gameObject.AddComponent<AudioSource>();
-            voiceSource.loop = false;
-            voiceSource.volume = 0.9f;
-        }
-
-        if (ambientSource == null)
-        {
-            ambientSource = gameObject.AddComponent<AudioSource>();
-            ambientSource.loop = true;
-            ambientSource.volume = 0.4f;
-        }
-
-        if (continuousFootstepSource == null)
-        {
-            continuousFootstepSource = gameObject.AddComponent<AudioSource>();
-            continuousFootstepSource.loop = true;
-            continuousFootstepSource.volume = 0.6f;
-            continuousFootstepSource.spatialBlend = 1f; // 3D audio for footsteps
-        }
+        return source;
     }
 
     private void InitializeAudioPool()
@@ -222,7 +160,7 @@ public class SoundManager : MonoBehaviour
 
         for (int i = 0; i < maxConcurrentSounds; i++)
         {
-            GameObject audioObj = new GameObject($"PooledAudioSource_{i}");
+            GameObject audioObj = new GameObject("PooledAudioSource_" + i);
             audioObj.transform.SetParent(transform);
 
             AudioSource source = audioObj.AddComponent<AudioSource>();
@@ -244,37 +182,24 @@ public class SoundManager : MonoBehaviour
         }
     }
 
+    // Movement
     public void StartFootsteps(bool isRunning, Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
+        if (!isInitialized) return;
 
-        AudioClipData[] footstepSounds = isRunning ? soundConfig.runSounds : soundConfig.walkSounds;
+        AudioClipData foot = isRunning ? runSound : walkSound;
+        if (foot.clip == null) return;
 
-        if (footstepSounds == null || footstepSounds.Length == 0) return;
+        continuousFootstepSource.clip = foot.clip;
+        continuousFootstepSource.volume = foot.volume;
+        continuousFootstepSource.pitch = isRunning ? 1.5f : 1.0f;
+        continuousFootstepSource.time = foot.StartTime;
+        continuousFootstepSource.transform.position = position;
 
-        if (!isFootstepPlaying || (isRunning != (continuousFootstepSource.pitch > 1.2f)))
+        if (!isFootstepPlaying)
         {
-            AudioClipData footstepData = footstepSounds[Random.Range(0, footstepSounds.Length)];
-
-            if (footstepData.clip != null)
-            {
-                continuousFootstepSource.transform.position = position;
-                continuousFootstepSource.clip = footstepData.clip;
-                continuousFootstepSource.volume = footstepData.volume;
-                continuousFootstepSource.pitch = isRunning ? 1.5f : 1.0f; // Faster pitch for running
-                continuousFootstepSource.time = footstepData.StartTime;
-
-                if (!isFootstepPlaying)
-                {
-                    continuousFootstepSource.Play();
-                    isFootstepPlaying = true;
-                }
-            }
-        }
-        else
-        {
-            // Update position while moving
-            continuousFootstepSource.transform.position = position;
+            continuousFootstepSource.Play();
+            isFootstepPlaying = true;
         }
     }
 
@@ -287,85 +212,67 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // LEGACY FOOTSTEP METHOD - kept for compatibility
-    public void PlayFootstep(bool isRunning, Vector3 position)
-    {
-        StartFootsteps(isRunning, position);
-    }
-
+    // Single-shot SFX
     public void PlayJump(Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
-        PlaySound3D(soundConfig.jumpSound, position);
+        if (!isInitialized || jumpSound.clip == null) return;
+        PlaySound3D(jumpSound, position);
     }
 
     public void PlayLanding(Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
-        PlaySound3D(soundConfig.landingSound, position);
+        if (!isInitialized || landingSound.clip == null) return;
+        PlaySound3D(landingSound, position);
     }
 
-    // INTERACTION AUDIO
     public void PlayPickupAmmo(Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
-        PlaySound3D(soundConfig.pickupAmmo, position);
+        if (!isInitialized || pickupAmmo.clip == null) return;
+        PlaySound3D(pickupAmmo, position);
     }
 
     public void PlayPickupOxygen(Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
-        PlaySound3D(soundConfig.pickupOxygen, position);
+        if (!isInitialized || pickupOxygen.clip == null) return;
+        PlaySound3D(pickupOxygen, position);
     }
 
-    // ZONE AUDIO
+    // Zones
     public void PlayChipPlacement(Vector2Int zonePosition)
     {
-        if (!isInitialized || soundConfig == null) return;
+        if (!isInitialized || chipPlacement.clip == null) return;
 
-        Vector3 worldPos = Vector3.zero;
-        if (TileManager.Instance != null)
-        {
-            worldPos = TileManager.Instance.GridToWorldPosition(zonePosition);
-        }
-        else
-        {
-            worldPos = new Vector3(zonePosition.x * 20f, 0f, zonePosition.y * 20f);
-        }
+        Vector3 worldPos = TileManager.Instance != null
+            ? TileManager.Instance.GridToWorldPosition(zonePosition)
+            : new Vector3(zonePosition.x * 20f, 0f, zonePosition.y * 20f);
 
-        PlaySound3D(soundConfig.chipPlacement, worldPos);
+        PlaySound3D(chipPlacement, worldPos);
         StartCountdownSequence();
     }
 
     public void PlayZoneComplete(Vector2Int zonePosition)
     {
-        if (!isInitialized || soundConfig == null) return;
+        if (!isInitialized || zoneComplete.clip == null) return;
 
         StopCountdownSequence();
 
-        Vector3 worldPos = Vector3.zero;
-        if (TileManager.Instance != null)
-        {
-            worldPos = TileManager.Instance.GridToWorldPosition(zonePosition);
-        }
-        else
-        {
-            worldPos = new Vector3(zonePosition.x * 20f, 0f, zonePosition.y * 20f);
-        }
+        Vector3 worldPos = TileManager.Instance != null
+            ? TileManager.Instance.GridToWorldPosition(zonePosition)
+            : new Vector3(zonePosition.x * 20f, 0f, zonePosition.y * 20f);
 
-        PlaySound3D(soundConfig.zoneComplete, worldPos);
+        PlaySound3D(zoneComplete, worldPos);
     }
 
-    // COUNTDOWN SYSTEM
+    // Countdown
     private void StartCountdownSequence()
     {
-        if (!isInitialized || isCountdownActive || soundConfig == null) return;
+        if (!isInitialized || isCountdownActive) return;
 
         isCountdownActive = true;
 
-        if (soundConfig.countdownMusic.clip != null)
+        if (countdownMusic.clip != null)
         {
-            PlayMusic(soundConfig.countdownMusic);
+            PlayMusic(countdownMusic);
         }
 
         countdownCoroutine = StartCoroutine(CountdownSequence());
@@ -379,13 +286,13 @@ public class SoundManager : MonoBehaviour
         {
             if (!isCountdownActive) yield break;
 
-            if (i <= 5 && soundConfig.countdownFinal.clip != null)
+            if (i <= 5 && countdownFinal.clip != null)
             {
-                PlaySFX(soundConfig.countdownFinal);
+                PlaySFX(countdownFinal);
             }
-            else if (i <= 10 && soundConfig.countdownTick.clip != null)
+            else if (i <= 10 && countdownTick.clip != null)
             {
-                PlaySFX(soundConfig.countdownTick);
+                PlaySFX(countdownTick);
             }
 
             yield return new WaitForSeconds(1f);
@@ -406,116 +313,64 @@ public class SoundManager : MonoBehaviour
         PlayAmbientMusic();
     }
 
-    // COMBAT AUDIO
+    // Combat
     public void PlayWeaponSound(int weaponIndex, Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
+        if (!isInitialized) return;
 
-        AudioClipData[] weaponSounds = weaponIndex == 0 ? soundConfig.weapon1Sounds : soundConfig.weapon2Sounds;
+        AudioClipData[] weaponSounds = weaponIndex == 0 ? weapon1Sounds : weapon2Sounds;
 
         if (weaponSounds != null && weaponSounds.Length > 0)
         {
             AudioClipData weaponSound = weaponSounds[Random.Range(0, weaponSounds.Length)];
-            PlaySound3D(weaponSound, position);
+            if (weaponSound.clip != null)
+                PlaySound3D(weaponSound, position);
         }
     }
 
     public void PlayImpactSound(Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
+        if (!isInitialized) return;
 
-        if (soundConfig.impactSounds != null && soundConfig.impactSounds.Length > 0)
+        if (impactSounds != null && impactSounds.Length > 0)
         {
-            AudioClipData impactSound = soundConfig.impactSounds[Random.Range(0, soundConfig.impactSounds.Length)];
-            PlaySound3D(impactSound, position);
+            AudioClipData impactSound = impactSounds[Random.Range(0, impactSounds.Length)];
+            if (impactSound.clip != null)
+                PlaySound3D(impactSound, position);
         }
     }
 
     public void PlayWeaponEmpty(Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
-        if (soundConfig.weaponEmpty.clip != null)
-        {
-            PlaySound3D(soundConfig.weaponEmpty, position);
-        }
+        if (!isInitialized || weaponEmpty.clip == null) return;
+        PlaySound3D(weaponEmpty, position);
     }
 
     public void PlayReloadSound(Vector3 position)
     {
-        if (!isInitialized || soundConfig == null) return;
-        if (soundConfig.weaponReload.clip != null)
-        {
-            PlaySound3D(soundConfig.weaponReload, position);
-        }
+        if (!isInitialized || weaponReload.clip == null) return;
+        PlaySound3D(weaponReload, position);
     }
 
-    // MISSION AUDIO
-    public void PlayHoverSound(Vector3 position)
-    {
-        if (!isInitialized || soundConfig == null) return;
-        PlaySound3D(soundConfig.hoverSound, position);
-    }
-
-    public void PlayLandingSequence()
-    {
-        if (!isInitialized || soundConfig == null) return;
-        PlaySFX(soundConfig.landingSequence);
-    }
-
-    public void PlayExtractionMusic()
-    {
-        if (!isInitialized || soundConfig == null) return;
-        PlayMusic(soundConfig.extractionMusic);
-    }
-
-    // DIALOGUE
-    public void PlayMissionStart()
-    {
-        if (!isInitialized || soundConfig == null) return;
-        PlayVoice(soundConfig.missionStart);
-    }
-
-    public void PlayMissionConfirm()
-    {
-        if (!isInitialized || soundConfig == null) return;
-        PlayVoice(soundConfig.missionConfirm);
-    }
-
-    public void PlayZoneUpdate()
-    {
-        if (!isInitialized || soundConfig == null) return;
-        PlayVoice(soundConfig.zoneUpdate);
-    }
-
-    public void PlayExtractionCall()
-    {
-        if (!isInitialized || soundConfig == null) return;
-        PlayVoice(soundConfig.extractionCall);
-    }
-
-    // MUSIC
+    // Music control
     public void PlayGameStartMusic()
     {
-        if (!isInitialized || soundConfig == null) return;
-        PlayMusic(soundConfig.gameStartMusic);
+        if (!isInitialized || gameStartMusic.clip == null) return;
+        PlayMusic(gameStartMusic);
     }
 
     public void PlayCreditsMusic()
     {
-        if (!isInitialized || soundConfig == null) return;
-        PlayMusic(soundConfig.creditsMusic);
+        if (!isInitialized || creditsMusic.clip == null) return;
+        PlayMusic(creditsMusic);
     }
 
     public void PlayAmbientMusic()
     {
-        if (!isInitialized || soundConfig == null) return;
-        if (soundConfig.ambientMusic.clip != null)
-        {
-            PlayMusic(soundConfig.ambientMusic, ambientSource);
-        }
+        if (!isInitialized || ambientMusic.clip == null) return;
+        PlayMusic(ambientMusic, ambientSource);
     }
 
-    // CORE PLAYBACK METHODS with Enhanced Audio Contro
     private void PlayMusic(AudioClipData audioData, AudioSource source = null)
     {
         if (audioData.clip == null) return;
@@ -527,11 +382,10 @@ public class SoundManager : MonoBehaviour
         source.volume = audioData.volume;
         source.pitch = audioData.pitch;
         source.loop = audioData.loop;
-        source.time = audioData.StartTime; // Use custom start time
+        source.time = audioData.StartTime;
         source.Play();
 
-        // Handle custom end time
-        if (audioData.EndTime < audioData.clip.length)
+        if (audioData.ClipDuration < audioData.clip.length)
         {
             StartCoroutine(StopAudioAtTime(source, audioData.ClipDuration));
         }
@@ -543,7 +397,6 @@ public class SoundManager : MonoBehaviour
 
         sfxSource.pitch = audioData.pitch;
 
-        // Handle custom timing for SFX
         if (audioData.StartTime > 0f || audioData.EndTime < audioData.clip.length)
         {
             StartCoroutine(PlaySFXWithCustomTiming(audioData));
@@ -551,35 +404,6 @@ public class SoundManager : MonoBehaviour
         else
         {
             sfxSource.PlayOneShot(audioData.clip, audioData.volume);
-        }
-    }
-
-    private IEnumerator PlaySFXWithCustomTiming(AudioClipData audioData)
-    {
-        sfxSource.clip = audioData.clip;
-        sfxSource.volume = audioData.volume;
-        sfxSource.time = audioData.StartTime;
-        sfxSource.Play();
-
-        yield return new WaitForSeconds(audioData.ClipDuration);
-
-        sfxSource.Stop();
-    }
-
-    private void PlayVoice(AudioClipData audioData)
-    {
-        if (audioData.clip == null || voiceSource == null) return;
-
-        voiceSource.clip = audioData.clip;
-        voiceSource.volume = audioData.volume;
-        voiceSource.pitch = audioData.pitch;
-        voiceSource.time = audioData.StartTime; // Use custom start time
-        voiceSource.Play();
-
-        // Handle custom end time
-        if (audioData.EndTime < audioData.clip.length)
-        {
-            StartCoroutine(StopAudioAtTime(voiceSource, audioData.ClipDuration));
         }
     }
 
@@ -596,7 +420,7 @@ public class SoundManager : MonoBehaviour
         source.pitch = audioData.pitch;
         source.loop = audioData.loop;
         source.spatialBlend = audioData.is3D ? 1f : 0f;
-        source.time = audioData.StartTime; // Use custom start time
+        source.time = audioData.StartTime;
 
         source.Play();
 
@@ -613,6 +437,21 @@ public class SoundManager : MonoBehaviour
         if (source != null && source.isPlaying)
         {
             source.Stop();
+        }
+    }
+
+    private IEnumerator PlaySFXWithCustomTiming(AudioClipData audioData)
+    {
+        sfxSource.clip = audioData.clip;
+        sfxSource.volume = audioData.volume;
+        sfxSource.time = audioData.StartTime;
+        sfxSource.Play();
+
+        yield return new WaitForSeconds(audioData.ClipDuration);
+
+        if (sfxSource.isPlaying && sfxSource.clip == audioData.clip)
+        {
+            sfxSource.Stop();
         }
     }
 
@@ -650,11 +489,8 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    // VOLUME CONTROL
-    public void SetMasterVolume(float volume)
-    {
-        AudioListener.volume = Mathf.Clamp01(volume);
-    }
+    // Volume control
+    public void SetMasterVolume(float volume) => AudioListener.volume = Mathf.Clamp01(volume);
 
     public void SetMusicVolume(float volume)
     {
@@ -667,57 +503,41 @@ public class SoundManager : MonoBehaviour
     {
         volume = Mathf.Clamp01(volume);
         if (sfxSource != null) sfxSource.volume = volume * 0.8f;
+        if (continuousFootstepSource != null) continuousFootstepSource.volume = volume * 0.6f;
     }
 
     public void SetVoiceVolume(float volume)
     {
         if (voiceSource != null)
-        {
             voiceSource.volume = Mathf.Clamp01(volume) * 0.9f;
-        }
     }
 
-    // PUBLIC INTERFACE
-    public bool IsSystemReady()
+    [ContextMenu("Test Direct Audio Assignment")]
+    private void TestDirectAudioAssignment()
     {
-        return isInitialized && soundConfig != null;
-    }
+        if (!Application.isPlaying) return;
 
-    public void ForceEventSubscription()
-    {
-        SubscribeToEvents();
-    }
+        Vector3 pos = transform.position;
 
-    // DEBUG
-    [ContextMenu("Test All Sounds")]
-    private void TestAllSounds()
-    {
-        if (!Application.isPlaying || !IsSystemReady()) return;
-
-        Vector3 testPos = transform.position;
-        StartFootsteps(false, testPos);
-        PlayJump(testPos);
-        PlayPickupAmmo(testPos);
-        PlayMissionStart();
-    }
-
-    [ContextMenu("Stop All Continuous Sounds")]
-    private void StopAllContinuousSounds()
-    {
-        StopFootsteps();
-    }
-
-    [ContextMenu("Validate Sound Configuration")]
-    private void ValidateSoundConfiguration()
-    {
-        if (soundConfig == null)
+        if (jumpSound.clip != null) PlayJump(pos);
+        if (walkSound.clip != null)
         {
-            Debug.LogError("SoundConfiguration is null!");
-            return;
+            StartFootsteps(false, pos);
         }
+    }
 
-        bool isValid = soundConfig.ValidateConfiguration();
-        Debug.Log(isValid ? "Sound configuration valid" : "Some audio clips missing");
+    [ContextMenu("Validate Direct Assignment")]
+    private void ValidateDirectAssignment()
+    {
+        int assigned = 0;
+        int total = 0;
+
+        if (walkSound.clip != null) assigned++; total++;
+        if (runSound.clip != null) assigned++; total++;
+        if (jumpSound.clip != null) assigned++; total++;
+        if (landingSound.clip != null) assigned++; total++;
+
+        Debug.Log("Assigned Clips Movement: " + assigned + "/" + total);
     }
 
     private void OnDestroy()
@@ -729,10 +549,81 @@ public class SoundManager : MonoBehaviour
                 TileManager.Instance.OnZoneActivationStarted -= PlayChipPlacement;
                 TileManager.Instance.OnZoneActivationComplete -= PlayZoneComplete;
             }
-            catch (System.Exception)
-            {
-                // Safe cleanup
-            }
+            catch { }
         }
+    }
+
+    // Defaults
+    private void Reset() { ApplyDefaultStartingValues(); }
+
+    [ContextMenu("Apply Default Starting Values")]
+    private void ApplyDefaultStartingValues()
+    {
+        if (walkSound.clip == null) walkSound = AudioDefaults.Movement();
+        if (runSound.clip == null) runSound = AudioDefaults.Movement();
+        if (jumpSound.clip == null) jumpSound = AudioDefaults.Movement();
+        if (landingSound.clip == null) landingSound = AudioDefaults.Movement();
+
+        if (pickupAmmo.clip == null) pickupAmmo = AudioDefaults.Interaction3D();
+        if (pickupOxygen.clip == null) pickupOxygen = AudioDefaults.Interaction3D();
+        if (chipPlacement.clip == null) chipPlacement = AudioDefaults.Interaction3D();
+        if (zoneComplete.clip == null) zoneComplete = AudioDefaults.Interaction3D();
+
+        if (weaponReload.clip == null) weaponReload = AudioDefaults.Combat();
+        if (weaponEmpty.clip == null) weaponEmpty = AudioDefaults.Combat();
+
+        if (weapon1Sounds != null)
+            for (int i = 0; i < weapon1Sounds.Length; i++)
+                if (weapon1Sounds[i].clip == null) weapon1Sounds[i] = AudioDefaults.Combat();
+
+        if (weapon2Sounds != null)
+            for (int i = 0; i < weapon2Sounds.Length; i++)
+                if (weapon2Sounds[i].clip == null) weapon2Sounds[i] = AudioDefaults.Combat();
+
+        if (impactSounds != null)
+            for (int i = 0; i < impactSounds.Length; i++)
+                if (impactSounds[i].clip == null) impactSounds[i] = AudioDefaults.Combat();
+
+        if (gameStartMusic.clip == null) gameStartMusic = AudioDefaults.Music();
+        if (creditsMusic.clip == null) creditsMusic = AudioDefaults.Music();
+        if (ambientMusic.clip == null) ambientMusic = AudioDefaults.Ambience();
+
+        if (countdownTick.clip == null) countdownTick = AudioDefaults.CountdownTick();
+        if (countdownMusic.clip == null) countdownMusic = AudioDefaults.CountdownMusic();
+        if (countdownFinal.clip == null) countdownFinal = AudioDefaults.CountdownFinal();
+
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
+    }
+
+    private static class AudioDefaults
+    {
+        private static AudioClipData Base(float volume, float pitch, bool is3D, bool loop, float fadeIn, float fadeOut)
+        {
+            var d = new AudioClipData
+            {
+                clip = null,
+                volume = Mathf.Clamp01(volume),
+                pitch = Mathf.Clamp(pitch, 0.5f, 2.0f),
+                is3D = is3D,
+                loop = loop,
+                fadeInDuration = Mathf.Max(0f, fadeIn),
+                fadeOutDuration = Mathf.Max(0f, fadeOut),
+            };
+            d.StartTime = 0f;
+            d.EndTime = 0f;
+            return d;
+        }
+
+        public static AudioClipData Movement() { return Base(0.8f, 1.0f, true, false, 0.06f, 0.06f); }
+        public static AudioClipData Interaction3D() { return Base(0.9f, 1.0f, true, false, 0.08f, 0.08f); }
+        public static AudioClipData Combat() { return Base(0.95f, 1.0f, true, false, 0.08f, 0.10f); }
+        public static AudioClipData Music() { return Base(0.8f, 1.0f, false, true, 1.5f, 2.5f); }
+        public static AudioClipData Ambience() { return Base(0.5f, 1.0f, true, true, 0.8f, 2.0f); }
+        public static AudioClipData CountdownTick() { return Base(0.8f, 1.0f, false, false, 0.06f, 0.06f); }
+        public static AudioClipData CountdownMusic() { return Base(0.8f, 1.0f, false, false, 0.5f, 0.5f); }
+        public static AudioClipData CountdownFinal() { return Base(1.0f, 1.0f, false, false, 0.05f, 0.08f); }
     }
 }
