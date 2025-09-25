@@ -1,25 +1,29 @@
 using UnityEngine;
 
-public class PickUpAmmo : MonoBehaviour
+public class PickUpAmmo : Interactable
 {
-    [Header("Config")]
-    [SerializeField] WeaponsManager WeaponsManager;
-
-    private void OnTriggerEnter(Collider other)
+   
+    public override void Interaction()
     {
-        if (other.CompareTag("Player"))
-        {
-            if (WeaponsManager != null)
-            {
-                WeaponsManager.AddAmmo(WeaponsManager.pickUpValue);
-                Debug.Log("Ammo aufgesammelt!");
-            }
-            else
-            {
-                Debug.LogWarning("WeaponsController nicht zugewiesen!");
-            }
+        base.Interaction();
 
-            Destroy(gameObject);
-        }
+        Debug.Log("Heb es auf Junge!");
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject == null) return;
+
+        WeaponsManager weaponsManager = playerObject.GetComponentInChildren<WeaponsManager>();
+        if (weaponsManager == null) return;
+
+        weaponsManager.AddAmmo(weaponsManager.pickUpValue);
+
+        Destroy(gameObject);
     }
+
+    public override string GetInteractionText()
+    {
+        return "Press E to Pick Up Ammo";
+    }
+
 }
+

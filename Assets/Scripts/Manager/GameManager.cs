@@ -11,7 +11,6 @@ public class GameManager : Singleton<GameManager>
 
     public Player Player => player; // Public property to access the player instance
 
-
     /// <summary>
     /// Test Only
     /// </summary>
@@ -21,5 +20,11 @@ public class GameManager : Singleton<GameManager>
         {
             player.ResetStats(); // Call the ResetStats method on the player instance
         }
+    }
+
+    public void AddPlayerExp(float expAmount)
+    {
+        PlayerExp playerExp = player.GetComponent<PlayerExp>();
+        playerExp.AddExp(expAmount);
     }
 }

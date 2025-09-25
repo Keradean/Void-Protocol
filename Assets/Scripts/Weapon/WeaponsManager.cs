@@ -49,7 +49,7 @@ public class WeaponsManager : MonoBehaviour
                 MuzzleFlare.SetActive(false);
             }
         }
-        // ShotCounter immer runterzählen, damit Feuerrate auch bei Einzelfeuer funktioniert
+       
         if (ShotCounter > 0)
             ShotCounter -= Time.deltaTime;
 
@@ -58,11 +58,11 @@ public class WeaponsManager : MonoBehaviour
 
     public void Shoot()
     {
-        // Einzelfeuer und Feuerrate korrekt behandeln
+       
         if (CurrentAmmo > 0 && ShotCounter <= 0f)
         {
             RaycastHit hit;
-            if (Physics.Raycast(Cam.position, Cam.forward, out hit, Range))
+            if (Physics.SphereCast(Cam.position, 0.5f,Cam.forward, out hit, Range))
             {
                 Debug.Log(hit.transform.name);
                 if (hit.transform.CompareTag("Enemy"))
@@ -127,7 +127,6 @@ public class WeaponsManager : MonoBehaviour
     public void AddAmmo(int pickUpValue)
     {
         RemainingAmmo += pickUpValue;
-        Debug.Log($"Munition aufgefüllt! + {pickUpValue}.Gesamt: {RemainingAmmo}");
     }
 
     public void SetWeapon(int weaponToSet)

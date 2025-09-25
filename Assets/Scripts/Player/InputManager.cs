@@ -7,6 +7,9 @@ public class InputManager : MonoBehaviour
     [SerializeField] private InputActionAsset playerControls;
     [SerializeField] private string actionMapName = "Player";
 
+    [SerializeField] private InputActionAsset UIControls;
+    [SerializeField] private string actionMapNameUI = "UI";
+
     [Header("Config")]
     [SerializeField] private string movement = "Movement";
     [SerializeField] private string rotation = "Rotation";
@@ -17,6 +20,8 @@ public class InputManager : MonoBehaviour
     [SerializeField] private string reload = "Reloading";
     [SerializeField] private string next = "Next";
     [SerializeField] private string previous = "Previous";
+    
+    [Header("UI")]
     [SerializeField] private string paused = "Paused";
 
     private InputAction movementAction;
@@ -28,6 +33,8 @@ public class InputManager : MonoBehaviour
     private InputAction reloadAction;
     private InputAction nextAction;
     private InputAction previousAction;
+    
+    private InputAction pausedAction;
 
     public bool ShootWasPressedThisFrame => shootAction.WasPressedThisFrame();
     public bool ShootIsPressed => shootAction.IsPressed();
@@ -41,6 +48,7 @@ public class InputManager : MonoBehaviour
     public bool ReloadTriggered { get; private set; }
     public bool NextTriggered { get; private set; }
     public bool PreviousTriggered { get; private set; }
+    public bool PausedTriggered { get; private set; }
 
     private void Awake()
     {
@@ -55,6 +63,9 @@ public class InputManager : MonoBehaviour
         reloadAction = mapReference.FindAction(reload);
         nextAction = mapReference.FindAction(next);
         previousAction = mapReference.FindAction(previous);
+
+        InputActionMap mapReferenceUI = UIControls.FindActionMap(actionMapNameUI);
+        pausedAction = mapReferenceUI.FindAction(paused);
 
         SetupCallbacks();
     }
@@ -87,16 +98,23 @@ public class InputManager : MonoBehaviour
 
         previousAction.performed += ctx => PreviousTriggered = true;
         previousAction.canceled += ctx => PreviousTriggered = false;
+        
+        pausedAction.performed += ctx => PausedTriggered = true;
+        pausedAction.canceled += ctx => PausedTriggered = false;
     }
 
     private void OnEnable()
     {
         playerControls.FindActionMap(actionMapName).Enable();
+
+        UIControls.FindActionMap(actionMapNameUI).Enable();
     }
 
     private void OnDisable()
     {
         playerControls.FindActionMap(actionMapName).Disable();
+        
+        UIControls.FindActionMap(actionMapNameUI).Disable();
     }
 }
 

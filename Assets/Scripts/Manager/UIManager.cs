@@ -11,8 +11,10 @@ public class UIManager : MonoBehaviour
     [Header("Reference")]
     [SerializeField] private PlayerStats stats; // Reference to the PlayerStats scriptable object
     [SerializeField] private WeaponsManager WeaponsManager; // Reference to the PlayerStats scriptable object
+    [SerializeField] private PlayerController playerController; // Reference to the PlayerStats scriptable object
 
     [Header("Bars")]
+    [SerializeField] private Image BgBar;  // Reference to the health bar UI element
     [SerializeField] private Image healthBar;  // Reference to the health bar UI element
     [SerializeField] private Image staminaBar;  // Reference to the mana bar UI element 
     [SerializeField] public Image ammoBar;  // Reference to the ammo bar UI element 
@@ -23,6 +25,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healthTMP; // Reference to the level text UI element
     [SerializeField] private TextMeshProUGUI staminaTMP; // Reference to the level text UI element
     [SerializeField] public TextMeshProUGUI ammoTMP; // Reference to the level text UI element
+    [SerializeField] public TextMeshProUGUI interactionTMP; // Reference to the level text UI element
 
     [Header("DeathScreen")]
     [SerializeField] private GameObject showDeathScreen;
@@ -63,22 +66,49 @@ public class UIManager : MonoBehaviour
         staminaTMP.text = $"{Mathf.FloorToInt(stats.Stamina)}";
         levelTMP.text = $"Level {stats.Level}";
         ammoTMP.text = $"{WeaponsManager.CurrentAmmo} / {WeaponsManager.RemainingAmmo}";
-        ;
+        
     }
+
+    public void ShowInteractionText(string message)
+    {
+        interactionTMP.text = message;
+        interactionTMP.enabled = true;
+    }
+
+    public void HideInteractionText()
+    {
+        interactionTMP.enabled = false;
+    }
+
 
     public void ShowDeathScreen()
     {
         showDeathScreen.SetActive(true);
         Time.timeScale = 0;
+        playerController.canRotate = false;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
     }
     public void ShowPausedScreen()
     {
-        showPausedScreen.SetActive(true);
-        Time.timeScale = 0;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        if (showPausedScreen.activeSelf == false)
+        {
+            showPausedScreen.SetActive(true);
+            Time.timeScale = 0;
+            playerController.canRotate = false; 
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
+        }
+        else
+        {
+            showPausedScreen.SetActive(false);
+            Time.timeScale = 1;
+            playerController.canRotate = true;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
     }
     public void RestartGame()
     {
@@ -101,5 +131,6 @@ public class UIManager : MonoBehaviour
     {
         Debug.Log("It’s not a game. It’s a game!");
         //SceneManager.LoadScene(MainMenu);
+        ShowPausedScreen();
     }
 }

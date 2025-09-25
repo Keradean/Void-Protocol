@@ -131,6 +131,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c0c0ad7a5e5007449d6869005bb4c24, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mesh: {fileID: 0}
+  highlitMaterial: {fileID: -6478536213147159724, guid: cac77e6370469da44ba94adebdef619b, type: 3}
+  healthValue: 0
 --- !u!54 &7832997453607974363
 Rigidbody:
   m_ObjectHideFlags: 0

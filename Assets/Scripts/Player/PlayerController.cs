@@ -5,9 +5,11 @@ public class PlayerController : MonoBehaviour
     [Header("Referenz")]
     [SerializeField] private CharacterController characterController;
     [SerializeField] private WeaponsManager weaponsManager;
+    [SerializeField] private UIManager uiManager;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private InputManager inputManager;
     [SerializeField] private PlayerStats stats;
+    [SerializeField] private PlayerInteraction playerInteraction;
 
     [Header("Config Movement Parameters")]
     [SerializeField] private float moveSpeed;
@@ -32,6 +34,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 currentMovement;
     private float verticalRotation;
 
+    public bool canRotate = true; 
+
     private bool CanSprint => inputManager.SprintTriggered && stats.Stamina > 0f && currentSprintCooldown <= 0f;
     private float CurrentSpeed => moveSpeed * (CanSprint ? sprintSpeedMultiplier : 1);
 
@@ -41,17 +45,22 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
         stats.ResetStats();
         InputManager shootAction = FindFirstObjectByType<InputManager>();
+        playerInteraction = GetComponent<PlayerInteraction>(); 
 
     }
 
     void Update()
     {
+        HandlePausedUnpaused();
+
         HandleMovement();
         HandleRotation();
         HandleStamina();
         HandleShooting();
         HandleReloading();
         HandleWeaponSwitching();
+        HandleInteraction();
+        
     }
 
     private void HandleMovement()
@@ -81,6 +90,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleRotation()
     {
+        if (!canRotate) return; 
         float mouseXRotation = inputManager.RotationInput.x * mouseSensitivity;
         float mouseYRotation = inputManager.RotationInput.y * mouseSensitivity;
 
@@ -148,6 +158,25 @@ public class PlayerController : MonoBehaviour
         {
             weaponsManager.PreviousWeapon();
         }
+    }
+
+    private void HandleInteraction()
+    {
+        if (inputManager.InteractTriggered && playerInteraction != null)
+        {
+            playerInteraction.InteractWithClosest();
+        }
+    }
+
+    private void HandlePausedUnpaused()
+    {
+        if (inputManager.PausedTriggered) 
+        {
+            Debug.Log("yes");
+            uiManager.PausedUnpaused();
+            
+        }
+
     }
 }
 

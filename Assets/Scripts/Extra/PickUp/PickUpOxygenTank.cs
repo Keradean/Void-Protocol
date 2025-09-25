@@ -1,27 +1,34 @@
 using UnityEngine;
 
-public class PickUpOxygenTank : MonoBehaviour
+public class PickUpOxygenTank : Interactable
 {
-    [SerializeField] private float oxygenValue; 
+    [SerializeField] private float oxygenValue;
 
-    private void OnTriggerEnter(Collider other)
+    public override void Interaction()
     {
-        if (other.CompareTag("Player"))
+        base.Interaction();
+        Debug.Log("Interaction Baby!!!");
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject == null) return;
+
+        Player player = playerObject.GetComponent<Player>();
+        if (player == null) return;
+
+        PlayerStats stats = player.Stats;
+        if (stats == null) return;
+
+        if (stats.Oxy < stats.MaxOxy)
         {
-            Player player = other.GetComponent<Player>();
+            stats.Oxy += oxygenValue;
+            stats.Oxy = Mathf.Min(stats.Oxy, stats.MaxOxy); 
 
-            if (player == null) return;
-
-            PlayerStats stats = player.Stats;
-
-            if (stats.Oxy < stats.MaxOxy)
-            {
-                stats.Oxy += oxygenValue;
-                if (stats.Oxy > stats.MaxOxy) // Clamp 
-                    stats.Oxy = stats.MaxOxy;// Clamp // Same as stats.Oxy = Mathf.Min(stats.Oxy + 30, stats.MaxOxy);
-
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
     }
+    public override string GetInteractionText()
+    {
+        return "Press E to get Oxygen";
+    }
+
 }

@@ -8,6 +8,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     public float CurrentHealth { get; private set; }
     private EnemyBrain enemyBrain;
+    private EnemyEXP enemyExp;
     //private Animator animator;
 
     // Spawner
@@ -20,6 +21,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private void Awake()
     {
         enemyBrain = GetComponent<EnemyBrain>();
+        enemyExp = GetComponent<EnemyEXP>();
         // animator
     }
 
@@ -46,6 +48,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         {
             enemyBrain.enabled = false;
             enemyPool.Release(this);
+            GameManager.Instance.AddPlayerExp(enemyExp.ExpDrop);
         }
 
         // Animation

@@ -1,26 +1,37 @@
 using UnityEngine;
 
-public class PickUpHealth : MonoBehaviour
+public class PickUpHealth : Interactable
 {
     [Header("Config")]
-    [SerializeField] private PlayerHealth playerHealth;
-    [SerializeField]public float HealthValue; // PickUpValue MediPen
+    [SerializeField] private float healthValue;
 
-
-    private void OnTriggerEnter(Collider other)
+    public override void Interaction()
     {
-        if (other.tag == "Player")
+        base.Interaction();
+        Debug.Log("Bring es mir Junge!");
+
+
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+        if (playerObject == null) return;
+
+
+        Player player = playerObject.GetComponent<Player>();
+        if (player == null) return;
+
+        PlayerStats stats = player.Stats;
+        PlayerHealth playerHealth = player.PlayerHealth;
+        if (stats == null || playerHealth == null) return;
+
+        if (playerHealth.CanRestoreHealth())
         {
-            PlayerHealth playerHealth = other.GetComponent<PlayerHealth>();
+            playerHealth.RestoreHealth(healthValue);
 
-            if (playerHealth != null && playerHealth.CanRestoreHealth())
-            {
-                PlayerStats stats = other.GetComponent<Player>().Stats;
-                playerHealth.RestoreHealth(HealthValue);
-
-                Destroy(gameObject);
-            }
-
+            Destroy(gameObject);
         }
     }
+    public override string GetInteractionText()
+    {
+        return "Press E to Heal";
+    }
+
 }

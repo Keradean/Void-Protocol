@@ -11,7 +11,6 @@ public class PlayerStats : ScriptableObject
     [Header("Health")]
     public float Health; // Player health
     public float MaxHealth; // Maximum player health
-    public float HealthValue; // PickUpValue MediPen
 
     [Header("Stamina")]
     public float Stamina; // Player Stamina
@@ -27,6 +26,7 @@ public class PlayerStats : ScriptableObject
     public float InitialNextLevelExp; // Initial experience points required for the next level
     [Range(1f, 100f)] public float ExpMultiplier; // Multiplier for experience points
 
+    [HideInInspector]public float TotalExp;
     public void ResetStats()
     {
         Health = MaxHealth; // Reset health to maximum health
@@ -34,5 +34,6 @@ public class PlayerStats : ScriptableObject
         Oxy = MaxOxy; // Reset Oxy to maximum Oxy
         CurrentExp = 0f; // Reset current experience points to zero
         NextLevelExp = InitialNextLevelExp; // Reset next level experience points to initial value
+        TotalExp = 0; 
     }
 }

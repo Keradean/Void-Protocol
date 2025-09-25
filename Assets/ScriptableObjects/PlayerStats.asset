@@ -12,14 +12,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75210e676607e1c41b53bb475c256dfa, type: 3}
   m_Name: PlayerStats
   m_EditorClassIdentifier: 
-  Level: 3
-  Health: 100
+  Level: 6
+  Health: 65
   MaxHealth: 100
   Stamina: 100
   MaxStamina: 100
-  Oxy: 89.27663
+  Oxy: 60.07898
   MaxOxy: 100
-  CurrentExp: 0
-  NextLevelExp: 100
+  CurrentExp: 200
+  NextLevelExp: 225
   InitialNextLevelExp: 100
   ExpMultiplier: 50
+  TotalExp: 0
