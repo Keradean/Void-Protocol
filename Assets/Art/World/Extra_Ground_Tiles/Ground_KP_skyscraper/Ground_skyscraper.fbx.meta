@@ -3,7 +3,52 @@ guid: ff2fa76ca58ca1d4f8a74389ae5cc792
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SM_Details
+    second: {fileID: 2100000, guid: 0c89b489c65f5ac4fb1c04ddbcc8b8f1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SM_Glow
+    second: {fileID: 2100000, guid: 7eedb7d339ec2494bb7bc134b40c8925, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: SM_mast
+    second: {fileID: 2100000, guid: 2e28d30e04e622640a37896e8639250e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Skyscraper_04
+    second: {fileID: 2100000, guid: 7f47243466d9ca44fb7a4d5b616c8eda, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Skyscraper_05
+    second: {fileID: 2100000, guid: c2ca23e25dccc67418095731b0e990a7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Skyscraper_Assets
+    second: {fileID: 2100000, guid: 06faf634e58ae174889798a3046e8559, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Skyscraper_Floor_Concrete
+    second: {fileID: 2100000, guid: 13d646f3170e1aa499072084227eb6bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Skyscraper_Glass
+    second: {fileID: 2100000, guid: 1aaf4de155bfcd143835796c9abafec3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Terminal
+    second: {fileID: 2100000, guid: 0aa2fed4feaae724d9dd29c2062ed005, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

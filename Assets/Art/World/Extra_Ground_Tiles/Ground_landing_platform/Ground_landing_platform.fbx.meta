@@ -3,7 +3,77 @@ guid: 7d0640e3bc62cae4d9c760b1843f5ecb
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Landing_platform
+    second: {fileID: 2100000, guid: 6b5feb64a2442af4cb5bc18898a7e6e1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.001
+    second: {fileID: 2100000, guid: ca9c043a0aac3ed418f9904df551af19, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material.002
+    second: {fileID: 2100000, guid: ebd2fb1d6be4b53419e6ae826c246ca6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: base_datail_main.001
+    second: {fileID: 2100000, guid: 0aa0c5f0f4a68da4697ddb13451e4ecd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: base_main.001
+    second: {fileID: 2100000, guid: 5753a1a0ea9094247acd76bd2f980ac5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: door_details.001
+    second: {fileID: 2100000, guid: 90046501e26ab2f49a4fcfab23b6b234, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dor glass.001
+    second: {fileID: 2100000, guid: e3bb69db031f1784e941fe754d9bf764, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dorr.001
+    second: {fileID: 2100000, guid: 2fb4d35fd2728924e885c2254ca1fd0f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: gewechsbox
+    second: {fileID: 2100000, guid: 08244c432e397cd45a1dbb5cd8bb25e1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glase.001
+    second: {fileID: 2100000, guid: 95e14c676ca45fe47b2e7f7383fa8434, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass
+    second: {fileID: 2100000, guid: 68ebca80bd9ed56418cd83ceb562b3aa, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: green_house_glow
+    second: {fileID: 2100000, guid: f58c8c88c1b48c24895406fc540afa6f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: lighting
+    second: {fileID: 2100000, guid: f832b4be99a6a2047acc73bebf0ecc3e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: mainbase_innen.001
+    second: {fileID: 2100000, guid: 2793b1285b1847642b03b050009748ce, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

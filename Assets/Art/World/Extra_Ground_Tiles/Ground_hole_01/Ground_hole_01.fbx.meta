@@ -3,7 +3,22 @@ guid: 8ce47e044eeb9594988d23badf82836b
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ground_flat_01_LOD0
+    second: {fileID: 2100000, guid: 10c946c2c90e224448e294968ca7aae8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ground_flat_01_LOD1
+    second: {fileID: 2100000, guid: a2ea3b2af5a08a34bb196df627bef868, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ground_flat_01_LOD2
+    second: {fileID: 2100000, guid: 28f078e444113f448b89acc5f9f889e3, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
