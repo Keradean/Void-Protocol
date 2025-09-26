@@ -172,7 +172,7 @@ public class PlayerController : MonoBehaviour
     {
         if (inputManager.PausedTriggered) 
         {
-            Debug.Log("yes");
+            Debug.Log("Take your time...");
             uiManager.PausedUnpaused();
             
         }

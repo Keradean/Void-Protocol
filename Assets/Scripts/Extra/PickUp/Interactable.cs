@@ -8,9 +8,9 @@ public class Interactable : MonoBehaviour
 
     private void Start()
     {
-        if (mesh == null) mesh = GetComponent<MeshRenderer>();
-        if (mesh != null)
+        if(mesh == null) mesh = GetComponent<MeshRenderer>();
         defaultMaterial = mesh.material;
+        
     }
 
     public void HighlitMaterial(bool active)
@@ -33,12 +33,15 @@ public class Interactable : MonoBehaviour
         return "Press E to Interact";
     }
 
+
     private void OnTriggerEnter(Collider other)
     {
+        
         if (!other.TryGetComponent<PlayerInteraction>(out var playerInteraction)) return;
 
         playerInteraction.interactables.Add(this);
-        }
+        playerInteraction.UpdateClosestInteractable(); 
+        
     }
 
     private void OnTriggerExit(Collider other)
