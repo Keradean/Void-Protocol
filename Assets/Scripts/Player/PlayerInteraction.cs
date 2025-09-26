@@ -41,11 +41,9 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
-        if (closestInteractable != null)
-        {
             closestInteractable.HighlitMaterial(true);
 
             uiManager?.ShowInteractionText(closestInteractable.GetInteractionText());
-        }
+
     }
 }
