@@ -4,7 +4,7 @@ public class MissionManager : MonoBehaviour
 {
     public static MissionManager instance;
 
-    public Mission CurrentMission;
+    public Mission currentMission;
 
     private void Awake()
     {
@@ -13,14 +13,14 @@ public class MissionManager : MonoBehaviour
 
     private void Start()
     {
-        CurrentMission?.StartMission();
+        Invoke(nameof(StartMission), 2);
     }
 
     private void Update()
     {
-        CurrentMission?.UpdateMission(); 
+        currentMission?.UpdateMission(); 
     }
-    private void StartMission() => CurrentMission.StartMission();
+    private void StartMission() => currentMission.StartMission();
 
-    public bool MissionCompleted() => CurrentMission.MissionCompleted(); 
+    public bool MissionCompleted() => currentMission.MissionCompleted(); 
 }
