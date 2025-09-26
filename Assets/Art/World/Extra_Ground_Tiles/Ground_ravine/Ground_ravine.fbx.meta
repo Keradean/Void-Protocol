@@ -3,72 +3,7 @@ guid: 10d95d21f4f0a594b807b7e2fbfd34cb
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_01_LOD0
-    second: {fileID: 2100000, guid: 0c9a6a7eb26093841b5944148259d040, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_01_LOD0.001
-    second: {fileID: 2100000, guid: dc2305e1b46f62d459b478d400e91d42, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_01_LOD1
-    second: {fileID: 2100000, guid: e93cc95def287ec45bc15eeb3a76a82b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_01_LOD2
-    second: {fileID: 2100000, guid: 9c69c76683f8707468aada0bb1d317b7, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_02_LOD0
-    second: {fileID: 2100000, guid: 8c5f4374d69b6554d9d3d15be3aa40d1, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_02_LOD0.001
-    second: {fileID: 2100000, guid: 0153d059a6f15d645aafffa4f5ce4693, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_02_LOD1
-    second: {fileID: 2100000, guid: 9765bd3ac4af67e478393bf725071d73, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_03_LOD0
-    second: {fileID: 2100000, guid: 0a3dacbcd6ee6134fa2df65fa9147280, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_03_LOD1
-    second: {fileID: 2100000, guid: f4928a499b4be154c925c58c3f9fa8a6, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_03_LOD2
-    second: {fileID: 2100000, guid: 08294e265932df9489a9f4bbe680b961, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_03_LOD0
-    second: {fileID: 2100000, guid: 4c57f30b8b9915a4199e85f1f272ecee, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_03_LOD1
-    second: {fileID: 2100000, guid: d0b1145703d3ea74ea6cb8411d6e5124, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_03_LOD2
-    second: {fileID: 2100000, guid: b54e9c93eacfaa14fa4a843551d87166, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

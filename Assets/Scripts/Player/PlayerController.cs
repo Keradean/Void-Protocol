@@ -36,6 +36,10 @@ public class PlayerController : MonoBehaviour
 
     public bool canRotate = true; 
 
+    // RESPONSIVE AUDIO CONTROL - Added by Julian with AI-Support
+    private bool isCurrentlyMoving = false;
+    private bool wasMovingLastFrame = false;
+
     private bool CanSprint => inputManager.SprintTriggered && stats.Stamina > 0f && currentSprintCooldown <= 0f;
     private float CurrentSpeed => moveSpeed * (CanSprint ? sprintSpeedMultiplier : 1);
 
@@ -71,12 +75,34 @@ public class PlayerController : MonoBehaviour
         currentMovement.x = calculateMove.x * CurrentSpeed;
         currentMovement.z = calculateMove.z * CurrentSpeed;
 
+        // RESPONSIVE AUDIO CONTROL - Added by Julian with AI-Support
+        isCurrentlyMoving = inputDirection.magnitude > 0.1f && characterController.isGrounded;
+
+        // Immediate Start/Stop Audio Response
+        if (isCurrentlyMoving && !wasMovingLastFrame)
+        {
+            // START footsteps immediately when movement begins
+            SoundManager.Instance?.StartFootsteps(CanSprint, transform.position);
+        }
+        else if (!isCurrentlyMoving && wasMovingLastFrame)
+        {
+            // STOP footsteps immediately when movement ends
+            SoundManager.Instance?.StopFootsteps();
+        }
+        else if (isCurrentlyMoving && wasMovingLastFrame)
+        {
+            // CONTINUE footsteps with updated position and speed
+            SoundManager.Instance?.StartFootsteps(CanSprint, transform.position);
+        }
+
         if (characterController.isGrounded)
         {
             currentMovement.y = -0.5f;
 
             if (inputManager.JumpTriggered)
             {
+                // AUDIO INTEGRATION - Added by Julian with AI-Support
+                SoundManager.Instance?.PlayJump(transform.position);
                 currentMovement.y = jumpForce;
             }
         }
@@ -86,6 +112,7 @@ public class PlayerController : MonoBehaviour
         }
 
         characterController.Move(currentMovement * Time.deltaTime);
+        wasMovingLastFrame = isCurrentlyMoving;
     }
 
     private void HandleRotation()
@@ -126,13 +153,13 @@ public class PlayerController : MonoBehaviour
     }
     private void HandleShooting()
     {
-       
+
         if (inputManager.ShootWasPressedThisFrame)
         {
             weaponsManager.Shoot();
         }
 
-       
+
         if (inputManager.ShootIsPressed)
         {
             weaponsManager.ShootHeld();
@@ -180,3 +207,16 @@ public class PlayerController : MonoBehaviour
     }
 }
 
+    // RESPONSIVE AUDIO CLEANUP - Added by Julian with AI-Support
+    private void OnDisable()
+    {
+        // Stop footsteps when player is disabled/destroyed
+        SoundManager.Instance?.StopFootsteps();
+    }
+
+    private void OnDestroy()
+    {
+        // Ensure footsteps are stopped when player is destroyed
+        SoundManager.Instance?.StopFootsteps();
+    }
+}

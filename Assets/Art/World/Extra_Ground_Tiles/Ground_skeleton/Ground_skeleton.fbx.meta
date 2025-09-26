@@ -7,28 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Ground_flat_03_LOD0
-    second: {fileID: 2100000, guid: 603233738ce0f4d4fac7f4c2eae4723e, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Ground_flat_03_LOD1
-    second: {fileID: 2100000, guid: b238133af3c9e1e4ea897b8f804d78a0, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
       name: Skeleton_LOD0
-    second: {fileID: 2100000, guid: 90066fa8e017a9c409744dd7a7e20628, type: 2}
+    second: {fileID: 2100000, guid: 850558fb143564047b81c99b428de17b, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Skeleton_LOD1
-    second: {fileID: 2100000, guid: 2deadd5944b56114e9e9aafac4552ec0, type: 2}
+    second: {fileID: 2100000, guid: af82e5ae49df19f4da117508b4aff309, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Skeleton_LOD2
-    second: {fileID: 2100000, guid: 907628ccb0a7e94498d50014de90917c, type: 2}
+    second: {fileID: 2100000, guid: 045570f9dff5c7144be2c89745b0e62f, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

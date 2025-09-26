@@ -8,32 +8,17 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Ground_flat_01_LOD0
-    second: {fileID: 2100000, guid: b8539d56bc11a9742b28da54d4be2b24, type: 2}
+    second: {fileID: 2100000, guid: 10c946c2c90e224448e294968ca7aae8, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Ground_flat_01_LOD1
-    second: {fileID: 2100000, guid: 1c55d45a2d3d3cd419adfa7195856e99, type: 2}
+    second: {fileID: 2100000, guid: a2ea3b2af5a08a34bb196df627bef868, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Ground_flat_01_LOD2
-    second: {fileID: 2100000, guid: 09abed116652c7c45aea9b71b9d6b2d0, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_03_LOD0
-    second: {fileID: 2100000, guid: 57335e308b1d82340bf16a3ac6ebdb91, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_03_LOD1
-    second: {fileID: 2100000, guid: 787ae06b2de3bc243a873eb1c1a20f14, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Rock_03_LOD2
-    second: {fileID: 2100000, guid: 6b7f9e46b8856ca45abcece1c58f6934, type: 2}
+    second: {fileID: 2100000, guid: 28f078e444113f448b89acc5f9f889e3, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
