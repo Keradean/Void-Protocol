@@ -25,7 +25,7 @@ public class PickUpHealth : Interactable
         if (playerHealth.CanRestoreHealth())
         {
             playerHealth.RestoreHealth(healthValue);
-
+            SoundManager.Instance.PlayPickupItem(transform.position);
             Destroy(gameObject);
         }
     }

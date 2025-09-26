@@ -205,8 +205,6 @@ public class PlayerController : MonoBehaviour
         }
 
     }
-}
-
     // RESPONSIVE AUDIO CLEANUP - Added by Julian with AI-Support
     private void OnDisable()
     {
