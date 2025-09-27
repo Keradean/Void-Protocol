@@ -7,13 +7,10 @@ public class PickUpHealth : Interactable
 
     public override void Interaction()
     {
-        base.Interaction();
         Debug.Log("Bring es mir Junge!");
-
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject == null) return;
-
 
         Player player = playerObject.GetComponent<Player>();
         if (player == null) return;
@@ -25,13 +22,9 @@ public class PickUpHealth : Interactable
         if (playerHealth.CanRestoreHealth())
         {
             playerHealth.RestoreHealth(healthValue);
-            SoundManager.Instance.PlayPickupItem(transform.position);
+            SoundManager.Instance?.PlayPickupItem(transform.position);
+            base.Interaction();
             Destroy(gameObject);
         }
     }
-    public override string GetInteractionText()
-    {
-        return "Press E to Heal";
-    }
-
 }

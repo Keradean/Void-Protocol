@@ -5,8 +5,6 @@ public class PickUpAmmo : Interactable
    
     public override void Interaction()
     {
-        base.Interaction();
-
         Debug.Log("Heb es auf Junge!");
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -17,13 +15,8 @@ public class PickUpAmmo : Interactable
 
         weaponsManager.AddAmmo(weaponsManager.pickUpValue);
 
+        base.Interaction();
         Destroy(gameObject);
     }
-
-    public override string GetInteractionText()
-    {
-        return "Press E to Pick Up Ammo";
-    }
-
 }
 

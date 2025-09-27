@@ -6,7 +6,6 @@ public class PickUpOxygenTank : Interactable
 
     public override void Interaction()
     {
-        base.Interaction();
         Debug.Log("Interaction Baby!!!");
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -21,14 +20,10 @@ public class PickUpOxygenTank : Interactable
         if (stats.Oxy < stats.MaxOxy)
         {
             stats.Oxy += oxygenValue;
-            stats.Oxy = Mathf.Min(stats.Oxy, stats.MaxOxy); 
+            stats.Oxy = Mathf.Min(stats.Oxy, stats.MaxOxy);
 
+            base.Interaction();
             Destroy(gameObject);
         }
     }
-    public override string GetInteractionText()
-    {
-        return "Press E to get Oxygen";
-    }
-
 }

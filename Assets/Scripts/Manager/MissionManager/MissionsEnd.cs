@@ -13,5 +13,6 @@ public class MissionsEnd : MonoBehaviour
     {
         if (other.gameObject != player) return;
         Debug.Log("Du hast es geschafft du 1 gluk");
+        //Ende
     }
 }

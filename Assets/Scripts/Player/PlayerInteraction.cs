@@ -4,35 +4,27 @@ using UnityEngine;
 public class PlayerInteraction : MonoBehaviour
 {
     public List<Interactable> interactables;
+
     private Interactable closestInteractable;
-
-    private UIManager uiManager;
-
 
     private void Start()
     {
-        uiManager = FindFirstObjectByType<UIManager>();
+        PlayerInteraction playerInteraction = FindFirstObjectByType<PlayerInteraction>();
     }
     public void InteractWithClosest()
     {
-        if (closestInteractable != null)
-        {
-            closestInteractable.Interaction();
-        }
+        closestInteractable?.Interaction();
     }
 
     public void UpdateClosestInteractable()
     {
-        closestInteractable?.HighlitMaterial(false);
-        uiManager?.HideInteractionText();
-
+        closestInteractable?.HighlightActive(false);
         closestInteractable = null;
-        float closestDistance = float.MaxValue;
 
+        float closestDistance = float.MaxValue;
         foreach (Interactable interactable in interactables)
         {
             if (interactable == null) continue;
-
             float distance = Vector3.Distance(transform.position, interactable.transform.position);
             if (distance < closestDistance)
             {
@@ -41,9 +33,6 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
-            closestInteractable.HighlitMaterial(true);
-
-            uiManager?.ShowInteractionText(closestInteractable.GetInteractionText());
-
+        closestInteractable?.HighlightActive(true);
     }
 }
