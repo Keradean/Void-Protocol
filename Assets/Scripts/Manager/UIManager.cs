@@ -25,7 +25,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI healthTMP; // Reference to the level text UI element
     [SerializeField] private TextMeshProUGUI staminaTMP; // Reference to the level text UI element
     [SerializeField] public TextMeshProUGUI ammoTMP; // Reference to the level text UI element
-    [SerializeField] public TextMeshProUGUI interactionTMP; // Reference to the level text UI element
 
     [Header("DeathScreen")]
     [SerializeField] private GameObject showDeathScreen;
@@ -41,7 +40,7 @@ public class UIManager : MonoBehaviour
 
     public void UpdatePlayerUI()
     {
-        // Update Health & Stamina & Oxy - mit Null-Check
+        // Update Health & Stamina & Oxy
         if (stats.MaxHealth > 0)
             healthBar.fillAmount = stats.Health / stats.MaxHealth;
         else
@@ -68,18 +67,6 @@ public class UIManager : MonoBehaviour
         ammoTMP.text = $"{WeaponsManager.CurrentAmmo} / {WeaponsManager.RemainingAmmo}";
         
     }
-
-    public void ShowInteractionText(string message)
-    {
-        interactionTMP.text = message;
-        interactionTMP.enabled = true;
-    }
-
-    public void HideInteractionText()
-    {
-        interactionTMP.enabled = false;
-    }
-
 
     public void ShowDeathScreen()
     {

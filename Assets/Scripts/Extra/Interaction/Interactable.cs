@@ -6,6 +6,9 @@ public class Interactable : MonoBehaviour
     [SerializeField] private MeshRenderer mesh; 
     private Material defaultMaterial;
 
+    [Header("Text")]
+    [SerializeField] private TextMeshProUGUI interactTMP;
+    
 
     private void Start()
     {
@@ -29,6 +32,19 @@ public class Interactable : MonoBehaviour
         else if (!active && defaultMaterial != null)
             mesh.material = defaultMaterial;
     }
+
+    public void InteractionText(bool active)
+    {
+        if (interactTMP != null)
+        {
+            interactTMP.enabled = true;
+        }
+        else
+        {
+            interactTMP.enabled = false;
+        }
+    }
+
     private void OnTriggerEnter(Collider other)
     {
         PlayerInteraction playerInteraction = other.GetComponent<PlayerInteraction>();
