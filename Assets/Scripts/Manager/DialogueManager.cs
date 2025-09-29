@@ -1,32 +1,49 @@
 /*
 ====================================================================
-* DialogueManager.cs - Simple Sequential Dialogue System
+* DialogueManager.cs - Simple Sequential Dialogue System (Fixed)
 ====================================================================
 * Project: Void Protocol
 * Script-Developer: Julian Gomez
-* Version: v1.0 - MVP Audio Integration
+* Version: v1.1 - Compiler fixes + serialized clips
 * 
 * [HUMAN-AUTHORED] - Simple trigger-based dialogue concept
 * [AI-ASSISTED] - Implementation with SoundManager integration
+* [AI-ASSISTED] - v1.1: Declare missing fields, add using, tidy API
 ====================================================================
 */
 
+using System.Collections;          // needed for IEnumerator, WaitForSeconds
 using UnityEngine;
 
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
-    // ... existing AudioClip fields ...
+    [Header("Intro / Narrative Beats")]
+    [SerializeField] private AudioClip landing_01;
+    [SerializeField] private AudioClip terminalStart_02;
+    [SerializeField] private AudioClip keyPointsLocated_03;
+
+    [Header("Spider Warnings")]
+    [SerializeField] private AudioClip spiderIncoming1;
+    [SerializeField] private AudioClip spiderIncoming2;
+
+    [Header("Tower Completions")]
+    [SerializeField] private AudioClip tower1Complete;
+    [SerializeField] private AudioClip tower2Complete;
+    [SerializeField] private AudioClip tower3Complete;
+
+    [Header("Mission / Extraction")]
+    [SerializeField] private AudioClip countdown_09;
+    [SerializeField] private AudioClip exitPlanet_10;
 
     private void Awake()
     {
-        // HINZUFÜGEN:
         if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        else { Destroy(gameObject); return; }
     }
 
-    // NEUE PUBLIC METHODS:
+    // ---- Public API ----
 
     public void PlayLandingMessage()
     {
@@ -39,24 +56,31 @@ public class DialogueManager : MonoBehaviour
         Invoke(nameof(PlayKeyPointsMessage), 3f);
     }
 
-    private void PlayKeyPointsMessage()
-    {
-        SoundManager.Instance?.PlayDialogue(keyPointsLocated_03);
-    }
-
     public void PlayTerminalActivated(int terminalIndex)
     {
-        // Spider Warning
+        // Spider warning based on which terminal was activated
         if (terminalIndex == 1)
             SoundManager.Instance?.PlayDialogue(spiderIncoming1);
         else if (terminalIndex == 2)
             SoundManager.Instance?.PlayDialogue(spiderIncoming2);
 
-        // Terminal Audio
+        // Terminal SFX (positional) — handled by SoundManager
         SoundManager.Instance?.PlayTerminalActivation(transform.position);
 
-        // Tower Complete nach 30 Sekunden
+        // After 30s: tower complete VO line
         StartCoroutine(PlayTowerCompleteDelayed(terminalIndex, 30f));
+    }
+
+    public void PlayExtractionSequence()
+    {
+        SoundManager.Instance?.PlayDialogue(countdown_09);
+    }
+
+    // ---- Internals ----
+
+    private void PlayKeyPointsMessage()
+    {
+        SoundManager.Instance?.PlayDialogue(keyPointsLocated_03);
     }
 
     private IEnumerator PlayTowerCompleteDelayed(int index, float delay)
@@ -77,10 +101,5 @@ public class DialogueManager : MonoBehaviour
     private void PlayExitMessage()
     {
         SoundManager.Instance?.PlayDialogue(exitPlanet_10);
-    }
-
-    public void PlayExtractionSequence()
-    {
-        SoundManager.Instance?.PlayDialogue(countdown_09);
     }
 }
