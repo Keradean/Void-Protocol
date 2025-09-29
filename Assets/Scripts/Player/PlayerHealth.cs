@@ -6,8 +6,8 @@ Project: Space Colony Game
 Course: PIP
 Script-Developer: Dennis De Col 
 *
-WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
-Diese detaillierte Authorship-Dokumentation ist für die
+WICHTIG: KOMMENTIERUNG NICHT Lï¿½SCHEN!
+Diese detaillierte Authorship-Dokumentation ist fï¿½r die
 akademische Bewertung erforderlich und darf nicht entfernt werden!
 *
 ====================================================================

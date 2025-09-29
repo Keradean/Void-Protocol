@@ -7,7 +7,7 @@ public class PickUpHealth : Interactable
 
     public override void Interaction()
     {
-        Debug.Log("Bring es mir Junge!");
+        //Debug.Log("Bring es mir Junge!");
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject == null) return;

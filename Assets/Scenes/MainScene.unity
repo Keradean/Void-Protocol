@@ -5532,6 +5532,60 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.036560778, y: 0.042153414, z: 0.27321404}
   m_Center: {x: 0.0000000012660037, y: -0.0006596483, z: 0.0748027}
+--- !u!1 &386234897
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 386234899}
+  - component: {fileID: 386234898}
+  m_Layer: 0
+  m_Name: DialogueManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &386234898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386234897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e7ff4d111a8e6a4f8795c2e5e4adc65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  landing_01: {fileID: 8300000, guid: 648b3713fdc3fcf40b03f5bea2a813d9, type: 3}
+  terminalStart_02: {fileID: 8300000, guid: 000a1227239d6324f9179221da339a29, type: 3}
+  keyPointsLocated_03: {fileID: 8300000, guid: 1777693029074a74b9a26b0f509f5fe4, type: 3}
+  spiderIncoming1: {fileID: 8300000, guid: fbc8d85978b52e148abbbb122b6390c4, type: 3}
+  spiderIncoming2: {fileID: 8300000, guid: 20182ed0856852241b1af83ad58ee983, type: 3}
+  tower1Complete: {fileID: 8300000, guid: 13724ec4d734e90448edb4cee907d767, type: 3}
+  tower2Complete: {fileID: 8300000, guid: 635091c189e07c2448e7a95e5892a98f, type: 3}
+  tower3Complete: {fileID: 8300000, guid: 8dc2deab475ed0e468efd12eecb221a8, type: 3}
+  countdown_09: {fileID: 8300000, guid: ed85cad218cd3d44baa269eca42c978e, type: 3}
+  exitPlanet_10: {fileID: 8300000, guid: 67be205d201ade04781d209772c7db7c, type: 3}
+--- !u!4 &386234899
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386234897}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 142.10814, y: -0.000023487913, z: 197.03093}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &387753493 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5823327181379515623, guid: 7d5bc92088315cd4fb584e1019558863, type: 3}
@@ -11790,6 +11844,7 @@ GameObject:
   m_Component:
   - component: {fileID: 806620698}
   - component: {fileID: 806620697}
+  - component: {fileID: 806620699}
   m_Layer: 0
   m_Name: SoundManager
   m_TagString: Untagged
@@ -11810,125 +11865,65 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSound:
-    clip: {fileID: 8300000, guid: 03835d23ee059c540bf15382c59b00b4, type: 3}
+    clip: {fileID: 8300000, guid: 0ab30252deea0ac43960879e5f7e4908, type: 3}
     volume: 1
-    pitch: 0.5
+    pitch: 1
     is3D: 0
     loop: 0
     startTime: 0
     endTime: 68.22725
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   runSound:
     clip: {fileID: 8300000, guid: 8a780306ec8e9de4fb2e63130060c0de, type: 3}
-    volume: 0
-    pitch: 1.51
-    is3D: 0
-    loop: 0
-    startTime: 3.1758275
-    endTime: 24.587051
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    volume: 0.4
+    pitch: 0.8
+    is3D: 1
+    loop: 1
+    startTime: 3.4791343
+    endTime: 29.470312
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   jumpSound:
     clip: {fileID: 8300000, guid: 7a03d0efffe95f149ad69b9131953ccd, type: 3}
-    volume: 1
-    pitch: 0.5
+    volume: 0.3
+    pitch: 1
     is3D: 0
     loop: 0
     startTime: 0
-    endTime: 1.8352916
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 1.0399985
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   landingSound:
     clip: {fileID: 8300000, guid: f00891e3749a6ea40aee6ec15f6993dc, type: 3}
-    volume: 1
-    pitch: 0.5
+    volume: 0.1
+    pitch: 1
     is3D: 0
     loop: 0
     startTime: 0
     endTime: 0.66566664
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  spiderMovement:
-    clip: {fileID: 8300000, guid: 9782e5db52a67ca47a960fed672d61e7, type: 3}
-    volume: 1
-    pitch: 0.5
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  weaponShot:
+    clip: {fileID: 8300000, guid: 86591f36086fec142abed0caa85f690e, type: 3}
+    volume: 0.5
+    pitch: 1
     is3D: 0
     loop: 0
     startTime: 0
-    endTime: 7.7720833
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  spiderAttack:
-    clip: {fileID: 8300000, guid: a5bcbcd0bae39ce428d9f8752c583252, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 1.2
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  spiderDefeat:
-    clip: {fileID: 8300000, guid: 0b67abf08e0f46b47b585875ba82d135, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 4
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  weapon1Sounds:
-  - clip: {fileID: 8300000, guid: 86591f36086fec142abed0caa85f690e, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 1.3013333
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  weapon2Sounds:
-  - clip: {fileID: 8300000, guid: cc1bc193cd2be3e45bbb229321a6dcdf, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 0.8370208
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  impactSoundObjects:
-  - clip: {fileID: 8300000, guid: 0187f1b05dfd6434fbe8e1b81c6aa6c9, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 2.4295833
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  impactSoundMobs:
-  - clip: {fileID: 8300000, guid: 86f4c4fc2c58dbd458902379f4e27a6f, type: 3}
-    volume: 0
-    pitch: 0
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 0.6526667
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  weaponReload:
-    clip: {fileID: 8300000, guid: 5ad1f1d4356737f44be6e109af2f924d, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 1.8111565
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   weaponEmpty:
     clip: {fileID: 8300000, guid: b2f12fb8855e91249b9b4578c944be37, type: 3}
     volume: 1
@@ -11936,9 +11931,83 @@ MonoBehaviour:
     is3D: 0
     loop: 0
     startTime: 0
-    endTime: 1
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  weaponReload:
+    clip: {fileID: 8300000, guid: 5ad1f1d4356737f44be6e109af2f924d, type: 3}
+    volume: 1
+    pitch: 0.5
+    is3D: 0
+    loop: 0
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  ImpactObject:
+    clip: {fileID: 8300000, guid: 0187f1b05dfd6434fbe8e1b81c6aa6c9, type: 3}
+    volume: 0.4
+    pitch: 1
+    is3D: 0
+    loop: 0
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  ImpactMob:
+    clip: {fileID: 8300000, guid: 86f4c4fc2c58dbd458902379f4e27a6f, type: 3}
+    volume: 0.4
+    pitch: 1
+    is3D: 0
+    loop: 0
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  SpiderAttack:
+    clip: {fileID: 8300000, guid: a5bcbcd0bae39ce428d9f8752c583252, type: 3}
+    volume: 0.6
+    pitch: 1
+    is3D: 0
+    loop: 0
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  SpiderDefeat:
+    clip: {fileID: 8300000, guid: 0b67abf08e0f46b47b585875ba82d135, type: 3}
+    volume: 0.6
+    pitch: 1
+    is3D: 1
+    loop: 0
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  SpiderMovement:
+    clip: {fileID: 8300000, guid: 9782e5db52a67ca47a960fed672d61e7, type: 3}
+    volume: 0.4
+    pitch: 1
+    is3D: 0
+    loop: 1
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   pickupItem:
     clip: {fileID: 8300000, guid: 34b38c9304ac2f84e92249a184d406db, type: 3}
     volume: 1
@@ -11946,29 +12015,35 @@ MonoBehaviour:
     is3D: 0
     loop: 0
     startTime: 0
-    endTime: 0.8125
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   mediPenUse:
     clip: {fileID: 8300000, guid: f53a6687db3b9b540814b9bb4a58af43, type: 3}
-    volume: 1
-    pitch: 0.5
+    volume: 0.5
+    pitch: 1
     is3D: 0
     loop: 0
     startTime: 0
-    endTime: 1.0245996
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   doorOpensClose:
     clip: {fileID: 8300000, guid: e5355cb4ec2222e4983489cf8e8c9972, type: 3}
-    volume: 1
-    pitch: 0.5
+    volume: 0.7
+    pitch: 1
     is3D: 0
     loop: 0
     startTime: 0
-    endTime: 3.4804792
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   terminalActivation:
     clip: {fileID: 8300000, guid: 77354a712e3059142a8b1c9b4cf29b48, type: 3}
     volume: 1
@@ -11976,131 +12051,84 @@ MonoBehaviour:
     is3D: 0
     loop: 0
     startTime: 0
-    endTime: 4.661229
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   countdownTick:
     clip: {fileID: 8300000, guid: 82fba5f249d681a478503bf133f1af17, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
+    volume: 0.5
+    pitch: 1
+    is3D: 1
     loop: 0
     startTime: 0
-    endTime: 2.617771
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   zoneCompletion:
     clip: {fileID: 8300000, guid: eff382a560ee30b48a8e78deab30e2c1, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
+    volume: 0.8
+    pitch: 1
+    is3D: 1
     loop: 0
     startTime: 0
-    endTime: 4.8297505
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   finalCompletionSignal:
-    clip: {fileID: 8300000, guid: 17d109c6f957b6144b2b23f1b1dae6f5, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 2.3335
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  lowOxygenWarning:
-    clip: {fileID: 8300000, guid: f6551694608b6534b88d030526e677ab, type: 3}
-    volume: 1
-    pitch: 0.5
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 1.8160833
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  staminaWarning:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    is3D: 0
+    clip: {fileID: 8300000, guid: 776ed7e34b16efb4c8200babe3d7c8b5, type: 3}
+    volume: 0.8
+    pitch: 1
+    is3D: 1
     loop: 0
     startTime: 0
     endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  healthWarning:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   landingSequence:
     clip: {fileID: 8300000, guid: 6d8c5320b56378a46bf06781e3b24639, type: 3}
     volume: 1
-    pitch: 0.5
-    is3D: 0
+    pitch: 1
+    is3D: 1
     loop: 0
     startTime: 0
-    endTime: 5.7706666
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   extractionSequence:
     clip: {fileID: 8300000, guid: 8048eb3a046bd3747bf2b474fb27bb83, type: 3}
     volume: 1
-    pitch: 0.5
-    is3D: 0
+    pitch: 1
+    is3D: 1
     loop: 0
     startTime: 0
-    endTime: 15.015
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   gameDialogues: []
-  missionStart:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    is3D: 0
-    loop: 0
+  ambientMusicTracks:
+  - clip: {fileID: 8300000, guid: 2109fe15646c8f94093897ad71df22ac, type: 3}
+    volume: 0.1
+    pitch: 1
+    is3D: 1
+    loop: 1
     startTime: 0
     endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  missionConfirm:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  zoneUpdate:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  extractionCall:
-    clip: {fileID: 0}
-    volume: 0
-    pitch: 0
-    is3D: 0
-    loop: 0
-    startTime: 0
-    endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  ambientMusicTracks: []
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   gameStartMusic:
     clip: {fileID: 0}
     volume: 0
@@ -12109,8 +12137,10 @@ MonoBehaviour:
     loop: 0
     startTime: 0
     endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   creditsMusic:
     clip: {fileID: 0}
     volume: 0
@@ -12119,8 +12149,10 @@ MonoBehaviour:
     loop: 0
     startTime: 0
     endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
   extractionMusic:
     clip: {fileID: 0}
     volume: 0
@@ -12129,12 +12161,45 @@ MonoBehaviour:
     loop: 0
     startTime: 0
     endTime: 0
-    fadeInDuration: 0
-    fadeOutDuration: 0
-  maxDistance: 50
-  rolloffMode: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  uiClick:
+    clip: {fileID: 0}
+    volume: 0
+    pitch: 0.5
+    is3D: 0
+    loop: 0
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  uiBack:
+    clip: {fileID: 0}
+    volume: 0
+    pitch: 0
+    is3D: 0
+    loop: 0
+    startTime: 0
+    endTime: 0
+    spatialBlend: 0
+    mixerGroup: {fileID: 0}
+    fadeIn: 0
+    fadeOut: 0
+  masterMixer: {fileID: 0}
+  musicMixer: {fileID: 0}
+  sfxMixer: {fileID: 0}
+  voiceMixer: {fileID: 0}
+  ambientMixer: {fileID: 0}
+  poolSize: 16
   maxConcurrentSounds: 16
   enableObjectPooling: 1
+  walkMinInterval: 0.35
+  footstepMaxDuration: 0.5
+  walkStopGrace: 0.12
 --- !u!4 &806620698
 Transform:
   m_ObjectHideFlags: 0
@@ -12150,6 +12215,103 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!82 &806620699
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 806620696}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &808795044 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2951755033536649003, guid: 1ad4bf1a384b9ec4bb3c39e0e1a4b2d4, type: 3}
@@ -41072,6 +41234,7 @@ SceneRoots:
   - {fileID: 832575519}
   - {fileID: 1924877302}
   - {fileID: 806620698}
+  - {fileID: 386234899}
   - {fileID: 683581271}
   - {fileID: 1890764700}
   - {fileID: 116034000}

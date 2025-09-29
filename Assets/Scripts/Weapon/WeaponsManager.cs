@@ -1,13 +1,39 @@
 /*
 ====================================================================
+* WeaponsManager.cs - Combat Audio Integration v3.1
+====================================================================
+* Project: Void Protocol
+* Course: PIP
+* Script-Developer: Dennis De Col
+* Created: 2025-08-25
+* Last Modified: 2025-09-28
+* Version: v3.1 - Audio Integration Applied
+*
+* WICHTIG: KOMMENTIERUNG NICHT Lï¿½SCHEN!
+* Diese detaillierte Authorship-Dokumentation ist fï¿½r die
+* akademische Bewertung erforderlich und darf nicht entfernt werden!
+*
+* AUDIO INTEGRATION ATTRIBUTION:
+* [HUMAN-AUTHORED] - Combat Audio Integration Konzept von Julian Gomez
+* [AI-ASSISTED] - SoundManager Integration Implementierung
+* 
+* BEREINIGUNGSNOTIZEN v3.1:
+* - Combat Audio Integration durch Julian Gomez hinzugefï¿½gt
+* - Weapon/Impact/Reload Audio Calls implementiert
+* - Empty Weapon Audio Feedback hinzugefï¿½gt
+====================================================================
+*/
+
+/*
+====================================================================
 WeaponsManager
 ====================================================================
 Project: Space Colony Game
 Course: PIP
 Script-Developer: Dennis De Col 
 *
-WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
-Diese detaillierte Authorship-Dokumentation ist für die
+WICHTIG: KOMMENTIERUNG NICHT Lï¿½SCHEN!
+Diese detaillierte Authorship-Dokumentation ist fï¿½r die
 akademische Bewertung erforderlich und darf nicht entfernt werden!
 *
 ====================================================================
@@ -166,6 +192,8 @@ public class WeaponsManager : MonoBehaviour
         if (CurrentAmmo > 0 && ShotCounter <= 0f)
         {
             // Variable to store raycast hit information
+            // AUDIO INTEGRATION - Added by Julian with AI-Support
+            SoundManager.Instance?.PlayWeaponSound(CurrentWeapon, transform.position);
             RaycastHit hit;
 
             // Perform a SphereCast (thick raycast) from camera forward
@@ -188,6 +216,8 @@ public class WeaponsManager : MonoBehaviour
                         // Deal damage to the enemy
                         damageable.TakeDamage(damage);
                         // Spawn damage effect (blood, sparks, etc.) at hit point
+                        // AUDIO INTEGRATION - Added by Julian with AI-Support
+                        SoundManager.Instance?.PlayImpactSoundMobs(hit.point);
                         Instantiate(DamageEffect, hit.point, Quaternion.identity);
                     }
                     else // Enemy doesn't have IDamageable (shouldn't happen, but safety check)
@@ -196,6 +226,10 @@ public class WeaponsManager : MonoBehaviour
                         Instantiate(ImpactEffect, hit.point, Quaternion.identity);
                     }
                 }
+                else
+                {
+                    // AUDIO INTEGRATION - Added by Julian with AI-Support
+                    SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
 
                 // Show muzzle flash effect (if it exists)
                 if (MuzzleFlare != null)
@@ -215,6 +249,11 @@ public class WeaponsManager : MonoBehaviour
 
             // Start the fire rate cooldown timer (prevents shooting again immediately)
             ShotCounter = TimeBtwShots;
+        }
+        else if (CurrentAmmo <= 0)
+        {
+            // AUDIO INTEGRATION - Added by Julian with AI-Support
+            SoundManager.Instance?.PlayWeaponEmpty(transform.position);
         }
     }
 
@@ -253,6 +292,8 @@ public class WeaponsManager : MonoBehaviour
         Debug.Log("Lad nach!!");
 
         // Return current ammo to reserve pool (simulate removing partially-full magazine)
+        // AUDIO INTEGRATION - Added by Julian with AI-Support
+        SoundManager.Instance?.PlayReloadSound(transform.position);
         RemainingAmmo += CurrentAmmo;
 
         // Check if we have enough reserve ammo to fill a full clip
@@ -270,6 +311,8 @@ public class WeaponsManager : MonoBehaviour
             // Reserve is now empty
             RemainingAmmo = 0;
         }
+
+        UpdateAmmoUI();
     }
 
     // ==================================================

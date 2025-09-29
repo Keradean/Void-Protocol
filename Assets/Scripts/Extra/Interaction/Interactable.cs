@@ -17,7 +17,7 @@ public class Interactable : MonoBehaviour
 
         defaultMaterial = mesh.material;
 
-        Debug.Log("Interactable" + gameObject.name);
+       // Debug.Log("Interactable" + gameObject.name);
     }
 
     public virtual void Interaction()

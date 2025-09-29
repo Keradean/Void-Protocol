@@ -6,7 +6,7 @@ public class PickUpOxygenTank : Interactable
 
     public override void Interaction()
     {
-        Debug.Log("Interaction Baby!!!");
+        //Debug.Log("Interaction Baby!!!");
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject == null) return;
@@ -21,6 +21,9 @@ public class PickUpOxygenTank : Interactable
         {
             stats.Oxy += oxygenValue;
             stats.Oxy = Mathf.Min(stats.Oxy, stats.MaxOxy);
+
+            // Julian [AI-ASSISTED] Pickup audio feedback - consistent pattern
+            SoundManager.Instance?.PlayPickupItem(transform.position);
 
             base.Interaction();
             Destroy(gameObject);

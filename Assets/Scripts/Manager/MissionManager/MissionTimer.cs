@@ -17,11 +17,12 @@ public class MissionTimer : Mission
 
         if (currentTime < 0)
         {
-            Debug.Log("Game Over Looser!!!");
+          //  Debug.Log("Game Over Looser!!!");
         }
+      
 
         string timeText = System.TimeSpan.FromSeconds(currentTime).ToString("mm\\:ss");
-        Debug.Log(timeText);
+       // Debug.Log(timeText);
     }
 
     public override bool MissionCompleted()

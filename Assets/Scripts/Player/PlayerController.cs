@@ -1,13 +1,39 @@
 /*
 ====================================================================
+* PlayerController.cs - Enhanced Movement Audio Integration v3.1
+====================================================================
+* Project: Space Colony Game
+* Course: PIP
+* Script-Developer: Dennis De Col
+* Created: 2025-08-25
+* Last Modified: 2025-09-28
+* Version: v3.1 - Movement Audio Fixes Applied
+*
+* WICHTIG: KOMMENTIERUNG NICHT Lï¿½SCHEN!
+* Diese detaillierte Authorship-Dokumentation ist fï¿½r die
+* akademische Bewertung erforderlich und darf nicht entfernt werden!
+*
+* AUDIO INTEGRATION ATTRIBUTION:
+* [HUMAN-AUTHORED] - Audio Integration Konzept von Julian Gomez
+* [AI-ASSISTED] - SoundManager Integration Implementierung
+* 
+* BEREINIGUNGSNOTIZEN v3.1:
+* - Movement Audio Integration durch Julian Gomez hinzugefï¿½gt
+* - Landing Detection Logic optimiert
+* - SoundManager Method-Calls korrigiert
+====================================================================
+*/
+
+/*
+====================================================================
 PlayerController
 ====================================================================
 Project: Space Colony Game
 Course: PIP
 Script-Developer: Dennis De Col 
 *
-WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
-Diese detaillierte Authorship-Dokumentation ist für die
+WICHTIG: KOMMENTIERUNG NICHT Lï¿½SCHEN!
+Diese detaillierte Authorship-Dokumentation ist fï¿½r die
 akademische Bewertung erforderlich und darf nicht entfernt werden!
 *
 Dieses Script wurde in einer voherigen Abgabe verwendet. 
@@ -60,6 +86,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpForce; // How high the player can jump
     [SerializeField] private float gravity; // Custom gravity multiplier (how fast player falls)
 
+    private bool wasGroundedLastFrame = false;
     // ==================================================
     // VARIABLE DECLARATION - SPRINT PARAMETERS
     // ==================================================
@@ -98,7 +125,7 @@ public class PlayerController : MonoBehaviour
     private bool CanSprint => inputManager.SprintTriggered && stats.Stamina > 0f && currentSprintCooldown <= 0f;
 
     // Property that calculates current movement speed
-    // If sprinting: base speed × multiplier, otherwise: just base speed
+    // If sprinting: base speed ï¿½ multiplier, otherwise: just base speed
     private float CurrentSpeed => moveSpeed * (CanSprint ? sprintSpeedMultiplier : 1);
 
     // ==================================================
@@ -114,6 +141,7 @@ public class PlayerController : MonoBehaviour
         Cursor.visible = false;
         // Reset player stats to default values (full health, full stamina, etc.)
         stats.ResetStats();
+        wasGroundedLastFrame = characterController.isGrounded;
         // Find the InputManager in the scene (currently not used after this line)
         InputManager shootAction = FindFirstObjectByType<InputManager>();
         // Get the PlayerInteraction component attached to this GameObject
@@ -168,7 +196,7 @@ public class PlayerController : MonoBehaviour
         // Check if player is moving (input greater than 0.1 to avoid tiny accidental inputs) AND on the ground
         isCurrentlyMoving = inputDirection.magnitude > 0.1f && characterController.isGrounded;
 
-        // Immediate Start/Stop Audio Response
+        // Immediate Start/Stop Audio Response - Julian's Audio Integration
         if (isCurrentlyMoving && !wasMovingLastFrame)
         {
             // START footsteps immediately when movement begins
@@ -179,9 +207,9 @@ public class PlayerController : MonoBehaviour
             // STOP footsteps immediately when movement ends
             SoundManager.Instance?.StopFootsteps();
         }
+        // CONTINUE footsteps with updated position and speed if moving
         else if (isCurrentlyMoving && wasMovingLastFrame)
         {
-            // CONTINUE footsteps with updated position and speed
             SoundManager.Instance?.StartFootsteps(CanSprint, transform.position);
         }
 
@@ -192,6 +220,13 @@ public class PlayerController : MonoBehaviour
             currentMovement.y = -0.5f;
 
             // Check if player pressed jump button
+            // Landing Detection - Separate Landing Audio
+            if (!wasGroundedLastFrame && characterController.isGrounded)
+            {
+                // AUDIO INTEGRATION - Added by Julian with AI-Support
+                SoundManager.Instance?.PlayLanding(transform.position);
+            }
+
             if (inputManager.JumpTriggered)
             {
                 // AUDIO INTEGRATION - Added by Julian with AI-Support
@@ -214,6 +249,7 @@ public class PlayerController : MonoBehaviour
 
         // Remember movement state for next frame (for audio system)
         wasMovingLastFrame = isCurrentlyMoving;
+        wasGroundedLastFrame = characterController.isGrounded;
     }
 
     // ==================================================
@@ -364,6 +400,7 @@ public class PlayerController : MonoBehaviour
     // ==================================================
     // Called automatically when this GameObject is disabled
     // RESPONSIVE AUDIO CLEANUP - Added by Julian with AI-Support
+    // ENHANCED AUDIO CLEANUP - Added by Julian with AI-Support
     private void OnDisable()
     {
         // Stop footsteps when player is disabled/destroyed
