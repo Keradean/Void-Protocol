@@ -99,17 +99,15 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClipData jumpSound;
     [SerializeField] private AudioClipData landingSound;
 
-    [Header("Voice / Dialogue")]
-    [SerializeField] private AudioClipData dialogueLine;
-
-    [Header("SFX")]
-    [SerializeField] private AudioClipData uiClick;
-    [SerializeField] private AudioClipData uiBack;
-
     [Header("Combat Audio")]
     [SerializeField] private AudioClipData weaponShot;
-    [SerializeField] private AudioClipData weaponReload;
     [SerializeField] private AudioClipData weaponEmpty;
+    [SerializeField] private AudioClipData weaponReload;
+    [SerializeField] private AudioClipData ImpactObject;
+    [SerializeField] private AudioClipData ImpactMob;
+    [SerializeField] private AudioClipData SpiderAttack;
+    [SerializeField] private AudioClipData SpiderDefeat;
+    [SerializeField] private AudioClipData SpiderMovement;
 
     [Header("Interaction Audio")]
     [SerializeField] private AudioClipData pickupItem;
@@ -126,10 +124,6 @@ public class SoundManager : MonoBehaviour
 
     [Header("Dialogue Audio")]
     [SerializeField] private GameDialogue[] gameDialogues;
-    [SerializeField] private AudioClipData missionStart;
-    [SerializeField] private AudioClipData missionConfirm;
-    [SerializeField] private AudioClipData zoneUpdate;
-    [SerializeField] private AudioClipData extractionCall;
 
     [Header("Ambient Music")]
     [SerializeField] private AudioClipData[] ambientMusicTracks;
@@ -138,6 +132,11 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClipData gameStartMusic;
     [SerializeField] private AudioClipData creditsMusic;
     [SerializeField] private AudioClipData extractionMusic;
+
+    [Header("SFX")]
+    [SerializeField] private AudioClipData uiClick;
+    [SerializeField] private AudioClipData uiBack;
+
 
     [Header("Audio Mixer Groups")]
     [SerializeField] private AudioMixerGroup masterMixer;
@@ -148,7 +147,7 @@ public class SoundManager : MonoBehaviour
 
     [Header("Pooling Settings")]
     [Tooltip("Anzahl der vorgehaltenen Pooled AudioSources")]
-    [SerializeField, Range(8, 64)] private int poolSize = 16;
+    [SerializeField, Range(8, 64)] private int poolSize = 26;
     [Tooltip("Maximale gleichzeitige OneShots bevor lower-priority recycelt werden")]
     [SerializeField, Range(8, 64)] private int maxConcurrentSounds = 24;
     [Tooltip("Pooling aktivieren (empfohlen)")]
@@ -469,6 +468,28 @@ public class SoundManager : MonoBehaviour
         if (!isInitialized) { DLog("DROP PlayReloadSound: init=false"); return; }
         if (weaponReload.clip == null) { DLog("DROP PlayReloadSound: clip=null"); return; }
         PlaySound3D(weaponReload, position, AudioPriority.Combat);
+    }
+
+    // ===== ENEMY AUDIO - Added by Julian with AI-Support =====
+    public void PlaySpiderAttack(Vector3 position)
+    {
+        if (!isInitialized) { DLog("DROP PlaySpiderAttack: init=false"); return; }
+        if (SpiderAttack.clip == null) { DLog("DROP PlaySpiderAttack: clip=null"); return; }
+        PlaySound3D(SpiderAttack, position, AudioPriority.Combat);
+    }
+
+    public void PlaySpiderDefeat(Vector3 position)
+    {
+        if (!isInitialized) { DLog("DROP PlaySpiderDefeat: init=false"); return; }
+        if (SpiderDefeat.clip == null) { DLog("DROP PlaySpiderDefeat: clip=null"); return; }
+        PlaySound3D(SpiderDefeat, position, AudioPriority.Combat);
+    }
+
+    public void PlaySpiderMovement(Vector3 position)
+    {
+        if (!isInitialized) { DLog("DROP PlaySpiderMovement: init=false"); return; }
+        if (SpiderMovement.clip == null) { DLog("DROP PlaySpiderMovement: clip=null"); return; }
+        PlaySound3D(SpiderMovement, position, AudioPriority.Movement);
     }
 
     // ===== COMBAT AUDIO =====

@@ -18,7 +18,26 @@ public class ActionAttack : FSMAction
         AttackPlayer();
     }
 
-    private void AttackPlayer()
+    private void AttackPlayer() // Von Julian [AI-ASSISTED] Audio integration for enemy attack feedback
+    {
+        if (enemyBrain.Player == null) return;
+        timer -= Time.deltaTime;
+        if (timer <= 0)
+        {
+            
+            SoundManager.Instance?.PlaySpiderAttack(transform.position);
+
+            IDamageable player = enemyBrain.Player.GetComponent<IDamageable>();
+            if (player != null)
+            {
+                player.TakeDamage(damage);
+            }
+
+            timer = timeBtwAttacks;
+        }
+    }
+
+    /*private void AttackPlayer()
     {
         if (enemyBrain.Player == null) return; 
         timer -= Time.deltaTime;
@@ -32,5 +51,5 @@ public class ActionAttack : FSMAction
 
             timer = timeBtwAttacks;
         }
-    }
+    }*/
 }

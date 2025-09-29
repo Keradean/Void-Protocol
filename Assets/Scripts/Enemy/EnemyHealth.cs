@@ -27,9 +27,9 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     public void OnSpawn()
     {
-       
+
         CurrentHealth = health;
-        
+
         enemyBrain.enabled = true;
     }
 
@@ -42,15 +42,29 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         }
     }
 
-    private void EnemyDead()
+    private void EnemyDead() // Von Julian [AI-ASSISTED] Audio integration for enemy death feedback
     {
         if (enemyPool != null)
         {
+            
+            SoundManager.Instance?.PlaySpiderDefeat(transform.position);
+
             enemyBrain.enabled = false;
             enemyPool.Release(this);
             GameManager.Instance.AddPlayerExp(enemyExp.ExpDrop);
         }
-
-        // Animation
     }
+
+    /*   private void EnemyDead()
+       {
+           if (enemyPool != null)
+           {
+               enemyBrain.enabled = false;
+               enemyPool.Release(this);
+               GameManager.Instance.AddPlayerExp(enemyExp.ExpDrop);
+           }
+
+           // Animation
+       }*/
+
 }
