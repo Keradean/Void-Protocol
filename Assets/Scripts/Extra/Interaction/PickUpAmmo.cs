@@ -15,6 +15,7 @@ public class PickUpAmmo : Interactable
 
         weaponsManager.AddAmmo(weaponsManager.pickUpValue);
 
+
         Destroy(gameObject);
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PlayerInteraction : MonoBehaviour
@@ -18,6 +19,7 @@ public class PlayerInteraction : MonoBehaviour
 
     public void UpdateClosestInteractable()
     {
+        closestInteractable?.InteractionText(false);
         closestInteractable?.HighlightActive(false);
         closestInteractable = null;
 
@@ -33,6 +35,7 @@ public class PlayerInteraction : MonoBehaviour
             }
         }
 
+        closestInteractable?.InteractionText(true);
         closestInteractable?.HighlightActive(true);
     }
 }

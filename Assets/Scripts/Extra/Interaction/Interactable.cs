@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class Interactable : MonoBehaviour
@@ -5,9 +6,9 @@ public class Interactable : MonoBehaviour
     [SerializeField] private Material highlightMaterial;
     [SerializeField] private MeshRenderer mesh; 
     private Material defaultMaterial;
-
+    
     [Header("Text")]
-    [SerializeField] private TextMeshProUGUI interactTMP;
+    [SerializeField] private GameObject interactTMP;
     
 
     private void Start()
@@ -35,13 +36,15 @@ public class Interactable : MonoBehaviour
 
     public void InteractionText(bool active)
     {
-        if (interactTMP != null)
+        if (interactTMP == null) return;
+
+        if (active && interactTMP != null)
         {
-            interactTMP.enabled = true;
+            interactTMP.SetActive(true);
         }
-        else
+        else if(!active && interactTMP != null)
         {
-            interactTMP.enabled = false;
+            interactTMP.SetActive(false);
         }
     }
 
@@ -61,5 +64,16 @@ public class Interactable : MonoBehaviour
 
         playerInteraction.interactables.Remove(this);
         playerInteraction.UpdateClosestInteractable();
+    }
+
+    private void OnDestroy()
+    {
+        
+        PlayerInteraction playerInteraction = FindFirstObjectByType<PlayerInteraction>();
+        if (playerInteraction != null && playerInteraction.interactables.Contains(this))
+        {
+            playerInteraction.interactables.Remove(this);
+            playerInteraction.UpdateClosestInteractable();
+        }
     }
 }
