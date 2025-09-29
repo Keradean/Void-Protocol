@@ -222,6 +222,8 @@ public class WeaponsManager : MonoBehaviour
                     }
                     else // Enemy doesn't have IDamageable (shouldn't happen, but safety check)
                     {
+                        // AUDIO INTEGRATION - Added by Julian with AI-Support
+                        SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
                         // Spawn generic impact effect
                         Instantiate(ImpactEffect, hit.point, Quaternion.identity);
                     }
@@ -231,31 +233,33 @@ public class WeaponsManager : MonoBehaviour
                     // AUDIO INTEGRATION - Added by Julian with AI-Support
                     SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
 
-                // Show muzzle flash effect (if it exists)
-                if (MuzzleFlare != null)
-                {
-                    MuzzleFlare.SetActive(true); // Enable the muzzle flash GameObject
+                    // Show muzzle flash effect (if it exists)
+                    if (MuzzleFlare != null)
+                    {
+                        MuzzleFlare.SetActive(true); // Enable the muzzle flash GameObject
+                    }
+
+                    // Start the muzzle flash timer
+                    FlareCounter = FlareDisplayTime;
+
+                    // Decrease ammunition by 1
+                    CurrentAmmo--;
+
+                    // Update the UI to show new ammo count
+                    UpdateAmmoUI();
                 }
 
-                // Start the muzzle flash timer
-                FlareCounter = FlareDisplayTime;
-
-                // Decrease ammunition by 1
-                CurrentAmmo--;
-
-                // Update the UI to show new ammo count
-                UpdateAmmoUI();
+                // Start the fire rate cooldown timer (prevents shooting again immediately)
+                ShotCounter = TimeBtwShots;
             }
-
-            // Start the fire rate cooldown timer (prevents shooting again immediately)
-            ShotCounter = TimeBtwShots;
-        }
-        else if (CurrentAmmo <= 0)
-        {
-            // AUDIO INTEGRATION - Added by Julian with AI-Support
-            SoundManager.Instance?.PlayWeaponEmpty(transform.position);
+            else if (CurrentAmmo <= 0)
+            {
+                // AUDIO INTEGRATION - Added by Julian with AI-Support
+                SoundManager.Instance?.PlayWeaponEmpty(transform.position);
+            }
         }
     }
+        
 
     // ==================================================
     // SHOOT HELD METHOD

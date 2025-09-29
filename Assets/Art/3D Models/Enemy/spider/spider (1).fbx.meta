@@ -1,9 +1,14 @@
 fileFormatVersion: 2
-guid: 3f0175ece25a6cc479bdd09896b261e9
+guid: 619b9530d9dc1b84fb52a8876e001adf
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Spider
+    second: {fileID: 2100000, guid: ac7ea72093bd0364a85e2fb12d7e89e5, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
