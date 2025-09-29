@@ -6,7 +6,7 @@ public class PickUpOxygenTank : Interactable
 
     public override void Interaction()
     {
-        Debug.Log("Interaction Baby!!!");
+        //Debug.Log("Interaction Baby!!!");
 
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject == null) return;

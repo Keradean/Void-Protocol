@@ -1,3 +1,29 @@
+/*
+====================================================================
+* WeaponsManager.cs - Combat Audio Integration v3.1
+====================================================================
+* Project: Void Protocol
+* Course: PIP
+* Script-Developer: Dennis De Col
+* Created: 2025-08-25
+* Last Modified: 2025-09-28
+* Version: v3.1 - Audio Integration Applied
+*
+* WICHTIG: KOMMENTIERUNG NICHT LÖSCHEN!
+* Diese detaillierte Authorship-Dokumentation ist für die
+* akademische Bewertung erforderlich und darf nicht entfernt werden!
+*
+* AUDIO INTEGRATION ATTRIBUTION:
+* [HUMAN-AUTHORED] - Combat Audio Integration Konzept von Julian Gomez
+* [AI-ASSISTED] - SoundManager Integration Implementierung
+* 
+* BEREINIGUNGSNOTIZEN v3.1:
+* - Combat Audio Integration durch Julian Gomez hinzugefügt
+* - Weapon/Impact/Reload Audio Calls implementiert
+* - Empty Weapon Audio Feedback hinzugefügt
+====================================================================
+*/
+
 using UnityEngine;
 
 public class WeaponsManager : MonoBehaviour
@@ -25,23 +51,19 @@ public class WeaponsManager : MonoBehaviour
 
     public UIManager UIManager;
 
-    private int CurrentWeapon, previouWeapons; 
+    private int CurrentWeapon, previouWeapons;
 
-
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         if (UIManager == null)
             UIManager = FindFirstObjectByType<UIManager>();
 
-        SetWeapon(0); 
+        SetWeapon(0);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (FlareCounter > 0) 
+        if (FlareCounter > 0)
         {
             FlareCounter -= Time.deltaTime;
             if (FlareCounter <= 0 && MuzzleFlare != null)
@@ -49,7 +71,7 @@ public class WeaponsManager : MonoBehaviour
                 MuzzleFlare.SetActive(false);
             }
         }
-       
+
         if (ShotCounter > 0)
             ShotCounter -= Time.deltaTime;
 
@@ -58,25 +80,33 @@ public class WeaponsManager : MonoBehaviour
 
     public void Shoot()
     {
-       
         if (CurrentAmmo > 0 && ShotCounter <= 0f)
         {
+            // AUDIO INTEGRATION - Added by Julian with AI-Support
+            SoundManager.Instance?.PlayWeaponSound(CurrentWeapon, transform.position);
+
             RaycastHit hit;
-            if (Physics.SphereCast(Cam.position, 0.5f,Cam.forward, out hit, Range))
+            if (Physics.SphereCast(Cam.position, 0.5f, Cam.forward, out hit, Range))
             {
-                Debug.Log(hit.transform.name);
                 if (hit.transform.CompareTag("Enemy"))
                 {
                     IDamageable damageable = hit.transform.GetComponent<IDamageable>();
                     if (damageable != null)
                     {
                         damageable.TakeDamage(damage);
+
+                        // AUDIO INTEGRATION - Added by Julian with AI-Support
+                        SoundManager.Instance?.PlayImpactSoundMobs(hit.point);
+
                         Instantiate(DamageEffect, hit.point, Quaternion.identity);
                     }
-                    else
-                    {
-                        Instantiate(ImpactEffect, hit.point, Quaternion.identity);
-                    }
+                }
+                else
+                {
+                    // AUDIO INTEGRATION - Added by Julian with AI-Support
+                    SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
+
+                    Instantiate(ImpactEffect, hit.point, Quaternion.identity);
                 }
 
                 if (MuzzleFlare != null)
@@ -88,15 +118,17 @@ public class WeaponsManager : MonoBehaviour
                 CurrentAmmo--;
                 UpdateAmmoUI();
             }
-            ShotCounter = TimeBtwShots; 
+            ShotCounter = TimeBtwShots;
+        }
+        else if (CurrentAmmo <= 0)
+        {
+            // AUDIO INTEGRATION - Added by Julian with AI-Support
+            SoundManager.Instance?.PlayWeaponEmpty(transform.position);
         }
     }
-  
-
 
     public void ShootHeld()
     {
-      
         if (AutoFire == true)
         {
             ShotCounter -= Time.deltaTime;
@@ -110,7 +142,10 @@ public class WeaponsManager : MonoBehaviour
     public void Reload()
     {
         if (CurrentAmmo >= ClipSize || RemainingAmmo <= 0) return;
-        Debug.Log("Lad nach!!");
+
+        // AUDIO INTEGRATION - Added by Julian with AI-Support
+        SoundManager.Instance?.PlayReloadSound(transform.position);
+
         RemainingAmmo += CurrentAmmo;
         if (RemainingAmmo >= ClipSize)
         {
@@ -122,6 +157,8 @@ public class WeaponsManager : MonoBehaviour
             CurrentAmmo = RemainingAmmo;
             RemainingAmmo = 0;
         }
+
+        UpdateAmmoUI();
     }
 
     public void AddAmmo(int pickUpValue)
@@ -131,13 +168,11 @@ public class WeaponsManager : MonoBehaviour
 
     public void SetWeapon(int weaponToSet)
     {
-        if (previouWeapons != CurrentWeapon) 
-        { 
-        Weapons[previouWeapons].CurrentAmmo = CurrentAmmo;
-        Weapons[previouWeapons].RemainingAmmo = RemainingAmmo;
+        if (previouWeapons != CurrentWeapon)
+        {
+            Weapons[previouWeapons].CurrentAmmo = CurrentAmmo;
+            Weapons[previouWeapons].RemainingAmmo = RemainingAmmo;
         }
-
-
 
         Range = Weapons[weaponToSet].Range;
         FlareDisplayTime = Weapons[weaponToSet].FlareDisplayTime;
@@ -178,9 +213,9 @@ public class WeaponsManager : MonoBehaviour
     public void NextWeapon()
     {
         CurrentWeapon++;
-        if(CurrentWeapon >= Weapons.Length)
+        if (CurrentWeapon >= Weapons.Length)
         {
-            CurrentWeapon = 0; 
+            CurrentWeapon = 0;
         }
 
         SetWeapon(CurrentWeapon);
@@ -189,7 +224,7 @@ public class WeaponsManager : MonoBehaviour
     public void PreviousWeapon()
     {
         CurrentWeapon--;
-        if (CurrentWeapon < 0) 
+        if (CurrentWeapon < 0)
         {
             CurrentWeapon = Weapons.Length - 1;
         }

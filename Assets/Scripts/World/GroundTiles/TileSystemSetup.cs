@@ -36,7 +36,6 @@ public class TileSystemSetup : MonoBehaviour
     private void SetupTileSystem()
     {
         CreateTileSystemStructure();
-        Debug.Log("Tile System Setup Complete");
     }
 
     private void CreateTileSystemStructure()
@@ -63,7 +62,6 @@ public class TileSystemSetup : MonoBehaviour
         GameObject existing = GameObject.Find(name);
         if (existing != null)
         {
-            Debug.Log($"{name} already exists - using existing GameObject");
             return existing;
         }
 
@@ -84,7 +82,6 @@ public class TileSystemSetup : MonoBehaviour
         TileManager existingManager = tileManagerGO.GetComponent<TileManager>();
         if (existingManager != null)
         {
-            Debug.Log("TileManager component already exists");
             return;
         }
 
@@ -94,7 +91,7 @@ public class TileSystemSetup : MonoBehaviour
         // Direct component assignment (no SerializedObject)
         if (tilePrefab != null && keyTilePrefab != null)
         {
-            Debug.Log("TileManager component added - assign prefabs manually in Inspector");
+            // Component configured - assign prefabs manually in Inspector
         }
         else
         {
@@ -116,7 +113,6 @@ public class TileSystemSetup : MonoBehaviour
         TileNavigationUI existingNavUI = FindFirstObjectByType<TileNavigationUI>();
         if (existingNavUI != null)
         {
-            Debug.Log("TileNavigationUI already exists");
             return;
         }
 
@@ -138,7 +134,6 @@ public class TileSystemSetup : MonoBehaviour
 
         // Add TileNavigationUI component
         TileNavigationUI navUI = navUIGO.AddComponent<TileNavigationUI>();
-        Debug.Log("NavigationUI created - assign UI elements manually in Inspector");
     }
 
     [ContextMenu("Validate System Setup")]

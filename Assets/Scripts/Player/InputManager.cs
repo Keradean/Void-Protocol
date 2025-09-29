@@ -20,7 +20,7 @@ public class InputManager : MonoBehaviour
     [SerializeField] private string reload = "Reloading";
     [SerializeField] private string next = "Next";
     [SerializeField] private string previous = "Previous";
-    
+
     [Header("UI")]
     [SerializeField] private string paused = "Paused";
 
@@ -33,7 +33,7 @@ public class InputManager : MonoBehaviour
     private InputAction reloadAction;
     private InputAction nextAction;
     private InputAction previousAction;
-    
+
     private InputAction pausedAction;
 
     public bool ShootWasPressedThisFrame => shootAction.WasPressedThisFrame();
@@ -43,8 +43,8 @@ public class InputManager : MonoBehaviour
     public Vector2 RotationInput { get; private set; }
     public bool JumpTriggered { get; private set; }
     public bool SprintTriggered { get; private set; }
-    public bool InteractTriggered { get; private set; }  
-    public bool ShootTriggered { get; private set; } 
+    public bool InteractTriggered { get; private set; }
+    public bool ShootTriggered { get; private set; }
     public bool ReloadTriggered { get; private set; }
     public bool NextTriggered { get; private set; }
     public bool PreviousTriggered { get; private set; }
@@ -92,13 +92,13 @@ public class InputManager : MonoBehaviour
 
         reloadAction.performed += ctx => ReloadTriggered = true;
         reloadAction.canceled += ctx => ReloadTriggered = false;
-       
+
         nextAction.performed += ctx => NextTriggered = true;
         nextAction.canceled += ctx => NextTriggered = false;
 
         previousAction.performed += ctx => PreviousTriggered = true;
         previousAction.canceled += ctx => PreviousTriggered = false;
-        
+
         pausedAction.performed += ctx => PausedTriggered = true;
         pausedAction.canceled += ctx => PausedTriggered = false;
     }
@@ -113,7 +113,7 @@ public class InputManager : MonoBehaviour
     private void OnDisable()
     {
         playerControls.FindActionMap(actionMapName).Disable();
-        
+
         UIControls.FindActionMap(actionMapNameUI).Disable();
     }
 }

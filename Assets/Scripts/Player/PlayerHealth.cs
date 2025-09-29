@@ -55,6 +55,6 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     {
         if (uiManager == null) return; 
         uiManager.ShowDeathScreen();
-        Debug.Log("I am Dead");
+        //Debug.Log("I am Dead");
     }
 }
