@@ -169,6 +169,7 @@ public class SoundManager : MonoBehaviour
     private AudioSource voiceSource;
     private AudioSource ambientSource;
     private AudioSource continuousFootstepSource;
+    private AudioSource dialogueSource;
 
     // Audio pooling and state management
     private readonly Queue<AudioSource> audioSourcePool = new Queue<AudioSource>();
@@ -198,6 +199,8 @@ public class SoundManager : MonoBehaviour
         Music = 8
     }
 
+
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -222,6 +225,27 @@ public class SoundManager : MonoBehaviour
         {
             DLog("No AmbientMusicTracks configured");
         }
+
+        // ? DIALOGUE SOURCE INITIALIZATION
+        GameObject dialogueGO = new GameObject("DialogueSource");
+        dialogueGO.transform.SetParent(transform);
+        dialogueSource = dialogueGO.AddComponent<AudioSource>();
+        dialogueSource.outputAudioMixerGroup = voiceMixer;
+        dialogueSource.spatialBlend = 0f; // 2D for dialogue
+        dialogueSource.playOnAwake = false;
+        dialogueSource.priority = 10; // High priority for dialogue
+
+        DLog("Dialogue Source initialized successfully");
+    }
+
+
+    public void PlayDialogue(AudioClip clip)
+    {
+        if (clip == null || dialogueSource == null) return;
+
+        dialogueSource.Stop();
+        dialogueSource.clip = clip;
+        dialogueSource.Play();
     }
 
     private void InitializeAudioSources()
@@ -439,6 +463,28 @@ public class SoundManager : MonoBehaviour
         if (!isInitialized) { DLog("DROP PlayPickupItem: init=false"); return; }
         if (pickupItem.clip == null) { DLog("DROP PlayPickupItem: clip=null"); return; }
         PlaySound3D(pickupItem, position, AudioPriority.Interaction);
+    }
+
+    // ===== ZONE & MISSION AUDIO =====
+    public void PlayZoneCompletion(Vector3 position)
+    {
+        if (!isInitialized) { DLog("DROP PlayZoneCompletion: init=false"); return; }
+        if (zoneCompletion.clip == null) { DLog("DROP PlayZoneCompletion: clip=null"); return; }
+        PlaySound3D(zoneCompletion, position, AudioPriority.Interaction);
+    }
+
+    public void PlayFinalCompletion(Vector3 position)
+    {
+        if (!isInitialized) { DLog("DROP PlayFinalCompletion: init=false"); return; }
+        if (finalCompletionSignal.clip == null) { DLog("DROP PlayFinalCompletion: clip=null"); return; }
+        PlaySound3D(finalCompletionSignal, position, AudioPriority.Interaction);
+    }
+
+    public void PlayTerminalActivation(Vector3 position)
+    {
+        if (!isInitialized) { DLog("DROP PlayTerminalActivation: init=false"); return; }
+        if (terminalActivation.clip == null) { DLog("DROP PlayTerminalActivation: clip=null"); return; }
+        PlaySound3D(terminalActivation, position, AudioPriority.Interaction);
     }
 
     // ===== COMBAT SUPPORT AUDIO =====

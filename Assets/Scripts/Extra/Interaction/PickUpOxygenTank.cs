@@ -22,6 +22,9 @@ public class PickUpOxygenTank : Interactable
             stats.Oxy += oxygenValue;
             stats.Oxy = Mathf.Min(stats.Oxy, stats.MaxOxy);
 
+            // Julian [AI-ASSISTED] Pickup audio feedback - consistent pattern
+            SoundManager.Instance?.PlayPickupItem(transform.position);
+
             base.Interaction();
             Destroy(gameObject);
         }

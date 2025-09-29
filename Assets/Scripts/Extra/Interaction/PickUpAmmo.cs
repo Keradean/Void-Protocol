@@ -16,6 +16,10 @@ public class PickUpAmmo : Interactable
         weaponsManager.AddAmmo(weaponsManager.pickUpValue);
 
 
+        // Julian [AI-ASSISTED] Pickup audio feedback - consistent with PickUpHealth pattern
+        SoundManager.Instance?.PlayPickupItem(transform.position);
+
+        base.Interaction();
         Destroy(gameObject);
     }
 }
