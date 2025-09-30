@@ -15,11 +15,11 @@ GameObject:
   - component: {fileID: 925973155630547998}
   - component: {fileID: -1359190095206037496}
   - component: {fileID: 1824497308309468780}
-  - component: {fileID: -2231002798861908789}
   - component: {fileID: -6177897234030590043}
   - component: {fileID: -8685905305111993045}
   - component: {fileID: -1135433391159677989}
   - component: {fileID: 3477830155655539965}
+  - component: {fileID: 1730793146438814418}
   m_Layer: 7
   m_Name: Spider_Patrol
   m_TagString: Enemy
@@ -107,10 +107,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   points:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  - {x: -92.25768, y: 0.52, z: 5.0825844}
+  - {x: -101.847565, y: 0.52, z: -21.882355}
+  - {x: -63.624626, y: 0.52, z: -62.47149}
+  - {x: -30.134758, y: 0.52, z: 4.562662}
 --- !u!114 &925973155630547998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,11 +123,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2232c49baa92e4147a458fdb918b3035, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initState: Patrol
+  initState: Wander
   states:
-  - ID: Patrol
+  - ID: Wander
     Actions:
-    - {fileID: -2231002798861908789}
+    - {fileID: 1730793146438814418}
     Transitions:
     - Decision: {fileID: 3477830155655539965}
       TrueState: Chase
@@ -138,7 +138,7 @@ MonoBehaviour:
     Transitions:
     - Decision: {fileID: 3477830155655539965}
       TrueState: 
-      FalseState: Patrol
+      FalseState: Wander
     - Decision: {fileID: -1135433391159677989}
       TrueState: Attack
       FalseState: 
@@ -175,19 +175,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   health: 10
---- !u!114 &-2231002798861908789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130060704507484962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f1b6c40d23b41b44b752c9e3fb5da43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 1.5
 --- !u!114 &-6177897234030590043
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -247,6 +234,27 @@ MonoBehaviour:
   playerMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &1730793146438814418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130060704507484962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f0b83346c61d544094e47687a1c0022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 3
+  wanderTime: 5
+  moveRange: {x: 10, y: 0, z: 10}
+  useGravity: 0
+  stickToGround: 0
+  arrivalDistance: 0.5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &651808396679822833
 GameObject:
   m_ObjectHideFlags: 0
