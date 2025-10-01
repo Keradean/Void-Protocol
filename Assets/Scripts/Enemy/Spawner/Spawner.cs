@@ -89,19 +89,6 @@ public class Spawner : MonoBehaviour
 
         // Initialize spawn counter to zero
         currentSpawnCount = 0;
-
-
-        this.enabled = false;
-    }
-
-    // ==================================================
-    // ON ENABLE METHOD
-    // ==================================================
-    // Called when the component is enabled (z.B. durch Terminal-Aktivierung)
-    // Initialisiert den Timer für den ersten Spawn
-    private void OnEnable()
-    {
-        timeSinceLastSpawn = Time.time + timeBtwSpawns;
     }
 
     // ==================================================

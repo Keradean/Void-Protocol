@@ -193,16 +193,16 @@ public class WeaponsManager : MonoBehaviour
         {
             // Variable to store raycast hit information
             // AUDIO INTEGRATION - Added by Julian with AI-Support
-            SoundManager.Instance?.PlayWeaponSound(CurrentWeapon, transform.position);
+            //SoundManager.Instance?.PlayWeaponSound(CurrentWeapon, transform.position);
+
+            // Variable to store raycast hit information
             RaycastHit hit;
 
             // Perform a SphereCast (thick raycast) from camera forward
-            // SphereCast has radius 0.5f (easier to hit enemies than thin raycast)
-            // Shoots from Cam.position in Cam.forward direction for Range distance
-            if (Physics.SphereCast(Cam.position, 0.5f, Cam.forward, out hit, Range))
+            if (Physics.SphereCast(Cam.position, 0.5f, Cam.forward, out hit, Range, ValidLayers))
             {
                 // Print the name of the object that was hit (for debugging)
-                Debug.Log(hit.transform.name);
+                Debug.Log("Hit: " + hit.transform.name);
 
                 // Check if the hit object is tagged as "Enemy"
                 if (hit.transform.CompareTag("Enemy"))
@@ -217,49 +217,55 @@ public class WeaponsManager : MonoBehaviour
                         damageable.TakeDamage(damage);
                         // Spawn damage effect (blood, sparks, etc.) at hit point
                         // AUDIO INTEGRATION - Added by Julian with AI-Support
-                        SoundManager.Instance?.PlayImpactSoundMobs(hit.point);
+                        //SoundManager.Instance?.PlayImpactSoundMobs(hit.point);
                         Instantiate(DamageEffect, hit.point, Quaternion.identity);
                     }
                     else // Enemy doesn't have IDamageable (shouldn't happen, but safety check)
                     {
                         // AUDIO INTEGRATION - Added by Julian with AI-Support
-                        SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
+                        //SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
                         // Spawn generic impact effect
                         Instantiate(ImpactEffect, hit.point, Quaternion.identity);
                     }
                 }
-                else
+                else // Hit something that's not an enemy (wall, ground, etc.)
                 {
                     // AUDIO INTEGRATION - Added by Julian with AI-Support
-                    SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
-
-                    // Show muzzle flash effect (if it exists)
-                    if (MuzzleFlare != null)
-                    {
-                        MuzzleFlare.SetActive(true); // Enable the muzzle flash GameObject
-                    }
-
-                    // Start the muzzle flash timer
-                    FlareCounter = FlareDisplayTime;
-
-                    // Decrease ammunition by 1
-                    CurrentAmmo--;
-
-                    // Update the UI to show new ammo count
-                    UpdateAmmoUI();
+                    //SoundManager.Instance?.PlayImpactSoundObjects(hit.point);
+                    // Spawn generic impact effect
+                    Instantiate(ImpactEffect, hit.point, Quaternion.identity);
                 }
+            }
 
-                // Start the fire rate cooldown timer (prevents shooting again immediately)
-                ShotCounter = TimeBtwShots;
-            }
-            else if (CurrentAmmo <= 0)
+            // WICHTIG: Dieser Code muss NACH dem Raycast-Check kommen,
+            // aber AUSSERHALB des if(Physics.SphereCast) Blocks!
+            // Er wird ausgeführt JEDES MAL wenn geschossen wird (egal ob getroffen oder nicht)
+
+            // Show muzzle flash effect (if it exists)
+            if (MuzzleFlare != null)
             {
-                // AUDIO INTEGRATION - Added by Julian with AI-Support
-                SoundManager.Instance?.PlayWeaponEmpty(transform.position);
+                MuzzleFlare.SetActive(true);
             }
+
+            // Start the muzzle flash timer
+            FlareCounter = FlareDisplayTime;
+
+            // Decrease ammunition by 1
+            CurrentAmmo--;
+
+            // Update the UI to show new ammo count
+            UpdateAmmoUI();
+
+            // Start the fire rate cooldown timer (prevents shooting again immediately)
+            ShotCounter = TimeBtwShots;
+        }
+        else if (CurrentAmmo <= 0)
+        {
+            // AUDIO INTEGRATION - Added by Julian with AI-Support
+           // SoundManager.Instance?.PlayWeaponEmpty(transform.position);
         }
     }
-        
+
 
     // ==================================================
     // SHOOT HELD METHOD

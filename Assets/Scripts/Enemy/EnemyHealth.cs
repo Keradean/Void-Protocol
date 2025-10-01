@@ -126,7 +126,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             EnemyDead();
         }
     }
-
+    /*
     // ==================================================
     // ENEMY DEAD METHOD
     // ==================================================
@@ -139,7 +139,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         if (enemyPool != null)
         {
             // Von Julian [AI-ASSISTED] - Play spider defeat sound effect at enemy's position
-            SoundManager.Instance?.PlaySpiderDefeat(transform.position);
+           // SoundManager.Instance?.PlaySpiderDefeat(transform.position);
 
             // Disable the AI brain (stop all enemy behavior)
             // This prevents the enemy from moving/attacking while being returned to pool
@@ -154,13 +154,13 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             GameManager.Instance.AddPlayerExp(enemyExp.ExpDrop);
         }
     }
-
+    */
     // ==================================================
     // COMMENTED OUT: ORIGINAL ENEMY DEAD METHOD
     // ==================================================
     // This is the original version before Julian added audio integration
     // Kept for reference/documentation purposes
-    /*
+    
      private void EnemyDead()
      {
            if (enemyPool != null)
@@ -171,5 +171,5 @@ public class EnemyHealth : MonoBehaviour, IDamageable
            }
            // Animation
      }
-    */
+    
 }
