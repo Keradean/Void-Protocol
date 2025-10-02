@@ -35,7 +35,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     [Header("Config")] // Header in Unity Inspector
     // Maximum health value (starting health when enemy spawns)
-    [SerializeField] private float health;
+    [SerializeField] private float health = 60f; // Default value if not set in Inspector
 
     // Current health of the enemy (decreases when taking damage)
     // { get; private set; } means: other scripts can read it, only this script can change it
@@ -99,11 +99,20 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     // Resets the enemy to its initial state (full health, AI enabled)
     public void OnSpawn()
     {
+        // Safety check: ensure health is positive
+        if (health <= 0f)
+        {
+            Debug.LogWarning($"Enemy {gameObject.name} has invalid health value: {health}. Setting to default 60.");
+            health = 60f;
+        }
+
         // Reset health to maximum (full health when spawning)
         CurrentHealth = health;
 
         // Enable the AI brain (allows enemy to move, patrol, chase, attack)
         enemyBrain.enabled = true;
+
+        Debug.Log($"Enemy spawned with {CurrentHealth} HP");
     }
 
     // ==================================================
@@ -126,50 +135,40 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             EnemyDead();
         }
     }
-    /*
+
     // ==================================================
-    // ENEMY DEAD METHOD
+    // ENEMY DEAD METHOD - FIXED VERSION
     // ==================================================
     // This private method handles enemy death
-    // Returns enemy to pool and gives player experience points
-    // Von Julian [AI-ASSISTED] Audio integration for enemy death feedback
+    // Works with both pooled enemies (spawned) and manual enemies (placed in scene)
+    // BUGFIX: Handles enemies without pool reference
     private void EnemyDead()
     {
-        // Safety check: make sure pool reference exists
+        // Optional: Uncomment when SoundManager is implemented
+        // Von Julian [AI-ASSISTED] - Play spider defeat sound effect at enemy's position
+        // SoundManager.Instance?.PlaySpiderDefeat(transform.position);
+
+        // Disable the AI brain (stop all enemy behavior)
+        enemyBrain.enabled = false;
+
+        // Give player experience points for killing this enemy
+        // GameManager handles adding EXP and potential level-up
+        GameManager.Instance.AddPlayerExp(enemyExp.ExpDrop);
+
+        // Check if this enemy is part of a pool (spawned enemy)
         if (enemyPool != null)
         {
-            // Von Julian [AI-ASSISTED] - Play spider defeat sound effect at enemy's position
-           // SoundManager.Instance?.PlaySpiderDefeat(transform.position);
-
-            // Disable the AI brain (stop all enemy behavior)
-            // This prevents the enemy from moving/attacking while being returned to pool
-            enemyBrain.enabled = false;
-
-            // Return this enemy to the pool (deactivates and stores for reuse)
-            // This is more efficient than destroying the enemy
+            // Return to pool for reuse (more efficient)
+            // The pool's OnRelease() method will call SetActive(false)
             enemyPool.Release(this);
-
-            // Give player experience points for killing this enemy
-            // GameManager handles adding EXP and potential level-up
-            GameManager.Instance.AddPlayerExp(enemyExp.ExpDrop);
         }
+        else
+        {
+            // Not pooled (manually placed in scene) - just destroy it
+            Destroy(gameObject);
+        }
+
+        // TODO: Animation
+        // animator.SetTrigger("Death");
     }
-    */
-    // ==================================================
-    // COMMENTED OUT: ORIGINAL ENEMY DEAD METHOD
-    // ==================================================
-    // This is the original version before Julian added audio integration
-    // Kept for reference/documentation purposes
-    
-     private void EnemyDead()
-     {
-           if (enemyPool != null)
-           {
-               enemyBrain.enabled = false;
-               enemyPool.Release(this);
-               GameManager.Instance.AddPlayerExp(enemyExp.ExpDrop);
-           }
-           // Animation
-     }
-    
 }

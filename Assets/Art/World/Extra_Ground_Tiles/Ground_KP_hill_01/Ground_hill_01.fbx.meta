@@ -7,6 +7,11 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Material
+    second: {fileID: 2100000, guid: fd99a5fcdd653cf4aa3182271923eeb8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: SM_Details
     second: {fileID: 2100000, guid: 54e9a389a3a661b4f8ae3180e3cd9d7b, type: 2}
   - first:
@@ -19,6 +24,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: SM_mast
     second: {fileID: 2100000, guid: 7b854897446b4734089c284357974584, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Terminal
+    second: {fileID: 2100000, guid: a1764b7675f40a14fade55e03e8df63b, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

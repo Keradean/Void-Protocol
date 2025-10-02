@@ -127,10 +127,10 @@ public class UIManager : MonoBehaviour
 
         // Display health as whole number (no decimals)
         // Mathf.FloorToInt rounds down to nearest integer (75.9 becomes 75)
-        healthTMP.text = $"{Mathf.FloorToInt(stats.Health)}";
+        //healthTMP.text = $"{Mathf.FloorToInt(stats.Health)}";
 
         // Display stamina as whole number (no decimals)
-        staminaTMP.text = $"{Mathf.FloorToInt(stats.Stamina)}";
+        //staminaTMP.text = $"{Mathf.FloorToInt(stats.Stamina)}";
 
         // Display player level (e.g. "Level 5")
         levelTMP.text = $"Level {stats.Level}";

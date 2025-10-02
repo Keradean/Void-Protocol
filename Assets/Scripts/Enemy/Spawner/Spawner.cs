@@ -162,7 +162,7 @@ public class Spawner : MonoBehaviour
         if (currentSpawnCount >= spawnStop) return;
 
         // Check if enough time has passed since last spawn
-        // Time.time returns the time in seconds since the game started
+        // Time.time returns the time in seconds since the game startedw
         if (Time.time > timeSinceLastSpawn)
         {
             // Get an enemy from the pool (spawns/activates it)
